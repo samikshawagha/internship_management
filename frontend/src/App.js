@@ -3,6 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 
+// Bootstrap
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/global.css';
+
 // Pages
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -10,8 +14,6 @@ import Dashboard from './pages/Dashboard';
 import InternshipList from './pages/InternshipList';
 import InternshipDetail from './pages/InternshipDetail';
 import CreateInternship from './pages/CreateInternship';
-
-import './styles/global.css';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
