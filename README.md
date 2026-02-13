@@ -215,7 +215,7 @@ NODE_ENV=development
 
 ### Frontend Configuration
 
-The frontend is configured to connect to the backend at `http://localhost:5000`. Modify in `src/services/apiService.js` if your backend is on a different address:
+The frontend is configured to connect to the backend at `http://:localhost5000`. Modify in `src/services/apiService.js` if your backend is on a different address:
 
 ```javascript
 const API_BASE = 'http://localhost:5000/api';

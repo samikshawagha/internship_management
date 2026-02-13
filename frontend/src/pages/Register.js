@@ -97,10 +97,10 @@ const Register = () => {
                 required
               />
             </Form.Group>
-            <Button 
-              variant="primary" 
-              type="submit" 
-              className="w-100 mb-3 fw-bold" 
+            <Button
+              variant="primary"
+              type="submit"
+              className="w-100 mb-3 fw-bold"
               disabled={loading}
             >
               {loading ? (
