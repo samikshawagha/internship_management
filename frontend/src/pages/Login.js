@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getRedirectPathByRole } from '../utils/jwtDecoder';
+import { Container, Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -17,7 +19,9 @@ const Login = () => {
 
     const result = await login(email, password);
     if (result.success) {
-      navigate('/dashboard');
+      // Get redirect path based on user role
+      const redirectPath = getRedirectPathByRole(result.user.role);
+      navigate(redirectPath);
     } else {
       setError(result.error);
     }
@@ -25,38 +29,56 @@ const Login = () => {
   };
 
   return (
-    <div className="container" style={{ maxWidth: '400px', marginTop: '50px' }}>
-      <div className="card">
-        <h2>Login</h2>
-        {error && <div className="error">{error}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '70vh' }}>
+      <Card className="shadow-lg" style={{ width: '100%', maxWidth: '400px' }}>
+        <Card.Body className="p-5">
+          <h2 className="text-center mb-4 fw-bold">Login</h2>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label className="fw-bold">Email Address</Form.Label>
+              <Form.Control
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label className="fw-bold">Password</Form.Label>
+              <Form.Control
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </Form.Group>
+            <Button 
+              variant="primary" 
+              type="submit" 
+              className="w-100 mb-3 fw-bold" 
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Spinner as="span" animation="border" size="sm" className="me-2" />
+                  Logging in...
+                </>
+              ) : (
+                'Login'
+              )}
+            </Button>
+          </Form>
+          <div className="text-center">
+            <p className="text-muted">
+              Don't have an account? <Link to="/register" className="text-decoration-none fw-bold">Register here</Link>
+            </p>
           </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="button" style={{ width: '100%' }} disabled={loading}>
-            {loading ? 'Loading...' : 'Login'}
-          </button>
-        </form>
-        <p>
-          Don't have an account? <a href="/register">Register here</a>
-        </p>
-      </div>
-    </div>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

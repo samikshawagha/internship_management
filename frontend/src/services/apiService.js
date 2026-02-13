@@ -8,14 +8,36 @@ export const apiService = {
   getInternshipById: (id) => axios.get(`${API_BASE}/internships/${id}`),
   getCompanyInternships: () => axios.get(`${API_BASE}/internships/company`),
   createInternship: (data) => axios.post(`${API_BASE}/internships`, data),
+  createInternshipWithImage: (formData) => {
+    return axios.post(`${API_BASE}/internships`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
   updateInternship: (id, data) => axios.put(`${API_BASE}/internships/${id}`, data),
+  updateInternshipWithImage: (id, formData) => {
+    return axios.put(`${API_BASE}/internships/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
   deleteInternship: (id) => axios.delete(`${API_BASE}/internships/${id}`),
 
   // Application endpoints
-  submitApplication: (data) => axios.post(`${API_BASE}/applications`, data),
+  submitApplication: (formData) => {
+    // FormData is used for file uploads
+    return axios.post(`${API_BASE}/applications`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
   getStudentApplications: () => axios.get(`${API_BASE}/applications`),
   getInternshipApplications: (internshipId) => axios.get(`${API_BASE}/applications/internship/${internshipId}`),
   updateApplicationStatus: (id, status) => axios.patch(`${API_BASE}/applications/${id}/status`, { status }),
+  deleteApplication: (id) => axios.delete(`${API_BASE}/applications/${id}`),
 
   // Report endpoints
   submitReport: (data) => axios.post(`${API_BASE}/reports`, data),

@@ -48,6 +48,7 @@ const initializeDatabase = async () => {
         stipend DECIMAL(10, 2),
         skills TEXT,
         startDate DATE,
+        logo VARCHAR(255),
         status ENUM('open', 'closed') DEFAULT 'open',
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (companyId) REFERENCES users(id)
@@ -83,6 +84,17 @@ const initializeDatabase = async () => {
         FOREIGN KEY (internshipId) REFERENCES internships(id)
       )
     `);
+
+    // Add logo column to internships table if it doesn't exist
+    try {
+      await connection.query(`
+        ALTER TABLE internships ADD COLUMN logo VARCHAR(255) AFTER startDate
+      `);
+    } catch (error) {
+      if (error.code !== 'ER_DUP_FIELDNAME') {
+        console.log('Logo column may already exist or other error:', error.message);
+      }
+    }
 
     connection.release();
     console.log('Database initialized successfully');

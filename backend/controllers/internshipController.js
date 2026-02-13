@@ -9,6 +9,9 @@ const internshipController = {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
+      // Get logo path if image was uploaded
+      const logo = req.file ? req.file.path : null;
+
       const result = await Internship.create({
         companyId: req.userId,
         title,
@@ -17,7 +20,8 @@ const internshipController = {
         duration,
         stipend,
         skills,
-        startDate
+        startDate,
+        logo
       });
 
       res.status(201).json({
@@ -66,7 +70,10 @@ const internshipController = {
   update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, description, location, duration, stipend, skills } = req.body;
+      const { title, description, location, duration, stipend, skills, status } = req.body;
+
+      // Get logo path if new image was uploaded
+      const logo = req.file ? req.file.path : undefined;
 
       await Internship.update(id, {
         title,
@@ -74,7 +81,8 @@ const internshipController = {
         location,
         duration,
         stipend,
-        skills
+        skills,
+        ...(logo && { logo })
       });
 
       res.json({ message: 'Internship updated successfully' });
