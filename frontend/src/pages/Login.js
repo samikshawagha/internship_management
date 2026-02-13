@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getRedirectPathByRole } from '../utils/jwtDecoder';
 import { Container, Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 
 const Login = () => {
@@ -18,7 +19,9 @@ const Login = () => {
 
     const result = await login(email, password);
     if (result.success) {
-      navigate('/dashboard');
+      // Get redirect path based on user role
+      const redirectPath = getRedirectPathByRole(result.user.role);
+      navigate(redirectPath);
     } else {
       setError(result.error);
     }

@@ -2,9 +2,9 @@ const pool = require('../config/database');
 
 const Internship = {
   create: async (data) => {
-    const { companyId, title, description, location, duration, stipend, skills, startDate } = data;
-    const query = 'INSERT INTO internships (companyId, title, description, location, duration, stipend, skills, startDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const [result] = await pool.query(query, [companyId, title, description, location, duration, stipend, skills, startDate]);
+    const { companyId, title, description, location, duration, stipend, skills, startDate, logo } = data;
+    const query = 'INSERT INTO internships (companyId, title, description, location, duration, stipend, skills, startDate, logo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const [result] = await pool.query(query, [companyId, title, description, location, duration, stipend, skills, startDate, logo || null]);
     return result;
   },
 
@@ -27,9 +27,25 @@ const Internship = {
   },
 
   update: async (id, data) => {
-    const { title, description, location, duration, stipend, skills } = data;
-    const query = 'UPDATE internships SET title = ?, description = ?, location = ?, duration = ?, stipend = ?, skills = ? WHERE id = ?';
-    const [result] = await pool.query(query, [title, description, location, duration, stipend, skills, id]);
+    const { title, description, location, duration, stipend, skills, logo } = data;
+    let query = 'UPDATE internships SET title = ?, description = ?, location = ?, duration = ?, stipend = ?, skills = ?';
+    const params = [title, description, location, duration, stipend, skills];
+    
+    if (logo) {
+      query += ', logo = ?';
+      params.push(logo);
+    }
+    
+    query += ' WHERE id = ?';
+    params.push(id);
+    
+    const [result] = await pool.query(query, params);
+    return result;
+  },
+
+  updateLogo: async (id, logoPath) => {
+    const query = 'UPDATE internships SET logo = ? WHERE id = ?';
+    const [result] = await pool.query(query, [logoPath, id]);
     return result;
   },
 

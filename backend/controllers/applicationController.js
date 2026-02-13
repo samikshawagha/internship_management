@@ -3,17 +3,24 @@ const Application = require('../models/Application');
 const applicationController = {
   create: async (req, res) => {
     try {
-      const { internshipId, resume, coverLetter } = req.body;
+      const { internshipId, coverLetter } = req.body;
 
       if (!internshipId) {
         return res.status(400).json({ error: 'Internship ID required' });
       }
 
+      if (!req.file) {
+        return res.status(400).json({ error: 'Resume file is required' });
+      }
+
+      // Store the resume file path
+      const resumePath = req.file.path;
+
       const result = await Application.create({
         studentId: req.userId,
         internshipId,
-        resume,
-        coverLetter
+        resume: resumePath,
+        coverLetter: coverLetter || ''
       });
 
       res.status(201).json({

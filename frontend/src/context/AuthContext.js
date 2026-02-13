@@ -21,6 +21,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.get('http://localhost:5000/api/auth/profile');
       setUser(response.data);
+      // Store user role in localStorage for quick access
+      localStorage.setItem('userRole', response.data.role);
     } catch (error) {
       console.error('Failed to fetch profile:', error);
       logout();
@@ -36,8 +38,12 @@ export const AuthProvider = ({ children }) => {
       setToken(token);
       setUser(user);
       localStorage.setItem('token', token);
+      // Store user role immediately
+      localStorage.setItem('userRole', user.role);
+      // Store user data in localStorage for persistence
+      localStorage.setItem('userData', JSON.stringify(user));
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      return { success: true };
+      return { success: true, user };
     } catch (error) {
       return { success: false, error: error.response?.data?.error || 'Login failed' };
     }
@@ -56,6 +62,8 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userData');
     delete axios.defaults.headers.common['Authorization'];
   };
 
