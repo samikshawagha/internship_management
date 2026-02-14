@@ -200,18 +200,20 @@ CREATE DATABASE IF NOT EXISTS internship_management;
 
 ```env
 # Database Configuration
-DB_HOST=localhost              # MySQL host
-DB_USER=root                   # MySQL username
-DB_PASSWORD=root               # MySQL password
-DB_NAME=internship_management  # Database name
+DB_HOST=localhost                         # MySQL host
+DB_USER=root                              # MySQL username (change in production)
+DB_PASSWORD=root                          # MySQL password (change in production)
+DB_NAME=internship_management             # Database name
 
 # JWT Configuration
-JWT_SECRET=your_jwt_secret_key_change_in_production
+JWT_SECRET=your_jwt_secret_key_change_in_production  # Keep this secure in production
 
 # Server Configuration
-PORT=5000
-NODE_ENV=development
+PORT=5000                                 # Server port
+NODE_ENV=development                      # Set to 'production' for production deployment
 ```
+
+> **⚠️ Security Warning**: Never use default credentials (root/root) in production. Always change the database credentials and JWT secret in production environments.
 
 ### Frontend Configuration
 
