@@ -1,0 +1,141 @@
+/* Footer Custom Styles */
+.footer-custom {
+  background: linear-gradient(180deg, #0f1419 0%, #1a1a2e 100%) !important;
+  border-top: 3px solid #0f3460;
+  margin-top: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-custom::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(0,212,255,0.1)"/></svg>');
+  background-size: cover;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.footer-custom h5,
+.footer-custom h6 {
+  color: #00d4ff;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.footer-custom p {
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.7);
+  position: relative;
+  z-index: 1;
+}
+
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  background-color: rgba(0, 212, 255, 0.1);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.social-links a:hover {
+  background-color: #00d4ff;
+  color: #1a1a2e !important;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+}
+
+.link-group {
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+
+.link-item {
+  background: transparent;
+  border: none;
+  padding: 8px 0;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+  padding-left: 10px;
+  font-size: 0.95rem;
+}
+
+.link-item:hover {
+  background: transparent;
+  color: #00d4ff;
+  border-left-color: #00d4ff;
+  transform: translateX(5px);
+}
+
+.footer-custom .border-top {
+  border-color: #0f3460 !important;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-custom a {
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.footer-custom a:hover {
+  color: #00d4ff !important;
+}
+
+/* Footer - Responsive */
+@media (max-width: 768px) {
+  .footer-custom {
+    padding-top: 2rem;
+  }
+
+  .footer-custom h5,
+  .footer-custom h6 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .social-links {
+    justify-content: flex-start;
+  }
+
+  .link-item {
+    font-size: 0.9rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.footer-custom {
+  animation: fadeInUp 0.6s ease;
+}
+
+/* Smooth Scroll Effect */
+@media (prefers-reduced-motion: no-preference) {
+  .footer-custom * {
+    scroll-behavior: smooth;
+  }
+}

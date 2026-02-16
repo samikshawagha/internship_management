@@ -142,6 +142,21 @@ code {
   color: white;
 }
 
+.card-gradient-teal {
+  background: linear-gradient(135deg, #00b4d8 0%, #0096c7 100%) !important;
+  color: white;
+}
+
+.card-gradient-orange {
+  background: linear-gradient(135deg, #ff6b35 0%, #ffa500 100%) !important;
+  color: white;
+}
+
+.card-gradient-danger {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
+  color: white;
+}
+
 /* Transition Card */
 .transition-card {
   position: relative;

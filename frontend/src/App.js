@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import Navbar from './components/Navbar';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 // Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -14,10 +15,15 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/AdminUsers';
+import AdminInternships from './pages/AdminInternships';
+import AdminApplications from './pages/AdminApplications';
+import AdminReports from './pages/AdminReports';
 import InternshipList from './pages/InternshipList';
 import InternshipDetail from './pages/InternshipDetail';
 import CreateInternship from './pages/CreateInternship';
 import EditInternship from './pages/EditInternship';
+import MyApplications from './pages/MyApplications';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -47,10 +53,12 @@ function AppContent() {
 
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        {/* Home Route - Available to All */}
-        <Route path="/" element={<Home />} />
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Header />
+        <main style={{ flex: 1 }}>
+          <Routes>
+            {/* Home Route - Available to All */}
+            <Route path="/" element={<Home />} />
         
         {/* Public Routes */}
         {!user ? (
@@ -87,6 +95,43 @@ function AppContent() {
               element={
                 <ProtectedRoute requiredRole={['admin']}>
                   <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin Management Routes */}
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute requiredRole={['admin']}>
+                  <AdminUsers />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/internships"
+              element={
+                <ProtectedRoute requiredRole={['admin']}>
+                  <AdminInternships />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/applications"
+              element={
+                <ProtectedRoute requiredRole={['admin']}>
+                  <AdminApplications />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/reports"
+              element={
+                <ProtectedRoute requiredRole={['admin']}>
+                  <AdminReports />
                 </ProtectedRoute>
               }
             />
@@ -128,6 +173,16 @@ function AppContent() {
               }
             />
 
+            {/* My Applications - Student Only */}
+            <Route
+              path="/my-applications"
+              element={
+                <ProtectedRoute requiredRole={['student']}>
+                  <MyApplications />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Unauthorized Route */}
             <Route
               path="/unauthorized"
@@ -146,7 +201,10 @@ function AppContent() {
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </>
         )}
-      </Routes>
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 }
