@@ -30,9 +30,20 @@ const authController = {
         phone
       });
 
+      // Fetch newly created user and return a systematic profile format
+      const createdUser = await User.findById(result.insertId);
+      const profile = {
+        id: createdUser.id,
+        email: createdUser.email,
+        role: createdUser.role,
+        fullName: createdUser.fullName,
+        phone: createdUser.phone,
+        createdAt: createdUser.createdAt
+      };
+
       res.status(201).json({
         message: 'User registered successfully',
-        userId: result.insertId
+        user: profile
       });
     } catch (error) {
       console.error('Registration error:', error);

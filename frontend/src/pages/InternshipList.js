@@ -1,235 +1,387 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { apiService } from '../services/apiService';
-import { Container, Row, Col, Card, Badge, Button, Spinner, Alert, Form, InputGroup } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { crudService } from '../services/crudService';
+import {
+  Container, Row, Col, Card, Button, Badge, Form, InputGroup,
+  Pagination, Modal, Alert, Spinner
+} from 'react-bootstrap';
+import '../styles/internshiplist.css';
 
 const InternshipList = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [internships, setInternships] = useState([]);
-  const [filteredInternships, setFilteredInternships] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [locationFilter, setLocationFilter] = useState('');
-  const [locationOptions, setLocationOptions] = useState([]);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterSkills, setFilterSkills] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState('recent');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedInternship, setSelectedInternship] = useState(null);
 
+  const itemsPerPage = 6;
+
+  // Load internships on mount
   useEffect(() => {
-    fetchInternships();
+    loadInternships();
   }, []);
 
-  useEffect(() => {
-    filterInternships();
-  }, [internships, searchTerm, locationFilter]);
-
-  const fetchInternships = async () => {
+  const loadInternships = async () => {
     try {
-      const response = await apiService.getInternships();
+      setLoading(true);
+      const response = await crudService.getInternships();
       setInternships(response.data);
-      
-      // Extract unique locations for filter
-      const locations = [...new Set(response.data.map(i => i.location))];
-      setLocationOptions(locations);
-    } catch (error) {
-      console.error('Error fetching internships:', error);
-      setError('Failed to fetch internships');
+      setError(null);
+    } catch (err) {
+      setError('Failed to load internships');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const filterInternships = () => {
-    let filtered = internships;
+  // Filter and search logic
+  const filteredInternships = internships.filter(internship => {
+    const searchMatch = internship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       internship.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       internship.company.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const statusMatch = filterStatus === 'all' || internship.status === filterStatus;
+    
+    const skillsMatch = filterSkills.length === 0 || 
+                       filterSkills.some(skill => internship.skills.includes(skill));
+    
+    return searchMatch && statusMatch && skillsMatch;
+  });
 
-    // Filter by search term (title + description + skills)
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        internship =>
-          internship.title.toLowerCase().includes(term) ||
-          internship.description.toLowerCase().includes(term) ||
-          internship.skills.toLowerCase().includes(term)
-      );
+  // Sort logic
+  const sortedInternships = [...filteredInternships].sort((a, b) => {
+    switch (sortBy) {
+      case 'recent':
+        return new Date(b.postedDate) - new Date(a.postedDate);
+      case 'stipend_high':
+        return parseInt(b.stipend) - parseInt(a.stipend);
+      case 'stipend_low':
+        return parseInt(a.stipend) - parseInt(b.stipend);
+      case 'applicants':
+        return b.applicants - a.applicants;
+      default:
+        return 0;
     }
+  });
 
-    // Filter by location
-    if (locationFilter) {
-      filtered = filtered.filter(internship => internship.location === locationFilter);
+  // Pagination logic
+  const totalPages = Math.ceil(sortedInternships.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedInternships = sortedInternships.slice(startIndex, startIndex + itemsPerPage);
+
+  const handleDelete = async () => {
+    if (!selectedInternship) return;
+    
+    try {
+      await crudService.deleteInternship(selectedInternship.id);
+      setSuccess('Internship deleted successfully!');
+      setShowDeleteModal(false);
+      loadInternships();
+    } catch (err) {
+      setError('Failed to delete internship');
     }
+  };
 
-    // Filter to show only open internships
-    filtered = filtered.filter(internship => internship.status === 'open');
-
-    setFilteredInternships(filtered);
+  const toggleSkillFilter = (skill) => {
+    setFilterSkills(prev =>
+      prev.includes(skill)
+        ? prev.filter(s => s !== skill)
+        : [...prev, skill]
+    );
+    setCurrentPage(1);
   };
 
   if (loading) {
     return (
-      <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
-        <Spinner animation="border" variant="primary" role="status">
+      <Container className="py-5 text-center">
+        <Spinner animation="border" role="status">
           <span className="visually-hidden">Loading...</span>
         </Spinner>
       </Container>
     );
   }
 
-  if (error) {
-    return (
-      <Container className="mt-4">
-        <Alert variant="danger">{error}</Alert>
-      </Container>
-    );
-  }
-
   return (
-    <Container fluid className="py-4">
-      {/* Header */}
-      <div className="mb-5">
-        <h1 className="fw-bold text-dark mb-2">🔍 Explore Internships</h1>
-        <p className="text-muted fs-5">
-          Find the perfect internship opportunity for your career growth. 🚀
-        </p>
-      </div>
+    <Container fluid className="py-5 internship-list-container">
+      <Container>
+        {/* Header */}
+        <Row className="mb-5 align-items-center">
+          <Col md={6}>
+            <h1 className="display-6 fw-bold mb-0">
+              📋 Internship Opportunities
+            </h1>
+            <p className="text-muted mt-2">
+              {sortedInternships.length} internships available
+            </p>
+          </Col>
+          <Col md={6} className="text-end">
+            {(user?.role === 'company' || user?.role === 'admin') && (
+              <Button
+                variant="success"
+                size="lg"
+                onClick={() => navigate('/internships/create')}
+                className="btn-create-internship"
+              >
+                ➕ Post Internship
+              </Button>
+            )}
+          </Col>
+        </Row>
 
-      {/* Search and Filters */}
-      <Row className="mb-4 g-3">
-        <Col md={8}>
-          <InputGroup className="shadow-sm">
-            <InputGroup.Text className="bg-white border-end-0">
-              🔎
-            </InputGroup.Text>
-            <Form.Control
-              placeholder="Search by title, skills, or description..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="border-start-0"
-            />
-          </InputGroup>
-        </Col>
-        <Col md={4}>
-          <Form.Select
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
-            className="shadow-sm"
-          >
-            <option value="">📍 All Locations</option>
-            {locationOptions.map(location => (
-              <option key={location} value={location}>
-                📍 {location}
-              </option>
-            ))}
-          </Form.Select>
-        </Col>
-      </Row>
+        {/* Error/Success Messages */}
+        {error && <Alert variant="danger" dismissible onClose={() => setError(null)}>{error}</Alert>}
+        {success && <Alert variant="success" dismissible onClose={() => setSuccess(null)}>{success}</Alert>}
 
-      {/* Results Count */}
-      <div className="mb-3">
-        <p className="text-muted">
-          Found <strong>{filteredInternships.length}</strong> internship{filteredInternships.length !== 1 ? 's' : ''}
-          {user?.role === 'student' ? ' open for applications' : ''}
-        </p>
-      </div>
+        <Row className="mb-4">
+          {/* Search Bar */}
+          <Col lg={8} className="mb-3 mb-lg-0">
+            <InputGroup size="lg" className="search-input-group">
+              <InputGroup.Text className="search-icon">🔍</InputGroup.Text>
+              <Form.Control
+                placeholder="Search internships, companies, skills..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+              />
+            </InputGroup>
+          </Col>
 
-      {/* Internship Cards */}
-      {filteredInternships.length === 0 ? (
-        <Alert variant="info" className="text-center py-5">
-          <h5 className="mb-2">No internships found</h5>
-          <p className="mb-0">
-            {searchTerm || locationFilter
-              ? 'Try adjusting your search or filter criteria.'
-              : 'Check back soon for new opportunities!'}
-          </p>
-        </Alert>
-      ) : (
-        <Row className="g-4">
-          {filteredInternships.map((internship) => (
-            <Col key={internship.id} md={6} lg={4}>
-              <Card className="h-100 shadow-sm border-0 transition-card hover-shadow" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
-                <Card.Body>
-                  {/* Title and Status */}
-                  <div className="d-flex justify-content-between align-items-start mb-3">
-                    <h5 className="card-title fw-bold text-primary mb-0" style={{ fontSize: '1.1rem' }}>
+          {/* Sort Dropdown */}
+          <Col lg={4}>
+            <Form.Select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="sort-select"
+            >
+              <option value="recent">Most Recent</option>
+              <option value="stipend_high">Highest Stipend</option>
+              <option value="stipend_low">Lowest Stipend</option>
+              <option value="applicants">Most Applied</option>
+            </Form.Select>
+          </Col>
+        </Row>
+
+        {/* Filters */}
+        <Row className="mb-4">
+          <Col md={3} className="mb-3">
+            <Form.Group>
+              <Form.Label className="fw-bold">Status</Form.Label>
+              <Form.Select
+                value={filterStatus}
+                onChange={(e) => {
+                  setFilterStatus(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="all">All Statuses</option>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+              </Form.Select>
+            </Form.Group>
+          </Col>
+
+          <Col md={9}>
+            <Form.Label className="fw-bold">Skills</Form.Label>
+            <div className="skills-filter">
+              {['React', 'Node.js', 'MongoDB', 'Python', 'AWS', 'Docker', 'JavaScript', 'TensorFlow'].map(skill => (
+                <Badge
+                  key={skill}
+                  bg={filterSkills.includes(skill) ? 'primary' : 'secondary'}
+                  style={{ cursor: 'pointer', marginRight: '5px', marginBottom: '5px' }}
+                  onClick={() => toggleSkillFilter(skill)}
+                  className="skill-badge"
+                >
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          </Col>
+        </Row>
+
+        {/* Internship Cards */}
+        <Row>
+          {paginatedInternships.length > 0 ? (
+            paginatedInternships.map(internship => (
+              <Col lg={6} key={internship.id} className="mb-4">
+                <Card className="internship-card h-100 shadow-sm hover-shadow">
+                  <Card.Body>
+                    {/* Status Badge */}
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <Badge bg={internship.status === 'open' ? 'success' : 'warning'}>
+                        {internship.status?.toUpperCase()}
+                      </Badge>
+                      <small className="text-muted">
+                        👥 {internship.applicants} applicants
+                      </small>
+                    </div>
+
+                    {/* Title */}
+                    <h5 className="card-title fw-bold mb-2">
                       {internship.title}
                     </h5>
-                    <Badge bg="success" className="flex-shrink-0">
-                      ✓ Open
-                    </Badge>
-                  </div>
-                  
-                  <hr className="my-3" />
-                  
-                  {/* Key Details */}
-                  <div className="mb-3">
-                    <p className="mb-2 small">
-                      <span className="text-secondary me-2">📍</span>
-                      <strong>{internship.location}</strong>
+
+                    {/* Company Info */}
+                    <p className="text-primary mb-3">
+                      🏢 {internship.company}
                     </p>
-                    <p className="mb-2 small">
-                      <span className="text-secondary me-2">⏱️</span>
-                      <strong>{internship.duration}</strong> months
+
+                    {/* Description */}
+                    <p className="card-text text-muted mb-3">
+                      {internship.description}
                     </p>
-                    <p className="mb-2 small">
-                      <span className="text-secondary me-2">💰</span>
-                      <strong>${internship.stipend}</strong>/month
-                    </p>
-                  </div>
-                  
-                  {/* Skills */}
-                  <div className="mb-3">
-                    <p className="text-muted small mb-2"><strong>Skills:</strong></p>
-                    <div className="d-flex flex-wrap gap-1">
-                      {internship.skills
-                        ? internship.skills.split(',').slice(0, 3).map((skill, index) => (
-                            <Badge key={index} bg="light" text="dark" className="small">
-                              {skill.trim()}
-                            </Badge>
-                          ))
-                        : null}
-                      {internship.skills && internship.skills.split(',').length > 3 && (
-                        <Badge bg="light" text="dark" className="small">
-                          +{internship.skills.split(',').length - 3}
+
+                    {/* Details Grid */}
+                    <Row className="mb-3 text-sm">
+                      <Col xs={6} className="mb-2">
+                        <small className="text-muted">Location</small>
+                        <br />
+                        <small className="fw-bold">📍 {internship.location}</small>
+                      </Col>
+                      <Col xs={6} className="mb-2">
+                        <small className="text-muted">Duration</small>
+                        <br />
+                        <small className="fw-bold">⏱️ {internship.duration}</small>
+                      </Col>
+                      <Col xs={6} className="mb-2">
+                        <small className="text-muted">Stipend</small>
+                        <br />
+                        <small className="fw-bold text-success">💰 {internship.stipend}</small>
+                      </Col>
+                      <Col xs={6} className="mb-2">
+                        <small className="text-muted">Start Date</small>
+                        <br />
+                        <small className="fw-bold">📅 {internship.startDate}</small>
+                      </Col>
+                    </Row>
+
+                    {/* Skills */}
+                    <div className="mb-3">
+                      {internship.skills.slice(0, 3).map(skill => (
+                        <Badge key={skill} bg="light" text="dark" className="me-1 mb-1">
+                          {skill}
+                        </Badge>
+                      ))}
+                      {internship.skills.length > 3 && (
+                        <Badge bg="light" text="dark">
+                          +{internship.skills.length - 3} more
                         </Badge>
                       )}
                     </div>
-                  </div>
-                  
-                  {/* Description Preview */}
-                  <p className="text-secondary small mb-3" style={{ minHeight: '50px' }}>
-                    {internship.description && internship.description.substring(0, 100)}
-                    {internship.description && internship.description.length > 100 ? '...' : ''}
-                  </p>
-                  
-                  {/* Action Button */}
-                  <Link to={`/internships/${internship.id}`} className="text-decoration-none">
-                    <Button variant="primary" className="w-100 fw-bold">
-                      View Details & Apply →
-                    </Button>
-                  </Link>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      )}
 
-      {/* Call to Action for Company Users */}
-      {user?.role === 'company' && (
-        <Row className="mt-5">
-          <Col lg={12}>
-            <Card className="bg-light border-0 shadow-sm">
-              <Card.Body className="text-center py-4">
-                <h5 className="fw-bold mb-2">Want to post an internship?</h5>
-                <p className="text-muted mb-3">Create a new opportunity for students to join your company.</p>
-                <Link to="/internships/create" className="text-decoration-none">
-                  <Button variant="success" size="lg">
-                    ➕ Post New Internship
-                  </Button>
-                </Link>
-              </Card.Body>
-            </Card>
-          </Col>
+                    {/* Action Buttons */}
+                    <div className="action-buttons">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => navigate(`/internships/${internship.id}`)}
+                      >
+                        View Details
+                      </Button>
+
+                      {(user?.role === 'company' || user?.role === 'admin') && (
+                        <>
+                          <Button
+                            variant="warning"
+                            size="sm"
+                            className="me-2"
+                            onClick={() => navigate(`/internships/${internship.id}/edit`)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedInternship(internship);
+                              setShowDeleteModal(true);
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))
+          ) : (
+            <Col lg={12}>
+              <Alert variant="info" className="text-center">
+                <h5>No internships found</h5>
+                <p>Try adjusting your filters or search terms</p>
+              </Alert>
+            </Col>
+          )}
         </Row>
-      )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Row className="mt-5">
+            <Col className="d-flex justify-content-center">
+              <Pagination>
+                <Pagination.First
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(1)}
+                />
+                <Pagination.Prev
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                />
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                  <Pagination.Item
+                    key={page}
+                    active={page === currentPage}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </Pagination.Item>
+                ))}
+                <Pagination.Next
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                />
+                <Pagination.Last
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(totalPages)}
+                />
+              </Pagination>
+            </Col>
+          </Row>
+        )}
+      </Container>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Internship</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete <strong>{selectedInternship?.title}</strong>?
+          This action cannot be undone.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

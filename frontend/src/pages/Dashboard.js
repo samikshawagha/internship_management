@@ -1,42 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { apiService } from '../services/apiService';
-import { Container, Row, Col, Card, Button, Badge, Spinner, Alert, ListGroup, ProgressBar } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { crudService } from '../services/crudService';
+import { Container, Row, Col, Card, Button, Badge, Spinner, Alert, ListGroup, ProgressBar, Modal, Table } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState(null);
-  const [applicationStats, setApplicationStats] = useState([]);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [dashboardData, setDashboardData] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [scrollY, setScrollY] = useState(0);
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    loadDashboardData();
+  }, [user?.id]);
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const fetchStats = async () => {
+  const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const dashboardResponse = await apiService.getDashboardStats();
-      setStats(dashboardResponse.data);
-
-      const appStatsResponse = await apiService.getApplicationStats();
-      setApplicationStats(appStatsResponse.data);
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-      setError('Failed to fetch dashboard stats');
+      const response = await crudService.getDashboardData(user?.id, 'student');
+      setDashboardData(response.data);
+      setError('');
+    } catch (err) {
+      setError('Failed to load dashboard data');
+      console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleWithdrawApplication = async () => {
+    if (!selectedApp) return;
+    
+    try {
+      await crudService.deleteApplication(selectedApp.id);
+      setSuccess('Application withdrawn successfully!');
+      setShowWithdrawModal(false);
+      loadDashboardData();
+    } catch (err) {
+      setError('Failed to withdraw application');
     }
   };
 
@@ -53,7 +60,7 @@ const Dashboard = () => {
     );
   }
 
-  if (error) {
+  if (error && !dashboardData) {
     return (
       <Container className="mt-4">
         <Alert variant="danger" className="alert-animated">{error}</Alert>
@@ -61,21 +68,18 @@ const Dashboard = () => {
     );
   }
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'pending':
-        return 'warning';
-      case 'accepted':
-        return 'success';
-      case 'rejected':
-        return 'danger';
-      default:
-        return 'secondary';
-    }
+  const getStatusBadge = (status) => {
+    const variants = {
+      pending: 'warning',
+      accepted: 'success',
+      rejected: 'danger'
+    };
+    return variants[status] || 'secondary';
   };
 
-  const totalApplications = applicationStats.reduce((sum, stat) => sum + stat.count, 0);
-  const acceptedCount = applicationStats.find(s => s.status === 'accepted')?.count || 0;
+  const stats = dashboardData?.stats || {};
+  const applications = dashboardData?.applications || [];
+
   const profileCompletion = (user?.phone ? 75 : 60);
 
   return (
@@ -98,9 +102,13 @@ const Dashboard = () => {
         </Row>
       </div>
 
+      {/* Alerts */}
+      {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
+      {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
+
       {/* Main Stats Cards */}
       <Row className="mb-5 g-3 stats-row">
-        {/* Total Internships Card */}
+        {/* Total Applications Card */}
         <Col md={6} lg={4}>
           <Card 
             className="stat-card h-100 shadow-sm border-0 interactive-card"
@@ -112,15 +120,15 @@ const Dashboard = () => {
             }}
           >
             <Card.Body className="text-white" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-              <div className="stat-icon">💼</div>
-              <h3 className="stat-label">Total Internships Available</h3>
-              <p className="stat-number">{stats?.totalInternships || 0}</p>
-              <small className="stat-sub">Opportunities to explore</small>
+              <div className="stat-icon">📝</div>
+              <h3 className="stat-label">Total Applications</h3>
+              <p className="stat-number">{stats.totalApplications || 0}</p>
+              <small className="stat-sub">All your applications</small>
             </Card.Body>
           </Card>
         </Col>
 
-        {/* Applied Count Card */}
+        {/* Pending Applications Card */}
         <Col md={6} lg={4}>
           <Card 
             className="stat-card h-100 shadow-sm border-0 interactive-card"
@@ -132,15 +140,15 @@ const Dashboard = () => {
             }}
           >
             <Card.Body className="text-white" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-              <div className="stat-icon">📝</div>
-              <h3 className="stat-label">Applied Count</h3>
-              <p className="stat-number">{totalApplications}</p>
-              <small className="stat-sub">Active applications</small>
+              <div className="stat-icon">⏳</div>
+              <h3 className="stat-label">Pending</h3>
+              <p className="stat-number">{stats.pending || 0}</p>
+              <small className="stat-sub">Awaiting response</small>
             </Card.Body>
           </Card>
         </Col>
 
-        {/* Accepted Count Card */}
+        {/* Accepted Applications Card */}
         <Col md={6} lg={4}>
           <Card 
             className="stat-card h-100 shadow-sm border-0 interactive-card"
@@ -154,8 +162,8 @@ const Dashboard = () => {
             <Card.Body className="text-white" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
               <div className="stat-icon">✅</div>
               <h3 className="stat-label">Accepted</h3>
-              <p className="stat-number">{acceptedCount}</p>
-              <small className="stat-sub">Successful placements</small>
+              <p className="stat-number">{stats.accepted || 0}</p>
+              <small className="stat-sub">Offers received</small>
             </Card.Body>
           </Card>
         </Col>
@@ -196,57 +204,86 @@ const Dashboard = () => {
                 </ListGroup.Item>
 
                 <ListGroup.Item className="border-0 ps-0 pe-0 pt-3">
-                  <Link to="/profile" className="text-decoration-none w-100">
-                    <Button variant="outline-primary" size="sm" className="w-100 btn-custom">
-                      ✏️ Edit Profile
-                    </Button>
-                  </Link>
+                  <Button 
+                    variant="outline-primary" 
+                    size="sm" 
+                    className="w-100 btn-custom"
+                    onClick={() => navigate('/profile')}
+                  >
+                    ✏️ Edit Profile
+                  </Button>
                 </ListGroup.Item>
               </ListGroup>
             </Card.Body>
           </Card>
         </Col>
 
-        {/* Application Status Breakdown */}
+        {/* Recent Applications */}
         <Col lg={7}>
           <Card className="status-card shadow-sm border-0 h-100">
             <Card.Header className="bg-success text-white border-0 card-header-custom">
-              <h5 className="mb-0 fw-bold">📊 Application Status Breakdown</h5>
+              <h5 className="mb-0 fw-bold">📊 Recent Applications</h5>
             </Card.Header>
             <Card.Body>
-              {applicationStats.length > 0 ? (
-                <Row className="g-3">
-                  {applicationStats.map((stat, idx) => (
-                    <Col md={6} key={stat.status}>
-                      <Card 
-                        className="status-breakdown-card border-0 bg-light text-center"
-                        onMouseEnter={() => setHoveredCard(10 + idx)}
-                        onMouseLeave={() => setHoveredCard(null)}
-                        style={{
-                          transform: hoveredCard === 10 + idx ? 'scale(1.05)' : 'scale(1)',
-                          transition: 'all 0.3s ease'
-                        }}
-                      >
-                        <Card.Body>
-                          <Badge bg={getStatusColor(stat.status)} className="mb-2 badge-status">
-                            {stat.status.charAt(0).toUpperCase() + stat.status.slice(1)}
-                          </Badge>
-                          <p className="h3 fw-bold mb-0 status-count">{stat.count}</p>
-                          <small className="text-muted breakdown-text">
-                            {stat.status === 'pending' ? '⏳ Waiting for response' : stat.status === 'accepted' ? '🎉 Offers received' : '❌ Not selected'}
-                          </small>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
+              {applications && applications.length > 0 ? (
+                <div className="table-responsive">
+                  <Table striped hover size="sm" className="applications-table">
+                    <thead>
+                      <tr>
+                        <th>Position</th>
+                        <th>Company</th>
+                        <th>Status</th>
+                        <th>Applied</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {applications.slice(0, 5).map(app => (
+                        <tr key={app.id}>
+                          <td className="fw-bold text-truncate">{app.internshipTitle}</td>
+                          <td>{app.company}</td>
+                          <td>
+                            <Badge bg={getStatusBadge(app.status)}>
+                              {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                            </Badge>
+                          </td>
+                          <td><small className="text-muted">{app.appliedDate}</small></td>
+                          <td>
+                            <Button 
+                              variant="danger" 
+                              size="sm"
+                              onClick={() => {
+                                setSelectedApp(app);
+                                setShowWithdrawModal(true);
+                              }}
+                            >
+                              Withdraw
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                  {applications.length > 5 && (
+                    <Button 
+                      variant="link" 
+                      className="w-100 mt-2"
+                      onClick={() => navigate('/my-applications')}
+                    >
+                      View All Applications →
+                    </Button>
+                  )}
+                </div>
               ) : (
                 <div className="empty-state">
                   <p className="text-muted text-center mb-3">No applications yet. Start exploring internships!</p>
                   <div className="text-center">
-                    <Link to="/internships" className="text-decoration-none">
-                      <Button variant="primary" className="btn-no-app">Start Applying 🚀</Button>
-                    </Link>
+                    <Button 
+                      variant="primary"
+                      onClick={() => navigate('/internships')}
+                    >
+                      Start Applying 🚀
+                    </Button>
                   </div>
                 </div>
               )}
@@ -262,31 +299,58 @@ const Dashboard = () => {
             <Card.Body>
               <h5 className="fw-bold mb-4">⚡ Quick Actions</h5>
               <div className="d-flex flex-wrap gap-3 actions-container">
-                <Link to="/internships" className="text-decoration-none flex-grow-1">
-                  <Button variant="primary" className="w-100 action-btn">
-                    🔍 Browse Internships
-                  </Button>
-                </Link>
-                <Link to="/MyApplications" className="text-decoration-none flex-grow-1">
-                  <Button variant="info" className="w-100 action-btn">
-                    📋 View Applications
-                  </Button>
-                </Link>
-                <Link to="/reports" className="text-decoration-none flex-grow-1">
-                  <Button variant="warning" className="w-100 action-btn">
-                    📝 View Reports
-                  </Button>
-                </Link>
-                <Link to="/profile" className="text-decoration-none flex-grow-1">
-                  <Button variant="secondary" className="w-100 action-btn">
-                    ⚙️ Profile Settings
-                  </Button>
-                </Link>
+                <Button 
+                  variant="primary" 
+                  className="flex-grow-1 action-btn"
+                  onClick={() => navigate('/internships')}
+                >
+                  🔍 Browse Internships
+                </Button>
+                <Button 
+                  variant="info" 
+                  className="flex-grow-1 action-btn"
+                  onClick={() => navigate('/my-applications')}
+                >
+                  📋 View Applications
+                </Button>
+                <Button 
+                  variant="warning" 
+                  className="flex-grow-1 action-btn"
+                  onClick={() => navigate('/reports')}
+                >
+                  📝 View Reports
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  className="flex-grow-1 action-btn"
+                  onClick={() => navigate('/profile')}
+                >
+                  ⚙️ Profile Settings
+                </Button>
               </div>
             </Card.Body>
           </Card>
         </Col>
       </Row>
+
+      {/* Withdraw Application Modal */}
+      <Modal show={showWithdrawModal} onHide={() => setShowWithdrawModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Withdraw Application</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to withdraw your application for <strong>{selectedApp?.internshipTitle}</strong> at {selectedApp?.company}?
+          This action cannot be undone.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowWithdrawModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleWithdrawApplication}>
+            Withdraw Application
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

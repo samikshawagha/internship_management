@@ -1,0 +1,115 @@
+/* Header Custom Styles */
+.navbar-custom {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+  border-bottom: 3px solid #0f3460;
+  transition: all 0.3s ease;
+}
+
+.navbar-custom:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.brand-text {
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  color: #00d4ff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.brand-text:hover {
+  transform: scale(1.05);
+  color: #00f0ff !important;
+  text-shadow: 0 3px 8px rgba(0, 212, 255, 0.5);
+  cursor: pointer;
+}
+
+.nav-link-custom {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 500;
+  margin: 0 10px;
+  padding: 8px 0 !important;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.nav-link-custom:hover {
+  color: #00d4ff !important;
+  border-bottom-color: #00d4ff;
+  transform: translateY(-2px);
+}
+
+.user-dropdown {
+  color: white !important;
+  background-color: rgba(0, 212, 255, 0.1) !important;
+  border: none !important;
+  padding: 8px 12px !important;
+  border-radius: 20px !important;
+  transition: all 0.3s ease;
+}
+
+.user-dropdown:hover {
+  background-color: rgba(0, 212, 255, 0.25) !important;
+  transform: scale(1.05);
+}
+
+.dropdown-menu-custom {
+  border: none;
+  border-radius: 10px;
+  background: #1a1a2e;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+.dropdown-menu-custom .dropdown-header {
+  background-color: transparent;
+  color: white;
+  border-bottom: 2px solid #0f3460;
+  padding: 12px 16px;
+}
+
+.dropdown-menu-custom .dropdown-item {
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.dropdown-menu-custom .dropdown-item:hover {
+  background-color: #0f3460;
+  color: #00d4ff;
+  transform: translateX(5px);
+}
+
+.dropdown-menu-custom .dropdown-divider {
+  border-color: #0f3460;
+}
+
+/* Navbar - Responsive */
+@media (max-width: 991.98px) {
+  .navbar-custom {
+    padding: 0.75rem 0;
+  }
+
+  .nav-link-custom {
+    margin: 5px 0 !important;
+  }
+
+  .user-dropdown {
+    margin-top: 10px;
+  }
+}
+
+/* Animation Classes */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.navbar-custom {
+  animation: slideDown 0.3s ease;
+}

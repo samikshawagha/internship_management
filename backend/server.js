@@ -119,8 +119,17 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 initializeDatabase().then(() => {
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+  });
+
+  server.on('error', (err) => {
+    if (err && err.code === 'EADDRINUSE') {
+      console.error(`Port ${PORT} is already in use. Please free the port and restart the server.`);
+      process.exit(1);
+    } else {
+      console.error('Server error:', err);
+    }
   });
 }).catch(error => {
   console.error('Failed to start server:', error);

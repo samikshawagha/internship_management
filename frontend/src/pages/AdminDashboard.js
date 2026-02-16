@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { apiService } from '../services/apiService';
+import { crudService } from '../services/crudService';
 import { Container, Row, Col, Card, Table, Badge, Spinner, Alert } from 'react-bootstrap';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,8 +18,17 @@ const AdminDashboard = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const dashboardResponse = await apiService.getDashboardStats();
-      setStats(dashboardResponse.data);
+      const statsResponse = await crudService.getStatistics();
+      const allUsers = await crudService.getAllUsers();
+      const allReports = await crudService.getAllReports();
+      
+      const enhancedStats = {
+        ...statsResponse.data,
+        totalUsers: allUsers.data.length,
+        totalReports: allReports.data.length
+      };
+      
+      setStats(enhancedStats);
     } catch (error) {
       setError('Failed to fetch dashboard stats');
     } finally {
@@ -63,6 +74,8 @@ const AdminDashboard = () => {
     const gradients = {
       totalInternships: 'card-gradient-blue',
       totalApplications: 'card-gradient-purple',
+      totalUsers: 'card-gradient-teal',
+      totalReports: 'card-gradient-orange',
       acceptedApplications: 'card-gradient-green',
       pendingApplications: 'card-gradient-cyan',
       rejectedApplications: 'card-gradient-danger',
@@ -99,12 +112,32 @@ const AdminDashboard = () => {
               .replace(/([A-Z])/g, ' $1')
               .replace(/^./, (str) => str.toUpperCase())
               .trim();
+            
+            const getNavigationPath = () => {
+              switch(key) {
+                case 'totalInternships':
+                  return '/admin/internships';
+                case 'totalApplications':
+                  return '/admin/applications';
+                case 'totalUsers':
+                  return '/admin/users';
+                case 'totalReports':
+                  return '/admin/reports';
+                default:
+                  return '#';
+              }
+            };
+            
             const getIcon = () => {
               switch (key) {
                 case 'totalInternships':
                   return '💼';
                 case 'totalApplications':
                   return '📋';
+                case 'totalUsers':
+                  return '👥';
+                case 'totalReports':
+                  return '📊';
                 case 'acceptedApplications':
                   return '✅';
                 case 'pendingApplications':
@@ -112,13 +145,39 @@ const AdminDashboard = () => {
                 case 'rejectedApplications':
                   return '❌';
                 default:
-                  return '📊';
+                  return '📈';
               }
             };
 
+            const isClickable = ['totalInternships', 'totalApplications', 'totalUsers', 'totalReports'].includes(key);
+
             return (
               <Col key={key} sm={6} lg={4} xl={5/3}>
-                <Card className={`h-100 border-0 transition-card ${getGradientClass(key)}`}>
+                <Card 
+                  className={`h-100 border-0 transition-card ${getGradientClass(key)} ${isClickable ? 'cursor-pointer' : ''}`}
+                  style={{ 
+                    cursor: isClickable ? 'pointer' : 'default',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (isClickable) {
+                      e.currentTarget.style.transform = 'translateY(-8px)';
+                      e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.2)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                  onClick={() => {
+                    if (isClickable) {
+                      const path = getNavigationPath();
+                      if (path !== '#') {
+                        navigate(path);
+                      }
+                    }
+                  }}
+                >
                   <Card.Body className="text-center text-white">
                     <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
                       {getIcon()}
@@ -179,51 +238,89 @@ const AdminDashboard = () => {
 
       {/* Management Sections */}
       <Row className="mt-5 g-4">
-        <Col md={6}>
-          <Card className="border-0 h-100">
-            <Card.Header className="bg-white border-bottom">
+        <Col lg={3} md={6}>
+          <Card 
+            className="border-0 h-100" 
+            style={{ cursor: 'pointer', transition: 'transform 0.3s ease' }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-8px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onClick={() => navigate('/admin/users')}
+          >
+            <Card.Header className="bg-info text-white border-bottom">
               <h5 className="mb-0 fw-bold d-flex align-items-center gap-2">
-                <span>📊</span> Key Metrics
+                <span>👥</span> Manage Users
               </h5>
             </Card.Header>
             <Card.Body>
-              <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
-                <span className="fw-500">Total Active Internships</span>
-                <Badge bg="primary" className="badge-large">{stats?.totalInternships || 0}</Badge>
-              </div>
-              <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
-                <span className="fw-500">Total Applications Received</span>
-                <Badge bg="info" className="badge-large">{stats?.totalApplications || 0}</Badge>
-              </div>
-              <div className="d-flex justify-content-between align-items-center py-3">
-                <span className="fw-500">Acceptance Rate</span>
-                <Badge bg="success" className="badge-large">
-                  {stats?.totalApplications ? Math.round((stats?.acceptedApplications || 0) / stats?.totalApplications * 100) : 0}%
-                </Badge>
+              <p className="text-muted mb-3">Manage all students, companies, and admin accounts.</p>
+              <div className="text-center">
+                <Badge bg="info" className="badge-large">Manage →</Badge>
               </div>
             </Card.Body>
           </Card>
         </Col>
 
-        <Col md={6}>
-          <Card className="border-0 h-100">
-            <Card.Header className="bg-white border-bottom">
+        <Col lg={3} md={6}>
+          <Card 
+            className="border-0 h-100" 
+            style={{ cursor: 'pointer', transition: 'transform 0.3s ease' }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-8px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onClick={() => navigate('/admin/internships')}
+          >
+            <Card.Header className="bg-primary text-white border-bottom">
               <h5 className="mb-0 fw-bold d-flex align-items-center gap-2">
-                <span>⚡</span> Quick Stats
+                <span>💼</span> Manage Internships
               </h5>
             </Card.Header>
             <Card.Body>
-              <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
-                <span className="fw-500">Pending Applications</span>
-                <Badge bg="warning" className="badge-large text-dark">{stats?.pendingApplications || 0}</Badge>
+              <p className="text-muted mb-3">Create, view, edit, and delete internship postings.</p>
+              <div className="text-center">
+                <Badge bg="primary" className="badge-large">Manage →</Badge>
               </div>
-              <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
-                <span className="fw-500">Rejected Applications</span>
-                <Badge bg="danger" className="badge-large">{stats?.rejectedApplications || 0}</Badge>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col lg={3} md={6}>
+          <Card 
+            className="border-0 h-100" 
+            style={{ cursor: 'pointer', transition: 'transform 0.3s ease' }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-8px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onClick={() => navigate('/admin/applications')}
+          >
+            <Card.Header className="bg-success text-white border-bottom">
+              <h5 className="mb-0 fw-bold d-flex align-items-center gap-2">
+                <span>📋</span> Manage Applications
+              </h5>
+            </Card.Header>
+            <Card.Body>
+              <p className="text-muted mb-3">Review and manage all internship applications.</p>
+              <div className="text-center">
+                <Badge bg="success" className="badge-large">Manage →</Badge>
               </div>
-              <div className="d-flex justify-content-between align-items-center py-3">
-                <span className="fw-500">Accepted Applications</span>
-                <Badge bg="success" className="badge-large">{stats?.acceptedApplications || 0}</Badge>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col lg={3} md={6}>
+          <Card 
+            className="border-0 h-100" 
+            style={{ cursor: 'pointer', transition: 'transform 0.3s ease' }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-8px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            onClick={() => navigate('/admin/reports')}
+          >
+            <Card.Header className="bg-warning text-white border-bottom">
+              <h5 className="mb-0 fw-bold d-flex align-items-center gap-2">
+                <span>📊</span> Manage Reports
+              </h5>
+            </Card.Header>
+            <Card.Body>
+              <p className="text-muted mb-3">View and manage system reports and analytics.</p>
+              <div className="text-center">
+                <Badge bg="warning" className="badge-large">Manage →</Badge>
               </div>
             </Card.Body>
           </Card>

@@ -51,10 +51,15 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (formData) => {
     try {
-      await axios.post('http://localhost:5000/api/auth/register', formData);
-      return { success: true };
+      const response = await axios.post('http://localhost:5000/api/auth/register', formData);
+      // If server returns created user profile, include it in the result
+      const serverUser = response.data?.user;
+      return { success: true, user: serverUser };
     } catch (error) {
-      return { success: false, error: error.response?.data?.error || 'Registration failed' };
+      console.error('Register error:', error.response || error.message || error);
+      const serverData = error.response?.data;
+      const serverError = serverData?.error || serverData || error.message;
+      return { success: false, error: typeof serverError === 'string' ? serverError : JSON.stringify(serverError) };
     }
   };
 
