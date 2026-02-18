@@ -5,6 +5,7 @@ const API_BASE = 'http://localhost:5000/api';
 export const apiService = {
   // Internship endpoints
   getInternships: () => axios.get(`${API_BASE}/internships`),
+  getAllInternships: () => axios.get(`${API_BASE}/internships/all`),
   getInternshipById: (id) => axios.get(`${API_BASE}/internships/${id}`),
   getCompanyInternships: () => axios.get(`${API_BASE}/internships/company`),
   createInternship: (data) => axios.post(`${API_BASE}/internships`, data),

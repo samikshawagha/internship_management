@@ -153,6 +153,16 @@ export const crudService = {
     return Promise.resolve({ data: applications[index] });
   },
 
+  // UPDATE - Update application details (e.g., cover letter) - allowed for students
+  updateApplication: (id, data) => {
+    const index = applications.findIndex(a => a.id === parseInt(id));
+    if (index === -1) {
+      return Promise.reject(new Error('Application not found'));
+    }
+    applications[index] = { ...applications[index], ...data, updatedDate: new Date().toISOString().split('T')[0] };
+    return Promise.resolve({ data: applications[index] });
+  },
+
   // DELETE - Withdraw application
   deleteApplication: (id) => {
     const index = applications.findIndex(a => a.id === parseInt(id));
@@ -218,6 +228,27 @@ export const crudService = {
       return Promise.reject(new Error('User not found'));
     }
     return Promise.resolve({ data: user });
+  },
+
+  // CREATE - Add new user
+  createUser: (data) => {
+    const newUser = {
+      id: nextUserId++,
+      ...data,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+
+    if (data.role === 'student') {
+      users.students.push(newUser);
+    } else if (data.role === 'company') {
+      users.companies.push(newUser);
+    } else if (data.role === 'admin') {
+      users.admins.push(newUser);
+    } else {
+      users.students.push(newUser);
+    }
+
+    return Promise.resolve({ data: newUser });
   },
 
   // UPDATE - Update user information

@@ -170,14 +170,18 @@ const InternshipDetail = () => {
                   {/* Required Skills */}
                   <div className="mb-4">
                     <p className="text-muted small mb-2">🎯 Required Skills</p>
-                    <div className="d-flex flex-wrap gap-2">
-                      {internship.skills &&
-                        internship.skills.split(',').map((skill, index) => (
-                          <Badge key={index} bg="light" text="dark" className="px-3 py-2">
-                            {skill.trim()}
-                          </Badge>
-                        ))}
-                    </div>
+                      <div className="d-flex flex-wrap gap-2">
+                        {(() => {
+                          const skillsArray = Array.isArray(internship.skills)
+                            ? internship.skills
+                            : (typeof internship.skills === 'string' ? internship.skills.split(',') : []);
+                          return skillsArray.map((skill, index) => (
+                            <Badge key={index} bg="light" text="dark" className="px-3 py-2">
+                              {skill.trim()}
+                            </Badge>
+                          ));
+                        })()}
+                      </div>
                   </div>
 
                   <hr className="my-4" />

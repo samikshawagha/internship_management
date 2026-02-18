@@ -77,8 +77,25 @@ const Dashboard = () => {
     return variants[status] || 'secondary';
   };
 
+  const getInternshipStatus = () => {
+    const apps = dashboardData?.applications || [];
+    const hasAccepted = apps.some(a => a.status === 'accepted');
+    const hasPending = apps.some(a => a.status === 'pending');
+    
+    if (hasAccepted) return { status: 'Active', variant: 'success', icon: '✅' };
+    if (hasPending) return { status: 'Pending', variant: 'warning', icon: '⏳' };
+    if (apps.length > 0) return { status: 'Completed', variant: 'info', icon: '🎉' };
+    return { status: 'Pending', variant: 'secondary', icon: '📌' };
+  };
+
+  const getInitials = (name) => {
+    if (!name) return 'ST';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
+
   const stats = dashboardData?.stats || {};
   const applications = dashboardData?.applications || [];
+  const internshipStatus = getInternshipStatus();
 
   const profileCompletion = (user?.phone ? 75 : 60);
 
@@ -106,6 +123,86 @@ const Dashboard = () => {
       {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
       {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
 
+      {/* Welcome Section */}
+      <Row className="mb-5 g-3">
+        <Col lg={12}>
+          <Card className="welcome-card shadow-sm border-0 position-relative overflow-hidden">
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '120px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              zIndex: 0
+            }}></div>
+            <Card.Body className="position-relative z-1 pt-5 pb-4">
+              <Row className="align-items-center">
+                <Col md={8}>
+                  <div className="d-flex align-items-center gap-4">
+                    <div 
+                      style={{
+                        width: '100px',
+                        height: '100px',
+                        borderRadius: '50%',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '2.5rem',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        border: '4px solid white',
+                        boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
+                      }}
+                    >
+                      {getInitials(user?.fullName)}
+                    </div>
+                    <div>
+                      <h2 className="fw-bold mb-2" style={{ fontSize: '1.8rem', color: '#1a1a2e' }}>
+                        {user?.fullName}
+                      </h2>
+                      <p className="mb-3 text-muted fs-5">
+                        <span className="me-3">
+                          📚 <strong>{user?.major || 'Not specified'}</strong>
+                        </span>
+                        <span>
+                          🏫 <strong>{user?.university || 'Not specified'}</strong>
+                        </span>
+                      </p>
+                      <div>
+                        <small className="text-muted d-block mb-2">Internship Status</small>
+                        <Badge bg={internshipStatus.variant} className="fs-6">
+                          {internshipStatus.icon} {internshipStatus.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+                <Col md={4} className="text-end">
+                  <div className="d-flex flex-column gap-2">
+                    <Button 
+                      variant="outline-primary" 
+                      size="sm"
+                      onClick={() => navigate('/profile')}
+                    >
+                      ✏️ Edit Profile
+                    </Button>
+                    <Button 
+                      variant="outline-secondary" 
+                      size="sm"
+                      onClick={() => navigate('/internships')}
+                    >
+                      🔍 Browse Internships
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
       {/* Main Stats Cards */}
       <Row className="mb-5 g-3 stats-row">
         {/* Total Applications Card */}
@@ -114,9 +211,11 @@ const Dashboard = () => {
             className="stat-card h-100 shadow-sm border-0 interactive-card"
             onMouseEnter={() => setHoveredCard(0)}
             onMouseLeave={() => setHoveredCard(null)}
+            onClick={() => navigate('/my-applications')}
             style={{
               transform: hoveredCard === 0 ? 'translateY(-10px) scale(1.03)' : 'translateY(0) scale(1)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              cursor: 'pointer'
             }}
           >
             <Card.Body className="text-white" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
@@ -136,7 +235,9 @@ const Dashboard = () => {
             onMouseLeave={() => setHoveredCard(null)}
             style={{
               transform: hoveredCard === 1 ? 'translateY(-10px) scale(1.03)' : 'translateY(0) scale(1)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              cursor: 'default',
+              opacity: 0.8
             }}
           >
             <Card.Body className="text-white" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
@@ -156,7 +257,9 @@ const Dashboard = () => {
             onMouseLeave={() => setHoveredCard(null)}
             style={{
               transform: hoveredCard === 2 ? 'translateY(-10px) scale(1.03)' : 'translateY(0) scale(1)',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              cursor: 'default',
+              opacity: 0.8
             }}
           >
             <Card.Body className="text-white" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { apiService } from '../services/apiService';
 import { crudService } from '../services/crudService';
 import {
   Container,
@@ -46,14 +47,25 @@ const AdminInternships = () => {
   });
 
   useEffect(() => {
-    loadInternships();
-  }, []);
+    if (user) loadInternships();
+  }, [user?.role]);
 
   const loadInternships = async () => {
     try {
       setLoading(true);
-      const response = await crudService.getInternships();
-      setInternships(response.data);
+      try {
+        // Admin should see all internships
+        if (user?.role === 'admin') {
+          const response = await apiService.getAllInternships();
+          setInternships(response.data);
+        } else {
+          const response = await apiService.getInternships();
+          setInternships(response.data);
+        }
+      } catch (apiErr) {
+        const response = await crudService.getInternships();
+        setInternships(response.data);
+      }
     } catch (err) {
       setError('Failed to load internships');
     } finally {
@@ -101,7 +113,11 @@ const AdminInternships = () => {
   const handleDelete = async (internshipId) => {
     if (window.confirm('Are you sure you want to delete this internship? This action cannot be undone.')) {
       try {
-        await crudService.deleteInternship(internshipId);
+        try {
+          await apiService.deleteInternship(internshipId);
+        } catch (apiErr) {
+          await crudService.deleteInternship(internshipId);
+        }
         loadInternships();
       } catch (err) {
         setError('Failed to delete internship');
@@ -141,9 +157,17 @@ const AdminInternships = () => {
       };
 
       if (editingInternship) {
-        await crudService.updateInternship(editingInternship.id, data);
+        try {
+          await apiService.updateInternship(editingInternship.id, data);
+        } catch (apiErr) {
+          await crudService.updateInternship(editingInternship.id, data);
+        }
       } else {
-        await crudService.createInternship(data);
+        try {
+          await apiService.createInternship(data);
+        } catch (apiErr) {
+          await crudService.createInternship(data);
+        }
       }
       
       setShowModal(false);
