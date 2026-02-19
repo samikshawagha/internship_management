@@ -96,7 +96,7 @@ const EditInternship = () => {
         await apiService.updateInternship(id, formData);
       }
       setSuccess('Internship updated successfully! ✅');
-      setTimeout(() => navigate('/company-dashboard'), 2000);
+      setTimeout(() => navigate('/company-home'), 2000);
     } catch (error) {
       setError(error.response?.data?.error || 'Failed to update internship');
     } finally {
@@ -252,7 +252,7 @@ const EditInternship = () => {
                   </Button>
                   <Button
                     variant="outline-secondary"
-                    onClick={() => navigate('/company-dashboard')}
+                    onClick={() => navigate('/company-home')}
                     className="fw-bold"
                   >
                     Cancel

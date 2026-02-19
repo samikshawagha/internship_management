@@ -10,6 +10,8 @@ const internshipRoutes = require('./routes/internshipRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const attendanceRoutes = require('./routes/attendanceRoutes');
+const performanceRoutes = require('./routes/performanceRoutes');
 
 const app = express();
 
@@ -109,6 +111,8 @@ app.use('/api/internships', internshipRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/performance', performanceRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

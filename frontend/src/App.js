@@ -13,7 +13,8 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import CompanyDashboard from './pages/CompanyDashboard';
+import CompanyHome from './pages/CompanyHome';
+import CompanyProfile from './pages/CompanyProfile';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminInternships from './pages/AdminInternships';
@@ -24,6 +25,11 @@ import InternshipDetail from './pages/InternshipDetail';
 import CreateInternship from './pages/CreateInternship';
 import EditInternship from './pages/EditInternship';
 import MyApplications from './pages/MyApplications';
+import Reports from './pages/Reports';
+import Attendance from './pages/Attendance';
+import MyPerformance from './pages/MyPerformance';
+import CompanyAttendance from './pages/CompanyAttendance';
+import PerformanceEvaluation from './pages/PerformanceEvaluation';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -38,7 +44,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   }
 
   if (requiredRole && !requiredRole.includes(user.role)) {
-    return <Navigate to="/unauthorized" />;
+    return <Navigate to="/" />;
   }
 
   return children;
@@ -79,12 +85,22 @@ function AppContent() {
               }
             />
 
-            {/* Company Dashboard */}
+            {/* Company Home */}
             <Route
-              path="/company-dashboard"
+              path="/company-home"
               element={
                 <ProtectedRoute requiredRole={['company']}>
-                  <CompanyDashboard />
+                  <CompanyHome />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Company Profile */}
+            <Route
+              path="/company-profile"
+              element={
+                <ProtectedRoute requiredRole={['company']}>
+                  <CompanyProfile />
                 </ProtectedRoute>
               }
             />
@@ -183,17 +199,53 @@ function AppContent() {
               }
             />
 
-            {/* Unauthorized Route */}
+            {/* Reports - Student & Company */}
             <Route
-              path="/unauthorized"
+              path="/reports"
               element={
-                <div className="container mt-5 text-center">
-                  <h1 className="text-danger">Access Denied</h1>
-                  <p className="text-muted">You don't have permission to access this page.</p>
-                  <a href="/" className="btn btn-primary">
-                    Go Home
-                  </a>
-                </div>
+                <ProtectedRoute requiredRole={['student', 'company']}>
+                  <Reports />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Attendance & Leave - Student Only */}
+            <Route
+              path="/attendance"
+              element={
+                <ProtectedRoute requiredRole={['student']}>
+                  <Attendance />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Performance - Student View */}
+            <Route
+              path="/my-performance"
+              element={
+                <ProtectedRoute requiredRole={['student']}>
+                  <MyPerformance />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Company Attendance Management */}
+            <Route
+              path="/company-attendance"
+              element={
+                <ProtectedRoute requiredRole={['company']}>
+                  <CompanyAttendance />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Company Performance Evaluation */}
+            <Route
+              path="/company-performance"
+              element={
+                <ProtectedRoute requiredRole={['company']}>
+                  <PerformanceEvaluation />
+                </ProtectedRoute>
               }
             />
 

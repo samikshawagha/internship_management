@@ -81,7 +81,7 @@ const CreateInternship = () => {
       // Reset file input
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = '';
-      setTimeout(() => navigate('/company-dashboard'), 2000);
+      setTimeout(() => navigate('/company-home'), 2000);
     } catch (error) {
       setError(error.response?.data?.error || 'Failed to create internship');
     } finally {
@@ -234,7 +234,7 @@ const CreateInternship = () => {
                   </Button>
                   <Button
                     variant="outline-secondary"
-                    onClick={() => navigate('/company-dashboard')}
+                    onClick={() => navigate('/company-home')}
                     className="fw-bold"
                   >
                     Cancel

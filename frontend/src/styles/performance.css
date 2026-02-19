@@ -1,0 +1,69 @@
+.performance-page {
+  min-height: 100vh;
+}
+
+.performance-page h1 {
+  font-size: 2.5rem;
+}
+
+.performance-page .card {
+  transition: all 0.3s ease;
+}
+
+.performance-page .card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-4px);
+}
+
+.performance-page .evaluation-card {
+  cursor: pointer;
+  border: 2px solid transparent !important;
+  transition: all 0.3s ease;
+}
+
+.performance-page .evaluation-card:hover {
+  border-color: #667eea !important;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15) !important;
+}
+
+.performance-page .badge {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.performance-page .progress {
+  background-color: #e9ecef;
+}
+
+.performance-page .progress-bar {
+  transition: width 0.3s ease;
+}
+
+/* Score display styling */
+.performance-page .score-display {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.performance-page .score-excellent {
+  color: #28a745;
+}
+
+.performance-page .score-good {
+  color: #ffc107;
+}
+
+.performance-page .score-needs-improvement {
+  color: #dc3545;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .performance-page h1 {
+    font-size: 1.8rem;
+  }
+
+  .performance-page .table {
+    font-size: 0.9rem;
+  }
+}

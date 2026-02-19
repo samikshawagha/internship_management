@@ -392,33 +392,276 @@ export const dummyApplications = [
 ];
 
 export const dummyReports = [
+  // Student Reports - Submitted to Companies
   {
     id: 1,
-    title: 'Q1 2025 Internship Report',
+    title: 'Week 1-2 Onboarding Summary',
+    studentId: 1,
+    studentName: 'Alice Johnson',
+    internshipId: 1,
+    internshipTitle: 'Frontend Developer Internship',
     company: 'Tech Corp',
-    createdBy: 'hr@techcorp.com',
-    createdDate: '2025-02-15',
-    type: 'Performance',
-    content: 'Overall performance of interns in Q1 has been excellent...',
-    metrics: {
-      totalInterns: 8,
-      averageRating: 4.5,
-      retentionRate: 87.5
-    }
+    content: `
+      During the first two weeks of my internship at Tech Corp, I successfully onboarded into the frontend development team. 
+      
+      Key Accomplishments:
+      - Set up development environment and reviewed codebase
+      - Completed company orientation and met all team members
+      - Fixed 3 UI bugs in the main dashboard
+      - Learned the company's React component architecture
+      
+      Challenges:
+      - Initial setup took longer than expected
+      - Learning curve with proprietary libraries
+      
+      Next Steps:
+      - Start working on assigned feature development
+      - Deepen understanding of backend APIs
+      - Improve code review process knowledge
+    `,
+    status: 'approved',
+    createdAt: '2025-02-10',
+    updatedAt: '2025-02-14'
   },
   {
     id: 2,
-    title: 'Hiring Analysis Report',
+    title: 'Progress Report - Feature Development',
+    studentId: 1,
+    studentName: 'Alice Johnson',
+    internshipId: 1,
+    internshipTitle: 'Frontend Developer Internship',
+    company: 'Tech Corp',
+    content: `
+      Completed my second month of internship with significant progress on assigned features.
+      
+      Completed Tasks:
+      - Developed user profile management feature (100% complete)
+      - Implemented responsive design for mobile devices
+      - Wrote comprehensive unit tests (coverage: 85%)
+      - Optimized component rendering performance by 30%
+      
+      Skills Developed:
+      - Advanced React patterns and hooks
+      - Performance optimization techniques
+      - Testing best practices with Jest
+      
+      Feedback:
+      - Team lead praised code quality and attention to detail
+      - Recommended for full-time position
+    `,
+    status: 'approved',
+    createdAt: '2025-02-17',
+    updatedAt: '2025-02-18'
+  },
+  {
+    id: 3,
+    title: 'Initial Learning Report',
+    studentId: 2,
+    studentName: 'Bob Smith',
+    internshipId: 2,
+    internshipTitle: 'Full Stack Developer Internship',
+    company: 'Tech Corp',
+    content: `
+      Started my internship at Tech Corp as a Full Stack Developer.
+      
+      Week 1 Activities:
+      - Attended team stand-ups and code review sessions
+      - Set up local development environment
+      - Reviewed existing backend architecture
+      - Completed security training modules
+      
+      Technologies Refreshed:
+      - Spring Boot framework
+      - React.js fundamentals
+      - PostgreSQL database queries
+      - Docker containerization
+      
+      Upcoming Tasks:
+      - Contribute to API development
+      - Participate in sprint planning
+      - Complete assigned tickets
+    `,
+    status: 'approved',
+    createdAt: '2025-02-11',
+    updatedAt: '2025-02-15'
+  },
+  {
+    id: 4,
+    title: 'Backend API Development - Phase 1',
+    studentId: 2,
+    studentName: 'Bob Smith',
+    internshipId: 2,
+    internshipTitle: 'Full Stack Developer Internship',
+    company: 'Tech Corp',
+    content: `
+      Successfully completed Phase 1 of backend API development.
+      
+      Deliverables:
+      - Developed REST APIs for user management (8 endpoints)
+      - Implemented JWT authentication and authorization
+      - Created database migrations for new features
+      - Set up logging and error handling
+      
+      Testing & Quality:
+      - Unit test coverage: 90%
+      - Integrated with CI/CD pipeline
+      - Passed all code review requirements
+      
+      Performance Metrics:
+      - API response time: <200ms average
+      - Database query optimization: 45% improvement
+      
+      Learnings:
+      - Advanced Java/Spring Boot patterns
+      - Database indexing strategies
+      - API security best practices
+    `,
+    status: 'pending',
+    createdAt: '2025-02-18',
+    updatedAt: '2025-02-19'
+  },
+  {
+    id: 5,
+    title: 'Data Analytics Internship - Month 1',
+    studentId: 3,
+    studentName: 'Carol Davis',
+    internshipId: 3,
+    internshipTitle: 'Data Science Internship',
     company: 'Data Dynamics',
-    createdBy: 'careers@datadynamics.com',
-    createdDate: '2025-02-14',
-    type: 'Analytics',
-    content: 'Application analysis for current internship postings...',
-    metrics: {
-      totalApplications: 45,
-      conversionRate: 22,
-      timeToHire: 14
-    }
+    content: `
+      Completed first month of Data Science internship at Data Dynamics.
+      
+      Projects Completed:
+      - Customer segmentation analysis using K-means clustering
+      - Predictive model for customer churn (accuracy: 87%)
+      - Dashboard creation with Tableau visualization
+      - Data cleanup and preprocessing for large datasets
+      
+      Skills Applied:
+      - Python (pandas, scikit-learn, matplotlib)
+      - SQL for complex data queries
+      - Tableau for business intelligence
+      - Statistical analysis and hypothesis testing
+      
+      Insights Discovered:
+      - Identified 3 actionable customer segments
+      - Recommended pricing strategy adjustments
+      - Automated monthly reporting process
+      
+      Mentor Feedback:
+      - Excellent analytical thinking
+      - Good attention to detail in data validation
+    `,
+    status: 'approved',
+    createdAt: '2025-02-12',
+    updatedAt: '2025-02-16'
+  },
+  {
+    id: 6,
+    title: 'Machine Learning Model Development',
+    studentId: 3,
+    studentName: 'Carol Davis',
+    internshipId: 3,
+    internshipTitle: 'Data Science Internship',
+    company: 'Data Dynamics',
+    content: `
+      Advanced to machine learning model development phase.
+      
+      Current Project:
+      - Building ensemble learning model for demand forecasting
+      - Data preprocessing: 100,000+ records
+      - Feature engineering using domain expertise
+      - Model evaluation and hyperparameter tuning
+      
+      Models Implemented:
+      - Random Forest (accuracy: 85%)
+      - Gradient Boosting (accuracy: 89%)
+      - Neural Network (accuracy: 88%)
+      
+      Deliverables:
+      - Trained model with 89% accuracy
+      - Production-ready prediction API
+      - Documentation and deployment guide
+      
+      Business Impact:
+      - Estimated inventory optimization savings: $250K/year
+      - Reduced forecasting errors by 35%
+    `,
+    status: 'approved',
+    createdAt: '2025-02-19',
+    updatedAt: '2025-02-19'
+  },
+  {
+    id: 7,
+    title: 'DevOps Infrastructure Setup',
+    studentId: 4,
+    studentName: 'David Wilson',
+    internshipId: 4,
+    internshipTitle: 'DevOps Engineer Internship',
+    company: 'Cloud Systems Inc',
+    content: `
+      Starting DevOps internship at Cloud Systems Inc.
+      
+      Initial Assignments:
+      - Reviewed existing AWS infrastructure
+      - Learned CI/CD pipeline architecture
+      - Set up monitoring with CloudWatch
+      - Configured security groups and VPCs
+      
+      Training Completed:
+      - AWS certification course (70% complete)
+      - Docker and Kubernetes fundamentals
+      - Infrastructure as Code (Terraform)
+      - Linux system administration
+      
+      First Project:
+      - Containerizing legacy application
+      - Setting up automated deployment process
+      
+      Resources:
+      - Participating in knowledge transfer sessions
+      - Active in Slack engineering channel
+    `,
+    status: 'approved',
+    createdAt: '2025-02-14',
+    updatedAt: '2025-02-17'
+  },
+  {
+    id: 8,
+    title: 'Cloud Infrastructure Optimization',
+    studentId: 4,
+    studentName: 'David Wilson',
+    internshipId: 4,
+    internshipTitle: 'DevOps Engineer Internship',
+    company: 'Cloud Systems Inc',
+    content: `
+      Successfully implemented infrastructure optimization initiatives.
+      
+      Completed Tasks:
+      - Migrated 15 microservices to Kubernetes cluster
+      - Implemented auto-scaling policies
+      - Set up centralized logging with ELK stack
+      - Reduced cloud infrastructure costs by 22%
+      
+      Tools & Technologies Used:
+      - Kubernetes for orchestration
+      - Terraform for infrastructure provisioning
+      - Prometheus for monitoring
+      - Jenkins for CI/CD automation
+      
+      Impact Metrics:
+      - Deployment time reduced: 60 minutes → 10 minutes
+      - System uptime improved: 98.5% → 99.95%
+      - Cost savings: $45K/month
+      
+      Recommendations:
+      - Implement disaster recovery plan
+      - Automate backup processes
+      - Conduct security audit
+    `,
+    status: 'pending',
+    createdAt: '2025-02-19',
+    updatedAt: '2025-02-19'
   }
 ];
 
@@ -467,4 +710,364 @@ export const dummyStats = {
     companySatisfaction: 4.5,
     placementRate: 78
   }
+};
+
+// Company Dashboard Dummy Data
+export const dummyCompanies = [
+  {
+    id: 1,
+    name: 'Tech Innovations Inc',
+    email: 'hr@techinnovations.com',
+    phone: '+1-555-1000',
+    industry: 'Software Development',
+    website: 'www.techinnovations.com',
+    logo: '🏢',
+    location: 'San Francisco, CA',
+    employees: 500,
+    founded: 2015,
+    description: 'Leading software development company specializing in cloud solutions'
+  },
+  {
+    id: 2,
+    name: 'Data Solutions Ltd',
+    email: 'careers@datasolutions.com',
+    phone: '+1-555-2000',
+    industry: 'Data Analytics',
+    website: 'www.datasolutions.com',
+    logo: '📊',
+    location: 'New York, NY',
+    employees: 250,
+    founded: 2018,
+    description: 'Providing advanced data analytics and AI solutions'
+  }
+];
+
+export const dummyCompanyAttendance = [
+  {
+    id: 1,
+    studentId: 1,
+    studentName: 'Alice Johnson',
+    date: '2026-02-19',
+    status: 'present',
+    remarks: null
+  },
+  {
+    id: 2,
+    studentId: 2,
+    studentName: 'Bob Smith',
+    date: '2026-02-19',
+    status: 'late',
+    remarks: 'Traffic on the way'
+  },
+  {
+    id: 3,
+    studentId: 3,
+    studentName: 'Carol Davis',
+    date: '2026-02-19',
+    status: 'present',
+    remarks: null
+  },
+  {
+    id: 4,
+    studentId: 4,
+    studentName: 'David Wilson',
+    date: '2026-02-19',
+    status: 'absent',
+    remarks: 'Unwell'
+  },
+  {
+    id: 5,
+    studentId: 1,
+    studentName: 'Alice Johnson',
+    date: '2026-02-18',
+    status: 'present',
+    remarks: null
+  },
+  {
+    id: 6,
+    studentId: 2,
+    studentName: 'Bob Smith',
+    date: '2026-02-18',
+    status: 'present',
+    remarks: null
+  },
+  {
+    id: 7,
+    studentId: 3,
+    studentName: 'Carol Davis',
+    date: '2026-02-18',
+    status: 'present',
+    remarks: null
+  },
+  {
+    id: 8,
+    studentId: 4,
+    studentName: 'David Wilson',
+    date: '2026-02-18',
+    status: 'late',
+    remarks: 'Morning appointment'
+  }
+];
+
+export const dummyCompanyLeaves = [
+  {
+    id: 1,
+    studentId: 1,
+    studentName: 'Alice Johnson',
+    startDate: '2026-02-20',
+    endDate: '2026-02-22',
+    reason: 'Personal work',
+    leaveType: 'casual',
+    status: 'pending',
+    createdAt: '2026-02-19'
+  },
+  {
+    id: 2,
+    studentId: 2,
+    studentName: 'Bob Smith',
+    startDate: '2026-02-25',
+    endDate: '2026-02-27',
+    reason: 'Medical appointment',
+    leaveType: 'sick',
+    status: 'pending',
+    createdAt: '2026-02-18'
+  },
+  {
+    id: 3,
+    studentId: 3,
+    studentName: 'Carol Davis',
+    startDate: '2026-02-17',
+    endDate: '2026-02-19',
+    reason: 'Family emergency',
+    leaveType: 'emergency',
+    status: 'approved',
+    approverComments: 'Approved with sympathy',
+    createdAt: '2026-02-15'
+  },
+  {
+    id: 4,
+    studentId: 4,
+    studentName: 'David Wilson',
+    startDate: '2026-02-10',
+    endDate: '2026-02-12',
+    reason: 'Home relocation',
+    leaveType: 'personal',
+    status: 'rejected',
+    approverComments: 'Insufficient notice period',
+    createdAt: '2026-02-08'
+  },
+  {
+    id: 5,
+    studentId: 1,
+    studentName: 'Alice Johnson',
+    startDate: '2026-01-20',
+    endDate: '2026-01-22',
+    reason: 'Conference attendance',
+    leaveType: 'casual',
+    status: 'approved',
+    createdAt: '2026-01-18'
+  }
+];
+
+export const dummyPerformanceEvaluations = [
+  {
+    id: 1,
+    studentId: 1,
+    studentName: 'Alice Johnson',
+    internshipId: 1,
+    internshipTitle: 'Frontend Development',
+    evaluatorId: 10,
+    evaluatorName: 'John Manager',
+    technicalSkills: 4.5,
+    communication: 4.2,
+    teamwork: 4.7,
+    punctuality: 5.0,
+    proactiveness: 4.3,
+    comments: 'Excellent work on React components. Very detail-oriented and communicates well with team. Shows great initiative in learning new technologies.',
+    createdAt: '2026-02-18',
+    updatedAt: '2026-02-18'
+  },
+  {
+    id: 2,
+    studentId: 2,
+    studentName: 'Bob Smith',
+    internshipId: 2,
+    internshipTitle: 'Backend Development',
+    evaluatorId: 11,
+    evaluatorName: 'Sarah Developer',
+    technicalSkills: 4.0,
+    communication: 3.8,
+    teamwork: 4.2,
+    punctuality: 4.5,
+    proactiveness: 3.9,
+    comments: 'Good performance with API development. Sometimes needs more initia in system design decisions but shows consistent growth.',
+    createdAt: '2026-02-17',
+    updatedAt: '2026-02-17'
+  },
+  {
+    id: 3,
+    studentId: 3,
+    studentName: 'Carol Davis',
+    internshipId: 3,
+    internshipTitle: 'Data Science',
+    evaluatorId: 12,
+    evaluatorName: 'Michael Data Lead',
+    technicalSkills: 4.8,
+    communication: 4.1,
+    teamwork: 4.4,
+    punctuality: 4.6,
+    proactiveness: 4.5,
+    comments: 'Outstanding technical skills in machine learning. Delivered high-quality analysis reports. Could improve presentation skills.',
+    createdAt: '2026-02-16',
+    updatedAt: '2026-02-16'
+  },
+  {
+    id: 4,
+    studentId: 4,
+    studentName: 'David Wilson',
+    internshipId: 4,
+    internshipTitle: 'DevOps',
+    evaluatorId: 13,
+    evaluatorName: 'Emily Ops Engineer',
+    technicalSkills: 4.3,
+    communication: 3.9,
+    teamwork: 4.5,
+    punctuality: 4.8,
+    proactiveness: 4.0,
+    comments: 'Strong infrastructure knowledge and Linux expertise. Very reliable and punctual. Needs to develop better documentation habits.',
+    createdAt: '2026-02-15',
+    updatedAt: '2026-02-15'
+  }
+];
+
+export const dummyCompanyAnalytics = {
+  monthlyApplications: [
+    { month: 'Jan', applications: 45, hired: 12 },
+    { month: 'Feb', applications: 68, hired: 18 },
+    { month: 'Mar', applications: 52, hired: 14 },
+    { month: 'Apr', applications: 78, hired: 22 },
+    { month: 'May', applications: 65, hired: 19 },
+    { month: 'Jun', applications: 82, hired: 25 }
+  ],
+  departmentDistribution: [
+    { department: 'Engineering', count: 12, color: '#667eea' },
+    { department: 'Data Science', count: 8, color: '#84fab0' },
+    { department: 'Product', count: 5, color: '#ffa502' },
+    { department: 'DevOps', count: 4, color: '#17a2b8' },
+    { department: 'Design', count: 3, color: '#dc3545' }
+  ],
+  performanceDistribution: [
+    { range: '4.5-5.0', count: 8, color: '#28a745' },
+    { range: '4.0-4.4', count: 12, color: '#84fab0' },
+    { range: '3.5-3.9', count: 6, color: '#ffc107' },
+    { range: '3.0-3.4', count: 2, color: '#fd7e14' },
+    { range: '<3.0', count: 1, color: '#dc3545' }
+  ]
+};
+
+export const dummyCompanyTeamMembers = [
+  {
+    id: 1,
+    studentId: 1,
+    name: 'Alice Johnson',
+    internshipTitle: 'Frontend Development',
+    startDate: '2025-12-01',
+    endDate: '2026-03-01',
+    status: 'active',
+    performanceScore: 4.5,
+    attendancePercentage: 95
+  },
+  {
+    id: 2,
+    studentId: 2,
+    name: 'Bob Smith',
+    internshipTitle: 'Backend Development',
+    startDate: '2026-01-15',
+    endDate: '2026-04-15',
+    status: 'active',
+    performanceScore: 4.0,
+    attendancePercentage: 88
+  },
+  {
+    id: 3,
+    studentId: 3,
+    name: 'Carol Davis',
+    internshipTitle: 'Data Science',
+    startDate: '2026-01-01',
+    endDate: '2026-04-01',
+    status: 'active',
+    performanceScore: 4.8,
+    attendancePercentage: 96
+  },
+  {
+    id: 4,
+    studentId: 4,
+    name: 'David Wilson',
+    internshipTitle: 'DevOps',
+    startDate: '2025-11-15',
+    endDate: '2026-02-15',
+    status: 'completed',
+    performanceScore: 4.3,
+    attendancePercentage: 94
+  }
+];
+
+export const dummyCompanyDashboardData = {
+  summary: {
+    totalInternships: 5,
+    activeInterns: 4,
+    completedInternships: 8,
+    averagePerformance: 4.4,
+    totalApplicationsreviewed: 280,
+    hirePendingCount: 12
+  },
+  recentApplications: [
+    {
+      id: 1,
+      studentName: 'Emma Wilson',
+      position: 'Frontend Developer',
+      status: 'new',
+      appliedDate: '2026-02-19',
+      university: 'MIT'
+    },
+    {
+      id: 2,
+      studentName: 'Frank Johnson',
+      position: 'Data Analyst',
+      status: 'reviewing',
+      appliedDate: '2026-02-18',
+      university: 'Stanford'
+    },
+    {
+      id: 3,
+      studentName: 'Grace Lee',
+      position: 'Backend Developer',
+      status: 'interview',
+      appliedDate: '2026-02-17',
+      university: 'Berkeley'
+    }
+  ],
+  upcomingEvents: [
+    {
+      id: 1,
+      title: 'Team Sync Meeting',
+      date: '2026-02-20',
+      time: '10:00 AM',
+      type: 'meeting'
+    },
+    {
+      id: 2,
+      title: 'Performance Review - Alice Johnson',
+      date: '2026-02-21',
+      time: '2:00 PM',
+      type: 'review'
+    },
+    {
+      id: 3,
+      title: 'Internship Program Evaluation',
+      date: '2026-02-22',
+      time: '11:00 AM',
+      type: 'evaluation'
+    }
+  ]
 };
