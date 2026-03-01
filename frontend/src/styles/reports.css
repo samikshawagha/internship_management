@@ -1,0 +1,343 @@
+/* Reports Page Styles */
+
+.reports-page {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  padding-top: 2rem;
+}
+
+/* Badge Styling */
+.reports-page .badge-large {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* Card Styling */
+.reports-page .card {
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.reports-page .card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.reports-page .card-header {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border: none;
+  padding: 1.5rem;
+}
+
+.reports-page .card-body {
+  padding: 2rem;
+}
+
+/* Form Styling */
+.reports-page .form-label {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.reports-page .form-control,
+.reports-page .form-select {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.reports-page .form-control:focus,
+.reports-page .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.reports-page .form-control-lg,
+.reports-page .form-select-lg {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.reports-page textarea.form-control {
+  resize: vertical;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Button Styling */
+.reports-page .btn {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.reports-page .btn-success {
+  background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+  color: #fff;
+}
+
+.reports-page .btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(132, 250, 176, 0.4);
+}
+
+.reports-page .btn-danger {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.reports-page .btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+}
+
+.reports-page .btn-outline-success,
+.reports-page .btn-outline-danger {
+  border-width: 2px;
+}
+
+.reports-page .btn-outline-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.reports-page .btn-outline-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.reports-page .btn-outline-secondary {
+  border: 2px solid #dee2e6;
+}
+
+.reports-page .btn-outline-secondary:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+/* Table Styling */
+.reports-page .table {
+  margin-bottom: 0;
+}
+
+.reports-page .table thead {
+  background-color: #f8f9fa;
+}
+
+.reports-page .table thead th {
+  border-bottom: 2px solid #dee2e6;
+  padding: 1rem;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.reports-page .table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-color: #e9ecef;
+}
+
+.reports-page .table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Alert Styling */
+.reports-page .alert {
+  border-radius: 10px;
+  border: none;
+  padding: 1rem 1.5rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.reports-page .alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.reports-page .alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Spinner */
+.reports-page .spinner-border {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+
+/* Text Colors */
+.text-primary {
+  color: #667eea !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+/* Input Focus */
+.reports-page input:focus,
+.reports-page textarea:focus,
+.reports-page select:focus {
+  outline: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reports-page {
+    padding-top: 1rem;
+  }
+
+  .reports-page h1 {
+    font-size: 1.75rem !important;
+  }
+
+  .reports-page .card-body {
+    padding: 1.5rem;
+  }
+
+  .reports-page .table {
+    font-size: 0.9rem;
+  }
+
+  .reports-page .table thead th {
+    padding: 0.75rem;
+  }
+
+  .reports-page .table tbody td {
+    padding: 0.75rem;
+  }
+
+  .reports-page .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .d-flex.gap-2 {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 576px) {
+  .reports-page {
+    padding: 0.5rem;
+  }
+
+  .reports-page h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .reports-page h5 {
+    font-size: 1.1rem;
+  }
+
+  .reports-page .card-body {
+    padding: 1rem;
+  }
+
+  .reports-page .table-responsive {
+    font-size: 0.85rem;
+  }
+
+  .reports-page .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .d-flex.gap-2 {
+    flex-direction: column;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table tbody tr {
+    display: block;
+    border: 1px solid #dee2e6;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+  }
+
+  .table tbody td {
+    display: block;
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .table tbody td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0.75rem;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Form Animations */
+form {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Badge Colors */
+.badge-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+}
+
+.badge-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+
+.badge-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+}
+
+.badge-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+}

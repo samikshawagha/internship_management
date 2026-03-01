@@ -19,7 +19,7 @@ const Navbar = () => {
   const getDashboardLink = () => {
     switch (user?.role) {
       case 'company':
-        return '/company-dashboard';
+        return '/company-home';
       case 'admin':
         return '/admin-dashboard';
       case 'student':
@@ -86,9 +86,16 @@ const Navbar = () => {
                     🔍 Browse
                   </Nav.Link>
                 )}
-                <Nav.Link href="/profile" onClick={() => setExpanded(false)} className="fw-500">
-                  👤 Profile
-                </Nav.Link>
+                {user.role === 'company' && (
+                  <Nav.Link href="/company-profile" onClick={() => setExpanded(false)} className="fw-500">
+                    👤 Profile
+                  </Nav.Link>
+                )}
+                {user.role !== 'company' && (
+                  <Nav.Link href="/profile" onClick={() => setExpanded(false)} className="fw-500">
+                    👤 Profile
+                  </Nav.Link>
+                )}
                 <Button 
                   variant="outline-light" 
                   size="sm" 

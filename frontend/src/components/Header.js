@@ -19,7 +19,7 @@ const Header = () => {
   const getDashboardLink = () => {
     switch (user?.role) {
       case 'company':
-        return '/company-dashboard';
+        return '/company-home';
       case 'admin':
         return '/admin-dashboard';
       case 'student':
@@ -100,29 +100,77 @@ const Header = () => {
                 </Nav.Link>
 
                 {user.role === 'student' && (
-                  <Nav.Link 
-                    href="/my-applications"
-                    className="nav-link-custom"
-                    onClick={() => {
-                      setExpanded(false);
-                      navigate('/my-applications');
-                    }}
-                  >
-                    Applications
-                  </Nav.Link>
+                  <>
+                    <Nav.Link 
+                      href="/my-applications"
+                      className="nav-link-custom"
+                      onClick={() => {
+                        setExpanded(false);
+                        navigate('/my-applications');
+                      }}
+                    >
+                      Applications
+                    </Nav.Link>
+                    <Nav.Link 
+                      href="/attendance"
+                      className="nav-link-custom"
+                      onClick={() => {
+                        setExpanded(false);
+                        navigate('/attendance');
+                      }}
+                    >
+                      Attendance
+                    </Nav.Link>
+                    <Nav.Link 
+                      href="/my-performance"
+                      className="nav-link-custom"
+                      onClick={() => {
+                        setExpanded(false);
+                        navigate('/my-performance');
+                      }}
+                    >
+                      Performance
+                    </Nav.Link>
+                  </>
                 )}
 
                 {(user.role === 'company' || user.role === 'admin') && (
-                  <Nav.Link 
-                    href="/reports"
-                    className="nav-link-custom"
-                    onClick={() => {
-                      setExpanded(false);
-                      navigate('/reports');
-                    }}
-                  >
-                    Reports
-                  </Nav.Link>
+                  <>
+                    <Nav.Link 
+                      href="/reports"
+                      className="nav-link-custom"
+                      onClick={() => {
+                        setExpanded(false);
+                        navigate('/reports');
+                      }}
+                    >
+                      Reports
+                    </Nav.Link>
+                    {user.role === 'company' && (
+                      <>
+                        <Nav.Link 
+                          href="/company-attendance"
+                          className="nav-link-custom"
+                          onClick={() => {
+                            setExpanded(false);
+                            navigate('/company-attendance');
+                          }}
+                        >
+                          Attendance
+                        </Nav.Link>
+                        <Nav.Link 
+                          href="/company-performance"
+                          className="nav-link-custom"
+                          onClick={() => {
+                            setExpanded(false);
+                            navigate('/company-performance');
+                          }}
+                        >
+                          Performance
+                        </Nav.Link>
+                      </>
+                    )}
+                  </>
                 )}
 
                 {/* User Dropdown */}

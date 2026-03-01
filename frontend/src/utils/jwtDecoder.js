@@ -26,7 +26,7 @@ export const getRoleFromToken = (token) => {
 export const getRedirectPathByRole = (role) => {
   switch (role) {
     case 'company':
-      return '/company-dashboard';
+      return '/company-home';
     case 'admin':
       return '/admin-dashboard';
     case 'student':
