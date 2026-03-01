@@ -129,7 +129,7 @@ All CRUD operations for:
 **File**: `frontend/src/pages/Dashboard.js`
 
 Features:
-- Statistics cards (Total, Pending, Accepted)
+- Statistics cards (Total, various statuses)
 - Profile information display
 - Recent applications table
 - Quick action buttons
@@ -177,7 +177,7 @@ Features:
 CRUD Operations:
 - 📖 Read: View all student applications
 - 📊 View Details: See application information
-- 🗑️ Delete: Withdraw pending applications
+- 🗑️ Delete: Withdraw applications
 
 ---
 
@@ -189,7 +189,7 @@ CRUD Operations:
 - ✅ Read internships
 - ✅ Create applications
 - ✅ Read own applications
-- ✅ Delete own pending applications
+- ✅ Delete own applications
 
 **COMPANY**:
 - ✅ Create internships

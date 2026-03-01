@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Navbar as BootstrapNavbar, Nav, Container, Button, Badge } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/global.css';
@@ -55,7 +55,7 @@ const Navbar = () => {
   return (
     <BootstrapNavbar bg="dark" expand="lg" sticky="top" className="navbar-dark mb-0 border-bottom" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
       <Container fluid className="px-4">
-        <BootstrapNavbar.Brand href="/" className="fw-bold d-flex align-items-center gap-2" style={{ fontSize: '1.4rem' }}>
+        <BootstrapNavbar.Brand as={Link} to="/" className="fw-bold d-flex align-items-center gap-2" style={{ fontSize: '1.4rem' }}>
           <span style={{ fontSize: '1.8rem' }}>📋</span>
           <span style={{ color: '#fff' }}>InternHub</span>
         </BootstrapNavbar.Brand>
@@ -73,20 +73,20 @@ const Navbar = () => {
                 <Badge bg={getRoleBadgeVariant()} className="me-2" style={{ fontSize: '0.75rem' }}>
                   {user.role === 'student' ? '👨‍🎓 Student' : user.role === 'company' ? '🏢 Company' : '⚙️ Admin'}
                 </Badge>
-                <Nav.Link href={getDashboardLink()} onClick={() => setExpanded(false)} className="fw-500">
+                <Nav.Link as={Link} to={getDashboardLink()} onClick={() => setExpanded(false)} className="fw-500">
                   Dashboard
                 </Nav.Link>
                 {user.role === 'company' && (
-                  <Nav.Link href="/internships/create" onClick={() => setExpanded(false)} className="fw-500">
+                  <Nav.Link as={Link} to="/internships/create" onClick={() => setExpanded(false)} className="fw-500">
                     ➕ Post Internship
                   </Nav.Link>
                 )}
                 {user.role === 'student' && (
-                  <Nav.Link href="/internships" onClick={() => setExpanded(false)} className="fw-500">
+                  <Nav.Link as={Link} to="/internships" onClick={() => setExpanded(false)} className="fw-500">
                     🔍 Browse
                   </Nav.Link>
                 )}
-                <Nav.Link href="/profile" onClick={() => setExpanded(false)} className="fw-500">
+                <Nav.Link as={Link} to="/profile" onClick={() => setExpanded(false)} className="fw-500">
                   👤 Profile
                 </Nav.Link>
                 <Button 
@@ -105,8 +105,8 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Nav.Link href="/login" onClick={() => setExpanded(false)} className="fw-500">Login</Nav.Link>
-                <Nav.Link href="/register" onClick={() => setExpanded(false)} className="fw-500">Register</Nav.Link>
+                <Nav.Link as={Link} to="/login" onClick={() => setExpanded(false)} className="fw-500">Login</Nav.Link>
+                <Nav.Link as={Link} to="/register" onClick={() => setExpanded(false)} className="fw-500">Register</Nav.Link>
               </>
             )}
           </Nav>

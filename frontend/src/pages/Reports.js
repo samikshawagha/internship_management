@@ -21,6 +21,10 @@ const Reports = () => {
     if (user?.role === 'student') {
       fetchStudentReports();
       fetchApprovedInternships();
+    } else {
+      // non-student users shouldn't see the student reports view
+      // stop the loading indicator so the page can render something else or an empty state
+      setLoading(false);
     }
   }, [user]);
 
@@ -29,6 +33,7 @@ const Reports = () => {
       const response = await apiService.getStudentReports();
       setReports(response.data);
     } catch (error) {
+      console.error('Failed to fetch student reports:', error);
       setError('Failed to fetch reports');
     } finally {
       setLoading(false);
@@ -41,7 +46,7 @@ const Reports = () => {
       const approved = response.data.filter(app => app.status === 'approved');
       setInternships(approved);
     } catch (error) {
-      console.error('Failed to fetch internships');
+      console.error('Failed to fetch approved internships:', error);
     }
   };
 
@@ -63,6 +68,7 @@ const Reports = () => {
       setShowForm(false);
       fetchStudentReports();
     } catch (error) {
+      console.error('Submit report failed:', error);
       setError(error.response?.data?.error || 'Failed to submit report');
     } finally {
       setSubmitting(false);
@@ -70,6 +76,16 @@ const Reports = () => {
   };
 
   if (loading) return <div className="loading">Loading reports...</div>;
+
+  // if not a student, show a simple message instead of the form/table
+  if (!loading && user?.role !== 'student') {
+    return (
+      <div className="container">
+        <h1>Internship Reports</h1>
+        <p className="text-muted">This section is available for students only.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container">

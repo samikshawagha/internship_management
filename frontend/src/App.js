@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -19,6 +19,7 @@ import AdminUsers from './pages/AdminUsers';
 import AdminInternships from './pages/AdminInternships';
 import AdminApplications from './pages/AdminApplications';
 import AdminReports from './pages/AdminReports';
+import Reports from './pages/Reports';
 import InternshipList from './pages/InternshipList';
 import InternshipDetail from './pages/InternshipDetail';
 import CreateInternship from './pages/CreateInternship';
@@ -42,6 +43,17 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   }
 
   return children;
+};
+
+const ReportsRouter = () => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" />;
+  if (user.role === 'admin') return <AdminReports />;
+  if (user.role === 'company') {
+    // companies should not access student/company reports
+    return <Navigate to="/company-dashboard" />;
+  }
+  return <Reports />;
 };
 
 function AppContent() {
@@ -136,6 +148,16 @@ function AppContent() {
               }
             />
 
+            {/* Generic reports route - role aware */}
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <ReportsRouter />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Internship Routes - Order matters! Create before :id */}
             <Route
               path="/internships/create"
@@ -190,9 +212,9 @@ function AppContent() {
                 <div className="container mt-5 text-center">
                   <h1 className="text-danger">Access Denied</h1>
                   <p className="text-muted">You don't have permission to access this page.</p>
-                  <a href="/" className="btn btn-primary">
+                  <Link to="/" className="btn btn-primary">
                     Go Home
-                  </a>
+                  </Link>
                 </div>
               }
             />

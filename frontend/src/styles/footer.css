@@ -78,7 +78,18 @@
   background: transparent;
   color: #00d4ff;
   border-left-color: #00d4ff;
+}
+
+.hover-link {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.hover-link:hover {
+  color: #00d4ff !important;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
   transform: translateX(5px);
+  transition: all 0.3s ease;
 }
 
 .footer-custom .border-top {

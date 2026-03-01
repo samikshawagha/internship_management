@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getRedirectPathByRole } from '../utils/jwtDecoder';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import '../styles/home.css';
 
@@ -27,9 +28,10 @@ const Home = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Redirect authenticated users to dashboard
+  // Redirect authenticated users to their appropriate dashboard
   if (!loading && user) {
-    navigate('/dashboard');
+    const redirectPath = getRedirectPathByRole(user.role);
+    navigate(redirectPath);
     return null;
   }
 
