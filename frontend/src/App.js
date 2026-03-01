@@ -30,6 +30,8 @@ import Attendance from './pages/Attendance';
 import MyPerformance from './pages/MyPerformance';
 import CompanyAttendance from './pages/CompanyAttendance';
 import PerformanceEvaluation from './pages/PerformanceEvaluation';
+import Assessment from './pages/Assessment';
+import Certificate from './pages/Certificate';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -245,6 +247,26 @@ function AppContent() {
               element={
                 <ProtectedRoute requiredRole={['company']}>
                   <PerformanceEvaluation />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Assessment & Evaluation - Student & Company */}
+            <Route
+              path="/assessment"
+              element={
+                <ProtectedRoute requiredRole={['student', 'company']}>
+                  <Assessment />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Certificates & Documentation - Student & Company */}
+            <Route
+              path="/certificate"
+              element={
+                <ProtectedRoute requiredRole={['student', 'company']}>
+                  <Certificate />
                 </ProtectedRoute>
               }
             />
