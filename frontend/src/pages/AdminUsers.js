@@ -38,6 +38,7 @@ const AdminUsers = () => {
     fullName: '',
     email: '',
     phone: '',
+    role: 'student',
   });
 
   useEffect(() => {
@@ -105,6 +106,7 @@ const AdminUsers = () => {
       fullName: selectedUser.fullName,
       email: selectedUser.email,
       phone: selectedUser.phone || '',
+      role: selectedUser.role || 'student',
     });
     setShowModal(true);
     setValidationError('');
@@ -130,6 +132,8 @@ const AdminUsers = () => {
     try {
       if (editingUser) {
         await crudService.updateUser(editingUser.id, formData);
+      } else {
+        await crudService.createUser(formData);
       }
       setShowModal(false);
       setEditingUser(null);
@@ -137,6 +141,7 @@ const AdminUsers = () => {
         fullName: '',
         email: '',
         phone: '',
+        role: 'student',
       });
       loadUsers();
     } catch (err) {
@@ -168,9 +173,14 @@ const AdminUsers = () => {
             </p>
           </Col>
           <Col md={4} className="text-end d-none d-md-block">
-            <Button variant="primary" onClick={() => navigate('/admin-dashboard')}>
-              ← Back to Dashboard
-            </Button>
+            <div className="d-flex justify-content-end gap-2">
+              <Button variant="success" onClick={() => { setEditingUser(null); setFormData({ fullName: '', email: '', phone: '', role: 'student' }); setShowModal(true); }}>
+                <FaPlus className="me-1"/> Add User
+              </Button>
+              <Button variant="primary" onClick={() => navigate('/admin-dashboard')}>
+                ← Back to Dashboard
+              </Button>
+            </div>
           </Col>
         </Row>
       </div>
@@ -269,6 +279,17 @@ const AdminUsers = () => {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="Enter phone number"
               />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Role *</Form.Label>
+              <Form.Select
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              >
+                <option value="student">Student</option>
+                <option value="company">Company</option>
+                <option value="admin">Admin</option>
+              </Form.Select>
             </Form.Group>
           </Form>
         </Modal.Body>

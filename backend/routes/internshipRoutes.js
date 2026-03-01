@@ -8,6 +8,7 @@ const router = express.Router();
 // Create internship with optional logo image
 router.post('/', verifyToken, checkRole(['company', 'admin']), imageUpload.single('logo'), internshipController.create);
 router.get('/', internshipController.getAll);
+router.get('/all', verifyToken, checkRole(['admin']), internshipController.getAllAdmin);
 router.get('/company', verifyToken, checkRole(['company', 'admin']), internshipController.getByCompanyId);
 router.get('/:id', internshipController.getById);
 // Update internship with optional logo image

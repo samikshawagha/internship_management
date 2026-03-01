@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { crudService } from '../services/crudService';
+import { apiService } from '../services/apiService';
 import {
   Container, Row, Col, Card, Button, Badge, Form, InputGroup,
   Pagination, Modal, Alert, Spinner
@@ -33,8 +34,15 @@ const InternshipList = () => {
   const loadInternships = async () => {
     try {
       setLoading(true);
-      const response = await crudService.getInternships();
-      setInternships(response.data);
+      // Prefer backend API when available
+      try {
+        const response = await apiService.getInternships();
+        setInternships(response.data);
+      } catch (apiErr) {
+        // Fallback to local mock service
+        const response = await crudService.getInternships();
+        setInternships(response.data);
+      }
       setError(null);
     } catch (err) {
       setError('Failed to load internships');
@@ -83,7 +91,11 @@ const InternshipList = () => {
     if (!selectedInternship) return;
     
     try {
-      await crudService.deleteInternship(selectedInternship.id);
+      try {
+        await apiService.deleteInternship(selectedInternship.id);
+      } catch (apiErr) {
+        await crudService.deleteInternship(selectedInternship.id);
+      }
       setSuccess('Internship deleted successfully!');
       setShowDeleteModal(false);
       loadInternships();

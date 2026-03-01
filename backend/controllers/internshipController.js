@@ -44,6 +44,17 @@ const internshipController = {
     }
   },
 
+  // Admin: get all internships regardless of status
+  getAllAdmin: async (req, res) => {
+    try {
+      const internships = await Internship.getAllAll();
+      res.json(internships);
+    } catch (error) {
+      console.error('Get all internships error:', error);
+      res.status(500).json({ error: 'Failed to fetch internships' });
+    }
+  },
+
   getById: async (req, res) => {
     try {
       const internship = await Internship.findById(req.params.id);

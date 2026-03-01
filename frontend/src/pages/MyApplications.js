@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { crudService } from '../services/crudService';
+import { apiService } from '../services/apiService';
 import {
   Container, Row, Col, Card, Button, Badge, Form, Table, Alert, Spinner, Modal
 } from 'react-bootstrap';
@@ -15,12 +17,30 @@ const MyApplications = () => {
   const [success, setSuccess] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [internships, setInternships] = useState([]);
+  const [applicationForm, setApplicationForm] = useState({ internshipId: '', coverLetter: '' });
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     loadApplications();
+    loadInternships();
+    // check URL for status query
+    const params = new URLSearchParams(location.search);
+    const status = params.get('status');
+    if (status) setFilterStatus(status);
   }, [user?.id]);
+
+  const navigateToSelfWithFilter = (status) => {
+    const params = new URLSearchParams();
+    if (status && status !== 'all') params.set('status', status);
+    navigate(`/my-applications?${params.toString()}`);
+    setFilterStatus(status);
+  };
 
   useEffect(() => {
     filterApplications();
@@ -37,6 +57,20 @@ const MyApplications = () => {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadInternships = async () => {
+    try {
+      const res = await apiService.getInternships();
+      setInternships(res.data);
+    } catch (err) {
+      try {
+        const res = await crudService.getInternships();
+        setInternships(res.data);
+      } catch (err2) {
+        console.error('Failed to load internships', err2);
+      }
     }
   };
 
@@ -73,6 +107,48 @@ const MyApplications = () => {
       loadApplications();
     } catch (err) {
       setError('Failed to withdraw application');
+    }
+  };
+
+  const handleOpenApply = () => {
+    setApplicationForm({ internshipId: internships[0]?.id || '', coverLetter: '' });
+    setShowApplyModal(true);
+  };
+
+  const handleCreateApplication = async () => {
+    if (!applicationForm.internshipId) return setError('Please select an internship');
+    try {
+      const internship = internships.find(i => i.id === parseInt(applicationForm.internshipId));
+      await crudService.createApplication({
+        studentId: user.id,
+        internshipId: parseInt(applicationForm.internshipId),
+        internshipTitle: internship.title,
+        company: internship.company,
+        coverLetter: applicationForm.coverLetter || ''
+      });
+      setShowApplyModal(false);
+      setSuccess('Application submitted successfully');
+      loadApplications();
+    } catch (err) {
+      setError(err.message || 'Failed to submit application');
+    }
+  };
+
+  const handleOpenEdit = (app) => {
+    setSelectedApp(app);
+    setApplicationForm({ internshipId: app.internshipId, coverLetter: app.coverLetter || '' });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateApplication = async () => {
+    if (!selectedApp) return;
+    try {
+      await crudService.updateApplication(selectedApp.id, { coverLetter: applicationForm.coverLetter });
+      setShowEditModal(false);
+      setSuccess('Application updated successfully');
+      loadApplications();
+    } catch (err) {
+      setError(err.message || 'Failed to update application');
     }
   };
 
@@ -129,7 +205,7 @@ const MyApplications = () => {
         {/* Statistics Cards */}
         <Row className="mb-5 g-3">
           <Col md={6} lg={3}>
-            <Card className="stat-card h-100 shadow-sm border-0">
+            <Card className="stat-card h-100 shadow-sm border-0" style={{ cursor: 'pointer' }} onClick={() => { setFilterStatus('all'); navigateToSelfWithFilter('all'); }}>
               <Card.Body className="text-white" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
                 <h3 className="stat-number">{stats.total}</h3>
                 <p className="stat-label mb-0">Total Applications</p>
@@ -137,7 +213,7 @@ const MyApplications = () => {
             </Card>
           </Col>
           <Col md={6} lg={3}>
-            <Card className="stat-card h-100 shadow-sm border-0">
+            <Card className="stat-card h-100 shadow-sm border-0" style={{ cursor: 'pointer' }} onClick={() => { setFilterStatus('pending'); navigateToSelfWithFilter('pending'); }}>
               <Card.Body className="text-white" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
                 <h3 className="stat-number">{stats.pending}</h3>
                 <p className="stat-label mb-0">Pending ⏳</p>
@@ -145,7 +221,7 @@ const MyApplications = () => {
             </Card>
           </Col>
           <Col md={6} lg={3}>
-            <Card className="stat-card h-100 shadow-sm border-0">
+            <Card className="stat-card h-100 shadow-sm border-0" style={{ cursor: 'pointer' }} onClick={() => { setFilterStatus('accepted'); navigateToSelfWithFilter('accepted'); }}>
               <Card.Body className="text-white" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
                 <h3 className="stat-number">{stats.accepted}</h3>
                 <p className="stat-label mb-0">Accepted ✅</p>
@@ -190,6 +266,10 @@ const MyApplications = () => {
           </Col>
         </Row>
 
+        <div className="d-flex justify-content-end mb-3">
+          <Button variant="primary" onClick={handleOpenApply}>➕ Apply to Internship</Button>
+        </div>
+
         {/* Applications Table */}
         {filteredApplications.length > 0 ? (
           <Card className="applications-card shadow-sm border-0">
@@ -230,16 +310,19 @@ const MyApplications = () => {
                                 View
                               </Button>
                               {app.status === 'pending' && (
-                                <Button 
-                                  variant="danger" 
-                                  size="sm"
-                                  onClick={() => {
-                                    setSelectedApp(app);
-                                    setShowWithdrawModal(true);
-                                  }}
-                                >
-                                  Withdraw
-                                </Button>
+                                <>
+                                  <Button variant="secondary" size="sm" onClick={() => handleOpenEdit(app)}>Edit</Button>
+                                  <Button 
+                                    variant="danger" 
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedApp(app);
+                                      setShowWithdrawModal(true);
+                                    }}
+                                  >
+                                    Withdraw
+                                  </Button>
+                                </>
                               )}
                             </div>
                           </td>
@@ -285,6 +368,57 @@ const MyApplications = () => {
           <Button variant="danger" onClick={handleWithdraw}>
             Yes, Withdraw Application
           </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Apply Modal */}
+      <Modal show={showApplyModal} onHide={() => setShowApplyModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Apply to Internship</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Internship *</Form.Label>
+              <Form.Select value={applicationForm.internshipId} onChange={(e) => setApplicationForm({ ...applicationForm, internshipId: e.target.value })}>
+                <option value="">Select an internship</option>
+                {internships.map(i => (
+                  <option key={i.id} value={i.id}>{i.title} — {i.company}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Cover Letter</Form.Label>
+              <Form.Control as="textarea" rows={4} value={applicationForm.coverLetter} onChange={(e) => setApplicationForm({ ...applicationForm, coverLetter: e.target.value })} />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowApplyModal(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreateApplication}>Submit Application</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Edit Application Modal */}
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Application</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Internship</Form.Label>
+              <Form.Control value={internships.find(i => i.id === applicationForm.internshipId)?.title || ''} readOnly />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Cover Letter</Form.Label>
+              <Form.Control as="textarea" rows={4} value={applicationForm.coverLetter} onChange={(e) => setApplicationForm({ ...applicationForm, coverLetter: e.target.value })} />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleUpdateApplication}>Save Changes</Button>
         </Modal.Footer>
       </Modal>
     </Container>
