@@ -108,7 +108,7 @@
 ```
 
 **Applications** (6 samples with different statuses):
-- Pending, Accepted, Rejected applications
+- Various application examples
 - Student-to-internship relationships
 - Cover letter text
 - Application dates
@@ -189,7 +189,7 @@ DELETE: Withdraw applications
 - Read: Internships
 - Create: Applications
 - Read: Own applications
-- Delete: Own pending applications
+- Delete: Own applications
 - Update: Profile
 
 ### Company Role ✅

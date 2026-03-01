@@ -62,7 +62,7 @@ npm start
 - ✅ Apply to internships
 - ✅ View my applications
 - ✅ Track application status
-- ✅ Withdraw pending applications
+- ✅ Withdraw applications
 
 #### **For Companies**:
 - ✅ Post new internships
@@ -125,10 +125,10 @@ npm start
 // Or navigate to /my-applications
 // Features:
 // - View all applications
-// - Filter by status (Pending, Accepted, Rejected)
+// - Filter by status
 // - Search by internship or company
 // - View details
-// - Withdraw pending applications
+// - Withdraw applications
 ```
 
 ### Post Internship

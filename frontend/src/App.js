@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -13,25 +13,18 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import CompanyHome from './pages/CompanyHome';
-import CompanyProfile from './pages/CompanyProfile';
+import CompanyDashboard from './pages/CompanyDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminInternships from './pages/AdminInternships';
 import AdminApplications from './pages/AdminApplications';
 import AdminReports from './pages/AdminReports';
+import Reports from './pages/Reports';
 import InternshipList from './pages/InternshipList';
 import InternshipDetail from './pages/InternshipDetail';
 import CreateInternship from './pages/CreateInternship';
 import EditInternship from './pages/EditInternship';
 import MyApplications from './pages/MyApplications';
-import Reports from './pages/Reports';
-import Attendance from './pages/Attendance';
-import MyPerformance from './pages/MyPerformance';
-import CompanyAttendance from './pages/CompanyAttendance';
-import PerformanceEvaluation from './pages/PerformanceEvaluation';
-import Assessment from './pages/Assessment';
-import Certificate from './pages/Certificate';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -46,10 +39,21 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   }
 
   if (requiredRole && !requiredRole.includes(user.role)) {
-    return <Navigate to="/" />;
+    return <Navigate to="/unauthorized" />;
   }
 
   return children;
+};
+
+const ReportsRouter = () => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" />;
+  if (user.role === 'admin') return <AdminReports />;
+  if (user.role === 'company') {
+    // companies should not access student/company reports
+    return <Navigate to="/company-dashboard" />;
+  }
+  return <Reports />;
 };
 
 function AppContent() {
@@ -87,22 +91,12 @@ function AppContent() {
               }
             />
 
-            {/* Company Home */}
+            {/* Company Dashboard */}
             <Route
-              path="/company-home"
+              path="/company-dashboard"
               element={
                 <ProtectedRoute requiredRole={['company']}>
-                  <CompanyHome />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Company Profile */}
-            <Route
-              path="/company-profile"
-              element={
-                <ProtectedRoute requiredRole={['company']}>
-                  <CompanyProfile />
+                  <CompanyDashboard />
                 </ProtectedRoute>
               }
             />
@@ -154,6 +148,16 @@ function AppContent() {
               }
             />
 
+            {/* Generic reports route - role aware */}
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <ReportsRouter />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Internship Routes - Order matters! Create before :id */}
             <Route
               path="/internships/create"
@@ -201,73 +205,17 @@ function AppContent() {
               }
             />
 
-            {/* Reports - Student & Company */}
+            {/* Unauthorized Route */}
             <Route
-              path="/reports"
+              path="/unauthorized"
               element={
-                <ProtectedRoute requiredRole={['student', 'company']}>
-                  <Reports />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Attendance & Leave - Student Only */}
-            <Route
-              path="/attendance"
-              element={
-                <ProtectedRoute requiredRole={['student']}>
-                  <Attendance />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Performance - Student View */}
-            <Route
-              path="/my-performance"
-              element={
-                <ProtectedRoute requiredRole={['student']}>
-                  <MyPerformance />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Company Attendance Management */}
-            <Route
-              path="/company-attendance"
-              element={
-                <ProtectedRoute requiredRole={['company']}>
-                  <CompanyAttendance />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Company Performance Evaluation */}
-            <Route
-              path="/company-performance"
-              element={
-                <ProtectedRoute requiredRole={['company']}>
-                  <PerformanceEvaluation />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Assessment & Evaluation - Student & Company */}
-            <Route
-              path="/assessment"
-              element={
-                <ProtectedRoute requiredRole={['student', 'company']}>
-                  <Assessment />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* Certificates & Documentation - Student & Company */}
-            <Route
-              path="/certificate"
-              element={
-                <ProtectedRoute requiredRole={['student', 'company']}>
-                  <Certificate />
-                </ProtectedRoute>
+                <div className="container mt-5 text-center">
+                  <h1 className="text-danger">Access Denied</h1>
+                  <p className="text-muted">You don't have permission to access this page.</p>
+                  <Link to="/" className="btn btn-primary">
+                    Go Home
+                  </Link>
+                </div>
               }
             />
 
