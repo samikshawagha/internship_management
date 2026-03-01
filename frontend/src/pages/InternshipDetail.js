@@ -99,7 +99,7 @@ const InternshipDetail = () => {
     try {
       setDeleting(true);
       await apiService.deleteInternship(id);
-      navigate('/company-dashboard');
+      navigate('/company-home');
     } catch (error) {
       setError('Failed to delete internship');
       setDeleting(false);
@@ -295,7 +295,7 @@ const InternshipDetail = () => {
                       >
                         🗑️ Delete Internship
                       </Button>
-                      <Link to="/company-dashboard" className="text-decoration-none">
+                      <Link to="/company-home" className="text-decoration-none">
                         <Button variant="outline-secondary" className="w-100 fw-bold">
                           ← Back to Dashboard
                         </Button>

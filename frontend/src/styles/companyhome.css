@@ -1,0 +1,247 @@
+/* Company Home Page Styles */
+
+.company-home {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+/* Welcome Section */
+.welcome-section {
+  animation: slideInDown 0.6s ease;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stat Card */
+.stat-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none !important;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+.stat-card .card-body {
+  padding: 1.5rem !important;
+}
+
+/* Feature Card */
+.feature-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 2px solid #e9ecef !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  border-color: #667eea !important;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+}
+
+.feature-card .card-body {
+  padding: 1.5rem !important;
+}
+
+/* Activity Item */
+.activity-item {
+  transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+  background-color: #f8f9fa;
+}
+
+.activity-item:last-child {
+  border-bottom: none !important;
+}
+
+/* Badge XL */
+.badge-xl {
+  display: inline-block;
+  border-radius: 25px;
+  font-weight: 600;
+}
+
+/* Benefits Section */
+.benefits-section {
+  margin-top: 3rem;
+}
+
+.benefit-card {
+  transition: all 0.3s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+}
+
+/* CTA Section */
+.cta-section {
+  margin-top: 3rem;
+  margin-bottom: -2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .company-home h1 {
+    font-size: 2rem !important;
+  }
+
+  .company-home h2 {
+    font-size: 1.5rem !important;
+  }
+
+  .welcome-section .d-flex {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .welcome-section button {
+    width: 100%;
+  }
+
+  .badge-xl {
+    display: block !important;
+    margin-bottom: 1rem;
+  }
+
+  .stat-card {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .company-home {
+    padding: 0.5rem !important;
+  }
+
+  .company-home h1 {
+    font-size: 1.5rem !important;
+  }
+
+  .welcome-section {
+    text-align: center;
+  }
+
+  .welcome-section p {
+    font-size: 0.95rem !important;
+  }
+
+  .feature-card .card-body {
+    padding: 1rem !important;
+  }
+
+  .activity-item {
+    flex-direction: column;
+  }
+
+  .activity-item .flex-grow-1 {
+    margin-left: 0;
+  }
+
+  .cta-section {
+    padding: 1.5rem 0 !important;
+  }
+
+  .cta-section button {
+    width: 100%;
+  }
+}
+
+/* Card Animations */
+.card {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button Styles */
+.company-home .btn {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.company-home .btn-success {
+  background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+  color: #fff;
+}
+
+.company-home .btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(132, 250, 176, 0.4);
+}
+
+.company-home .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.company-home .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.company-home .btn-light {
+  color: #667eea !important;
+  border: 2px solid transparent;
+}
+
+.company-home .btn-light:hover {
+  background-color: #fff !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Alert Styles */
+.company-home .alert {
+  border-radius: 10px;
+  border: none;
+  padding: 1rem 1.5rem;
+}
+
+.company-home .alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.company-home .alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.company-home .alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus states */
+.company-home .btn:focus,
+.company-home .card:focus {
+  outline: none;
+}
