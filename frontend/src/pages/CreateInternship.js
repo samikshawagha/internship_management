@@ -14,6 +14,7 @@ const CreateInternship = () => {
     stipend: '',
     skills: '',
     startDate: '',
+    minStudents: '',
     logoFile: null
   });
   const [error, setError] = useState('');
@@ -62,6 +63,9 @@ const CreateInternship = () => {
       data.append('stipend', formData.stipend);
       data.append('skills', formData.skills);
       data.append('startDate', formData.startDate);
+      if (formData.minStudents) {
+        data.append('minStudents', formData.minStudents);
+      }
       if (formData.logoFile) {
         data.append('logo', formData.logoFile);
       }
@@ -76,6 +80,7 @@ const CreateInternship = () => {
         stipend: '',
         skills: '',
         startDate: '',
+        minStudents: '',
         logoFile: null
       });
       // Reset file input
@@ -212,6 +217,22 @@ const CreateInternship = () => {
                     value={formData.startDate}
                     onChange={handleChange}
                   />
+                </Form.Group>
+
+                {/* Minimum Students */}
+                <Form.Group className="mb-4">
+                  <Form.Label className="fw-bold">Minimum Applications to Auto-Close</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="minStudents"
+                    value={formData.minStudents}
+                    onChange={handleChange}
+                    placeholder="e.g., 10 (leave blank for no limit)"
+                    min="1"
+                  />
+                  <Form.Text className="text-muted">
+                    Once this many students apply, the internship will automatically close.
+                  </Form.Text>
                 </Form.Group>
 
                 {/* Submit Button */}

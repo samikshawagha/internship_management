@@ -32,6 +32,7 @@ const initializeDatabase = async () => {
         role ENUM('admin', 'company', 'student') NOT NULL,
         fullName VARCHAR(255) NOT NULL,
         phone VARCHAR(15),
+        logo VARCHAR(255),
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -50,6 +51,7 @@ const initializeDatabase = async () => {
         startDate DATE,
         logo VARCHAR(255),
         status ENUM('open', 'closed') DEFAULT 'open',
+        minStudents INT DEFAULT NULL,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (companyId) REFERENCES users(id)
       )
@@ -93,6 +95,24 @@ const initializeDatabase = async () => {
     } catch (error) {
       if (error.code !== 'ER_DUP_FIELDNAME') {
         console.log('Logo column may already exist or other error:', error.message);
+      }
+    }
+
+    // Add logo column to users table if it doesn't exist
+    try {
+      await connection.query(`ALTER TABLE users ADD COLUMN logo VARCHAR(255)`);
+    } catch (error) {
+      if (error.code !== 'ER_DUP_FIELDNAME') {
+        console.log('Users logo column may already exist:', error.message);
+      }
+    }
+
+    // Add minStudents column to internships table if it doesn't exist
+    try {
+      await connection.query(`ALTER TABLE internships ADD COLUMN minStudents INT DEFAULT NULL`);
+    } catch (error) {
+      if (error.code !== 'ER_DUP_FIELDNAME') {
+        console.log('minStudents column may already exist:', error.message);
       }
     }
 

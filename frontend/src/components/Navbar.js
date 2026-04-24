@@ -86,27 +86,11 @@ const Navbar = () => {
                     🔍 Browse
                   </Nav.Link>
                 )}
-                <Nav.Link href="/profile" onClick={() => setExpanded(false)} className="fw-500">
-                  👤 Profile
-                </Nav.Link>
-                <Button 
-                  variant="outline-light" 
-                  size="sm" 
-                  onClick={handleLogout}
-                  className="ms-2 fw-600"
-                  style={{
-                    borderRadius: '8px',
-                    padding: '0.5rem 1rem',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  Logout
-                </Button>
               </>
             ) : (
               <>
-                <Nav.Link href="/login" onClick={() => setExpanded(false)} className="fw-500">Login</Nav.Link>
-                <Nav.Link href="/register" onClick={() => setExpanded(false)} className="fw-500">Register</Nav.Link>
+                <Nav.Link href="/login" onClick={() => setExpanded(false)} className="fw-500">Sign In</Nav.Link>
+                <Nav.Link href="/register" onClick={() => setExpanded(false)} className="fw-500">Sign Up</Nav.Link>
               </>
             )}
           </Nav>

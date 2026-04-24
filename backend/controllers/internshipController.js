@@ -3,7 +3,7 @@ const Internship = require('../models/Internship');
 const internshipController = {
   create: async (req, res) => {
     try {
-      const { title, description, location, duration, stipend, skills, startDate } = req.body;
+      const { title, description, location, duration, stipend, skills, startDate, minStudents } = req.body;
 
       if (!title || !description || !location || !duration) {
         return res.status(400).json({ error: 'Missing required fields' });
@@ -21,7 +21,8 @@ const internshipController = {
         stipend,
         skills,
         startDate,
-        logo
+        logo,
+        minStudents: minStudents || null
       });
 
       res.status(201).json({
