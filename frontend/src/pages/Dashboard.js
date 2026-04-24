@@ -417,11 +417,18 @@ const Dashboard = () => {
                   📋 View Applications
                 </Button>
                 <Button 
+                  variant="success" 
+                  className="flex-grow-1 action-btn"
+                  onClick={() => navigate('/student-hub')}
+                >
+                  🎓 Student Hub
+                </Button>
+                <Button 
                   variant="warning" 
                   className="flex-grow-1 action-btn"
                   onClick={() => navigate('/reports')}
                 >
-                  📝 View Reports
+                  📊 View Reports
                 </Button>
                 <Button 
                   variant="secondary" 

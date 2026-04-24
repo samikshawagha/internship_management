@@ -20,12 +20,24 @@ export const AuthProvider = ({ children }) => {
   const fetchUserProfile = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/auth/profile');
+      console.log('Fetched user profile:', response.data);
       setUser(response.data);
       // Store user role in localStorage for quick access
       localStorage.setItem('userRole', response.data.role);
     } catch (error) {
       console.error('Failed to fetch profile:', error);
-      logout();
+      // Try to restore user from localStorage before logging out
+      const storedUser = localStorage.getItem('userData');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          setUser(parsed);
+        } catch {
+          logout();
+        }
+      } else {
+        logout();
+      }
     } finally {
       setLoading(false);
     }
@@ -35,6 +47,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
       const { token, user } = response.data;
+      console.log('Login successful - User:', user);
       setToken(token);
       setUser(user);
       localStorage.setItem('token', token);

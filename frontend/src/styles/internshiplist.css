@@ -1,215 +1,271 @@
-/* InternshipList Styles */
-.internship-list-container {
-  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-  min-height: 100%;
+/* Internship Page Styles */
+.internship-page {
+  background: #fff;
 }
 
-.search-input-group {
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+/* Hero */
+.internship-hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 60%, #4361ee 100%);
+  padding: 80px 0 60px;
+  color: #fff;
 }
 
-.search-input-group .form-control {
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  opacity: 0.85;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* Sections */
+.internship-section {
+  padding: 70px 0;
+}
+
+.bg-light-custom {
+  background: #f8f9fa;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 8px;
+}
+
+.section-subtitle {
+  color: #6c757d;
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+/* Domain Cards */
+.domain-card {
   border: none;
-  padding: 12px 16px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.search-input-group .input-group-text {
-  border: none;
-  background-color: white;
-  font-size: 1.2rem;
+.domain-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.13);
 }
 
-.sort-select {
-  border-radius: 10px;
-  border: none;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 12px 16px;
+.domain-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  display: block;
 }
 
-.skill-badge {
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 8px 12px;
+.domain-title {
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Benefits */
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.97rem;
+  color: #333;
+}
+
+.benefit-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+/* Why Join Visual */
+.why-join-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.visual-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
   border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 380px;
 }
 
-.skill-badge:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+.visual-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #fff;
 }
 
-.internship-card {
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #00d4ff;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-top: 6px;
+}
+
+/* Skills Cards */
+.skills-card {
   border: none;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
   overflow: hidden;
 }
 
-.internship-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
-}
-
-.internship-card .card-body {
-  padding: 24px;
-}
-
-.internship-card .card-title {
-  color: #1a1a2e;
-  margin-bottom: 12px;
-  transition: color 0.3s ease;
-}
-
-.internship-card:hover .card-title {
-  color: #0f3460;
-}
-
-.internship-card .text-primary {
-  color: #00d4ff !important;
+.skills-card .card-header {
   font-weight: 600;
+  font-size: 0.95rem;
+  padding: 14px 20px;
 }
 
-.action-buttons {
+.skills-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.skills-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+  color: #444;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
-  margin-top: 16px;
 }
 
-.action-buttons .btn {
-  flex: 1;
-  min-width: 80px;
-  transition: all 0.3s ease;
+.skills-list li:last-child {
+  border-bottom: none;
 }
 
-.action-buttons .btn-primary {
-  background-color: #0f3460;
-  border-color: #0f3460;
+.skill-check {
+  color: #2a9d8f;
+  font-weight: 700;
 }
 
-.action-buttons .btn-primary:hover {
-  background-color: #00d4ff;
-  border-color: #00d4ff;
-  transform: translateY(-2px);
+/* Program Details */
+.details-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
 }
 
-.action-buttons .btn-warning {
-  background-color: #ffc107;
-  border-color: #ffc107;
-}
-
-.action-buttons .btn-warning:hover {
-  background-color: #ff9800;
-  border-color: #ff9800;
-  transform: translateY(-2px);
-}
-
-.action-buttons .btn-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
-}
-
-.action-buttons .btn-danger:hover {
-  background-color: #c82333;
-  transform: translateY(-2px);
-}
-
-.btn-create-internship {
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-}
-
-.btn-create-internship:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-}
-
-/* Hover Shadow Effect */
-.hover-shadow {
-  transition: all 0.3s ease;
-}
-
-.hover-shadow:hover {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Skills Filter */
-.skills-filter {
+.detail-item {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 0;
 }
 
-/* Pagination */
-.pagination {
-  margin-top: 30px;
+.detail-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
-.pagination .page-link {
-  color: #0f3460;
-  border-color: #dee2e6;
+.detail-label {
+  font-size: 0.8rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.pagination .page-link:hover {
-  background-color: #00d4ff;
-  border-color: #00d4ff;
-  color: white;
-}
-
-.pagination .page-item.active .page-link {
-  background-color: #0f3460;
-  border-color: #0f3460;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .internship-card {
-    margin-bottom: 16px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-  }
-
-  .action-buttons .btn {
-    width: 100%;
-  }
-
-  .skill-badge {
-    font-size: 0.85rem;
-  }
-}
-
-/* Animation for loading */
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.loading {
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-/* Modal Styles */
-.modal-header {
-  background-color: #f5f7fa;
-  border-bottom: 2px solid #dee2e6;
-}
-
-.modal-title {
-  color: #1a1a2e;
+.detail-value {
   font-weight: 600;
+  color: #1a1a2e;
+  font-size: 0.95rem;
+}
+
+/* Apply Card */
+.apply-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.apply-btn {
+  background: linear-gradient(135deg, #4361ee, #0f3460);
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: opacity 0.2s;
+}
+
+.apply-btn:hover {
+  opacity: 0.9;
+}
+
+/* Contact */
+.contact-card {
+  padding: 30px 20px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+}
+
+.contact-icon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.contact-label {
+  font-size: 0.85rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.contact-value {
+  color: #4361ee;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.contact-value:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .internship-section {
+    padding: 50px 0;
+  }
+
+  .visual-card {
+    padding: 28px;
+  }
 }
