@@ -699,3 +699,15 @@ table tbody tr:last-child td {
   animation: fadeIn 0.3s ease;
 }
 
+
+/* Dashboard layout with sidebar */
+.dashboard-layout {
+  display: flex;
+  min-height: calc(100vh - 56px);
+}
+
+.dashboard-content {
+  flex: 1;
+  overflow-x: hidden;
+  min-width: 0;
+}

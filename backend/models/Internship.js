@@ -2,12 +2,13 @@ const pool = require('../config/database');
 
 const Internship = {
   create: async (data) => {
-    const { companyId, title, description, location, duration, stipend, skills, startDate, logo, status } = data;
+    const { companyId, title, description, location, duration, stipend, skills, startDate, logo, status, minStudents } = data;
     // Ensure new internships have a status (default to 'open') so getAll() returns them
     const insertStatus = status || 'open';
     const skillsStr = Array.isArray(skills) ? skills.join(',') : (skills || null);
-    const query = 'INSERT INTO internships (companyId, title, description, location, duration, stipend, skills, startDate, logo, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const [result] = await pool.query(query, [companyId, title, description, location, duration, stipend, skillsStr, startDate, logo || null, insertStatus]);
+    const minStu = minStudents ? parseInt(minStudents) : null;
+    const query = 'INSERT INTO internships (companyId, title, description, location, duration, stipend, skills, startDate, logo, status, minStudents) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const [result] = await pool.query(query, [companyId, title, description, location, duration, stipend, skillsStr, startDate, logo || null, insertStatus, minStu]);
     return result;
   },
 
@@ -59,10 +60,11 @@ const Internship = {
   },
 
   update: async (id, data) => {
-    const { title, description, location, duration, stipend, skills, logo } = data;
+    const { title, description, location, duration, stipend, skills, logo, minStudents } = data;
     const skillsStr = Array.isArray(skills) ? skills.join(',') : skills;
-    let query = 'UPDATE internships SET title = ?, description = ?, location = ?, duration = ?, stipend = ?, skills = ?';
-    const params = [title, description, location, duration, stipend, skillsStr];
+    const minStu = minStudents ? parseInt(minStudents) : null;
+    let query = 'UPDATE internships SET title = ?, description = ?, location = ?, duration = ?, stipend = ?, skills = ?, minStudents = ?';
+    const params = [title, description, location, duration, stipend, skillsStr, minStu];
     
     if (logo) {
       query += ', logo = ?';
@@ -92,6 +94,21 @@ const Internship = {
     const query = 'UPDATE internships SET status = ? WHERE id = ?';
     const [result] = await pool.query(query, [status, id]);
     return result;
+  },
+
+  // Count applications and auto-close if minStudents reached
+  checkAndAutoClose: async (internshipId) => {
+    const [rows] = await pool.query(
+      'SELECT i.minStudents, i.status, COUNT(a.id) as appCount FROM internships i LEFT JOIN applications a ON a.internshipId = i.id WHERE i.id = ? GROUP BY i.id',
+      [internshipId]
+    );
+    const row = rows[0];
+    if (!row || !row.minStudents || row.status === 'closed') return false;
+    if (row.appCount >= row.minStudents) {
+      await pool.query('UPDATE internships SET status = "closed" WHERE id = ?', [internshipId]);
+      return true;
+    }
+    return false;
   }
 };
 

@@ -1,54 +1,36 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Navbar as BootstrapNavbar, Nav, Container, Button, Badge } from 'react-bootstrap';
+import { Navbar as BootstrapNavbar, Nav, Container, Badge } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/global.css';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-    setExpanded(false);
-  };
-
   const getDashboardLink = () => {
     switch (user?.role) {
-      case 'company':
-        return '/company-dashboard';
-      case 'admin':
-        return '/admin-dashboard';
-      case 'student':
-      default:
-        return '/dashboard';
+      case 'company': return '/company-dashboard';
+      case 'admin': return '/admin-dashboard';
+      default: return '/dashboard';
     }
   };
 
   const getRoleBadgeVariant = () => {
     switch (user?.role) {
-      case 'company':
-        return 'success';
-      case 'admin':
-        return 'danger';
-      case 'student':
-      default:
-        return 'info';
+      case 'company': return 'success';
+      case 'admin': return 'danger';
+      default: return 'info';
     }
   };
 
   const getRoleIcon = () => {
     switch (user?.role) {
-      case 'company':
-        return '🏢';
-      case 'admin':
-        return '⚙️';
-      case 'student':
-      default:
-        return '👨‍🎓';
+      case 'company': return '🏢';
+      case 'admin': return '⚙️';
+      default: return '👨‍🎓';
     }
   };
 
@@ -66,11 +48,9 @@ const Navbar = () => {
               <>
                 <div className="d-flex align-items-center gap-2 nav-link" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                   <span>{getRoleIcon()}</span>
-                  <span>
-                    Welcome, <strong>{user.fullName.split(' ')[0]}</strong>
-                  </span>
+                  <span>Welcome, <strong>{user.fullName?.split(' ')[0]}</strong></span>
                 </div>
-                <Badge bg={getRoleBadgeVariant()} className="me-2" style={{ fontSize: '0.75rem' }}>
+                <Badge bg={getRoleBadgeVariant()} style={{ fontSize: '0.75rem' }}>
                   {user.role === 'student' ? '👨‍🎓 Student' : user.role === 'company' ? '🏢 Company' : '⚙️ Admin'}
                 </Badge>
                 <Nav.Link as={Link} to={getDashboardLink()} onClick={() => setExpanded(false)} className="fw-500">
@@ -86,27 +66,11 @@ const Navbar = () => {
                     🔍 Browse
                   </Nav.Link>
                 )}
-                <Nav.Link as={Link} to="/profile" onClick={() => setExpanded(false)} className="fw-500">
-                  👤 Profile
-                </Nav.Link>
-                <Button 
-                  variant="outline-light" 
-                  size="sm" 
-                  onClick={handleLogout}
-                  className="ms-2 fw-600"
-                  style={{
-                    borderRadius: '8px',
-                    padding: '0.5rem 1rem',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  Logout
-                </Button>
               </>
             ) : (
               <>
-                <Nav.Link as={Link} to="/login" onClick={() => setExpanded(false)} className="fw-500">Login</Nav.Link>
-                <Nav.Link as={Link} to="/register" onClick={() => setExpanded(false)} className="fw-500">Register</Nav.Link>
+                <Nav.Link as={Link} to="/login" onClick={() => setExpanded(false)} className="fw-500">Sign In</Nav.Link>
+                <Nav.Link as={Link} to="/register" onClick={() => setExpanded(false)} className="fw-500">Sign Up</Nav.Link>
               </>
             )}
           </Nav>

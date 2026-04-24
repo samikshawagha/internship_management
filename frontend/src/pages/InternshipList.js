@@ -1,400 +1,338 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { crudService } from '../services/crudService';
-import { apiService } from '../services/apiService';
-import {
-  Container, Row, Col, Card, Button, Badge, Form, InputGroup,
-  Pagination, Modal, Alert, Spinner
-} from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Badge, Form, Alert } from 'react-bootstrap';
 import '../styles/internshiplist.css';
+
+const DOMAINS = [
+  {
+    id: 'fullstack',
+    icon: '💻',
+    title: 'Full Stack Development (MERN Stack)',
+    color: '#4361ee',
+    skills: ['HTML, CSS, JavaScript', 'React.js', 'Node.js & Express', 'MongoDB / SQL', 'API Development', 'Authentication & Authorization', 'Deployment (AWS)'],
+  },
+  {
+    id: 'ai',
+    icon: '🤖',
+    title: 'Artificial Intelligence (AI) & Machine Learning',
+    color: '#7209b7',
+    skills: ['Machine Learning Fundamentals', 'Data Handling & Model Training', 'AI APIs Integration', 'Real-world AI use cases in web apps'],
+  },
+  {
+    id: 'cloud',
+    icon: '☁️',
+    title: 'Cloud Computing (AWS / Azure / DevOps Basics)',
+    color: '#f72585',
+    skills: ['Cloud Fundamentals (AWS / Azure)', 'Hosting & Deployment', 'CI/CD Basics', 'Server Management', 'Scalability & Security Basics'],
+  },
+];
+
+const BENEFITS = [
+  { icon: '🏗️', text: 'Work on real client and in-house projects' },
+  { icon: '🛠️', text: 'Learn modern tech stacks used in the industry' },
+  { icon: '🧑‍🏫', text: 'Get mentorship from experienced developers' },
+  { icon: '📁', text: 'Build a strong portfolio' },
+  { icon: '🚀', text: 'Gain exposure to production environments' },
+  { icon: '🏆', text: 'Receive an internship certificate on completion' },
+];
 
 const InternshipList = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [internships, setInternships] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    fullName: '', email: '', phone: '', college: '', year: '', branch: '', skills: '',
+  });
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterSkills, setFilterSkills] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState('recent');
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedInternship, setSelectedInternship] = useState(null);
 
-  const itemsPerPage = 6;
-
-  // Load internships on mount
-  useEffect(() => {
-    loadInternships();
-  }, []);
-
-  const loadInternships = async () => {
-    try {
-      setLoading(true);
-      // Prefer backend API when available
-      try {
-        const response = await apiService.getInternships();
-        setInternships(response.data);
-      } catch (apiErr) {
-        // Fallback to local mock service
-        const response = await crudService.getInternships();
-        setInternships(response.data);
-      }
-      setError(null);
-    } catch (err) {
-      setError('Failed to load internships');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Filter and search logic
-  const filteredInternships = internships.filter(internship => {
-    const searchMatch = internship.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       internship.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                       internship.company.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const statusMatch = filterStatus === 'all' || internship.status === filterStatus;
-    
-    const skillsMatch = filterSkills.length === 0 || 
-                       filterSkills.some(skill => internship.skills.includes(skill));
-    
-    return searchMatch && statusMatch && skillsMatch;
-  });
-
-  // Sort logic
-  const sortedInternships = [...filteredInternships].sort((a, b) => {
-    switch (sortBy) {
-      case 'recent':
-        return new Date(b.postedDate) - new Date(a.postedDate);
-      case 'stipend_high':
-        return parseInt(b.stipend) - parseInt(a.stipend);
-      case 'stipend_low':
-        return parseInt(a.stipend) - parseInt(b.stipend);
-      case 'applicants':
-        return b.applicants - a.applicants;
-      default:
-        return 0;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const required = ['fullName', 'email', 'phone', 'college', 'year', 'branch', 'skills'];
+    const missing = required.filter(f => !formData[f].trim());
+    if (missing.length > 0) {
+      setError('Please fill in all required fields.');
+      return;
     }
-  });
-
-  // Pagination logic
-  const totalPages = Math.ceil(sortedInternships.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedInternships = sortedInternships.slice(startIndex, startIndex + itemsPerPage);
-
-  const handleDelete = async () => {
-    if (!selectedInternship) return;
-    
-    try {
-      try {
-        await apiService.deleteInternship(selectedInternship.id);
-      } catch (apiErr) {
-        await crudService.deleteInternship(selectedInternship.id);
-      }
-      setSuccess('Internship deleted successfully!');
-      setShowDeleteModal(false);
-      loadInternships();
-    } catch (err) {
-      setError('Failed to delete internship');
-    }
+    setError(null);
+    setSubmitted(true);
   };
-
-  const toggleSkillFilter = (skill) => {
-    setFilterSkills(prev =>
-      prev.includes(skill)
-        ? prev.filter(s => s !== skill)
-        : [...prev, skill]
-    );
-    setCurrentPage(1);
-  };
-
-  if (loading) {
-    return (
-      <Container className="py-5 text-center">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      </Container>
-    );
-  }
 
   return (
-    <Container fluid className="py-5 internship-list-container">
-      <Container>
-        {/* Header */}
-        <Row className="mb-5 align-items-center">
-          <Col md={6}>
-            <h1 className="display-6 fw-bold mb-0">
-              📋 Internship Opportunities
-            </h1>
-            <p className="text-muted mt-2">
-              {sortedInternships.length} internships available
+    <div className="internship-page">
+      {/* Hero Section */}
+      <div className="internship-hero">
+        <Container>
+          <div className="hero-content text-center">
+            <h1 className="hero-title">Internship Programs</h1>
+            <p className="hero-subtitle">
+              Hands-on learning with real projects, expert mentorship, and industry exposure
             </p>
-          </Col>
-          <Col md={6} className="text-end">
             {(user?.role === 'company' || user?.role === 'admin') && (
               <Button
-                variant="success"
+                variant="light"
                 size="lg"
+                className="mt-3"
                 onClick={() => navigate('/internships/create')}
-                className="btn-create-internship"
               >
                 ➕ Post Internship
               </Button>
             )}
-          </Col>
-        </Row>
+          </div>
+        </Container>
+      </div>
 
-        {/* Error/Success Messages */}
-        {error && <Alert variant="danger" dismissible onClose={() => setError(null)}>{error}</Alert>}
-        {success && <Alert variant="success" dismissible onClose={() => setSuccess(null)}>{success}</Alert>}
-
-        <Row className="mb-4">
-          {/* Search Bar */}
-          <Col lg={8} className="mb-3 mb-lg-0">
-            <InputGroup size="lg" className="search-input-group">
-              <InputGroup.Text className="search-icon">🔍</InputGroup.Text>
-              <Form.Control
-                placeholder="Search internships, companies, skills..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-              />
-            </InputGroup>
-          </Col>
-
-          {/* Sort Dropdown */}
-          <Col lg={4}>
-            <Form.Select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="sort-select"
-            >
-              <option value="recent">Most Recent</option>
-              <option value="stipend_high">Highest Stipend</option>
-              <option value="stipend_low">Lowest Stipend</option>
-              <option value="applicants">Most Applied</option>
-            </Form.Select>
-          </Col>
-        </Row>
-
-        {/* Filters */}
-        <Row className="mb-4">
-          <Col md={3} className="mb-3">
-            <Form.Group>
-              <Form.Label className="fw-bold">Status</Form.Label>
-              <Form.Select
-                value={filterStatus}
-                onChange={(e) => {
-                  setFilterStatus(e.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="all">All Statuses</option>
-                <option value="open">Open</option>
-                <option value="closed">Closed</option>
-              </Form.Select>
-            </Form.Group>
-          </Col>
-
-          <Col md={9}>
-            <Form.Label className="fw-bold">Skills</Form.Label>
-            <div className="skills-filter">
-              {['React', 'Node.js', 'MongoDB', 'Python', 'AWS', 'Docker', 'JavaScript', 'TensorFlow'].map(skill => (
-                <Badge
-                  key={skill}
-                  bg={filterSkills.includes(skill) ? 'primary' : 'secondary'}
-                  style={{ cursor: 'pointer', marginRight: '5px', marginBottom: '5px' }}
-                  onClick={() => toggleSkillFilter(skill)}
-                  className="skill-badge"
-                >
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </Col>
-        </Row>
-
-        {/* Internship Cards */}
-        <Row>
-          {paginatedInternships.length > 0 ? (
-            paginatedInternships.map(internship => (
-              <Col lg={6} key={internship.id} className="mb-4">
-                <Card className="internship-card h-100 shadow-sm hover-shadow">
-                  <Card.Body>
-                    {/* Status Badge */}
-                    <div className="d-flex justify-content-between align-items-start mb-2">
-                      <Badge bg={internship.status === 'open' ? 'success' : 'warning'}>
-                        {internship.status?.toUpperCase()}
-                      </Badge>
-                      <small className="text-muted">
-                        👥 {internship.applicants} applicants
-                      </small>
-                    </div>
-
-                    {/* Title */}
-                    <h5 className="card-title fw-bold mb-2">
-                      {internship.title}
-                    </h5>
-
-                    {/* Company Info */}
-                    <p className="text-primary mb-3">
-                      🏢 {internship.company}
-                    </p>
-
-                    {/* Description */}
-                    <p className="card-text text-muted mb-3">
-                      {internship.description}
-                    </p>
-
-                    {/* Details Grid */}
-                    <Row className="mb-3 text-sm">
-                      <Col xs={6} className="mb-2">
-                        <small className="text-muted">Location</small>
-                        <br />
-                        <small className="fw-bold">📍 {internship.location}</small>
-                      </Col>
-                      <Col xs={6} className="mb-2">
-                        <small className="text-muted">Duration</small>
-                        <br />
-                        <small className="fw-bold">⏱️ {internship.duration}</small>
-                      </Col>
-                      <Col xs={6} className="mb-2">
-                        <small className="text-muted">Stipend</small>
-                        <br />
-                        <small className="fw-bold text-success">💰 {internship.stipend}</small>
-                      </Col>
-                      <Col xs={6} className="mb-2">
-                        <small className="text-muted">Start Date</small>
-                        <br />
-                        <small className="fw-bold">📅 {internship.startDate}</small>
-                      </Col>
-                    </Row>
-
-                    {/* Skills */}
-                    <div className="mb-3">
-                      {internship.skills.slice(0, 3).map(skill => (
-                        <Badge key={skill} bg="light" text="dark" className="me-1 mb-1">
-                          {skill}
-                        </Badge>
-                      ))}
-                      {internship.skills.length > 3 && (
-                        <Badge bg="light" text="dark">
-                          +{internship.skills.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="action-buttons">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => navigate(`/internships/${internship.id}`)}
-                      >
-                        View Details
-                      </Button>
-
-                      {(user?.role === 'company' || user?.role === 'admin') && (
-                        <>
-                          <Button
-                            variant="warning"
-                            size="sm"
-                            className="me-2"
-                            onClick={() => navigate(`/internships/${internship.id}/edit`)}
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedInternship(internship);
-                              setShowDeleteModal(true);
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </>
-                      )}
-                    </div>
+      {/* Domains Section */}
+      <section className="internship-section">
+        <Container>
+          <h2 className="section-title text-center">Internship Domains</h2>
+          <p className="section-subtitle text-center">We are currently offering internships in the following domains</p>
+          <Row className="g-4 mt-2">
+            {DOMAINS.map((domain) => (
+              <Col md={4} key={domain.id}>
+                <Card className="domain-card h-100" style={{ borderTop: `4px solid ${domain.color}` }}>
+                  <Card.Body className="text-center p-4">
+                    <div className="domain-icon" style={{ color: domain.color }}>{domain.icon}</div>
+                    <h5 className="domain-title">{domain.title}</h5>
                   </Card.Body>
                 </Card>
               </Col>
-            ))
-          ) : (
-            <Col lg={12}>
-              <Alert variant="info" className="text-center">
-                <h5>No internships found</h5>
-                <p>Try adjusting your filters or search terms</p>
-              </Alert>
-            </Col>
-          )}
-        </Row>
+            ))}
+          </Row>
+        </Container>
+      </section>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <Row className="mt-5">
-            <Col className="d-flex justify-content-center">
-              <Pagination>
-                <Pagination.First
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(1)}
-                />
-                <Pagination.Prev
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                />
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                  <Pagination.Item
-                    key={page}
-                    active={page === currentPage}
-                    onClick={() => setCurrentPage(page)}
-                  >
-                    {page}
-                  </Pagination.Item>
+      {/* Why Join Section */}
+      <section className="internship-section bg-light-custom">
+        <Container>
+          <Row className="align-items-center g-5">
+            <Col lg={6}>
+              <h2 className="section-title">Why Join Our Internship Program?</h2>
+              <p className="text-muted mb-4">
+                Our internship program is built for students and fresh graduates who want more than just theory.
+              </p>
+              <div className="benefits-list">
+                {BENEFITS.map((b, i) => (
+                  <div key={i} className="benefit-item">
+                    <span className="benefit-icon">{b.icon}</span>
+                    <span>{b.text}</span>
+                  </div>
                 ))}
-                <Pagination.Next
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                />
-                <Pagination.Last
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(totalPages)}
-                />
-              </Pagination>
+              </div>
+              <p className="mt-4 text-muted fst-italic">
+                This is a learning-first, growth-focused internship designed to help you transition into a professional developer.
+              </p>
+            </Col>
+            <Col lg={6}>
+              <div className="why-join-visual">
+                <div className="visual-card">
+                  <div className="visual-stat">
+                    <span className="stat-number">3</span>
+                    <span className="stat-label">Domains</span>
+                  </div>
+                  <div className="visual-stat">
+                    <span className="stat-number">1–3</span>
+                    <span className="stat-label">Months</span>
+                  </div>
+                  <div className="visual-stat">
+                    <span className="stat-number">✅</span>
+                    <span className="stat-label">Certificate</span>
+                  </div>
+                  <div className="visual-stat">
+                    <span className="stat-number">🌐</span>
+                    <span className="stat-label">Online / Offline</span>
+                  </div>
+                </div>
+              </div>
             </Col>
           </Row>
-        )}
-      </Container>
+        </Container>
+      </section>
 
-      {/* Delete Confirmation Modal */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete Internship</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Are you sure you want to delete <strong>{selectedInternship?.title}</strong>?
-          This action cannot be undone.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={handleDelete}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
+      {/* Skills Section */}
+      <section className="internship-section">
+        <Container>
+          <h2 className="section-title text-center">Skills You'll Gain</h2>
+          <p className="section-subtitle text-center">Practical, industry-relevant skills across all domains</p>
+          <Row className="g-4 mt-2">
+            {DOMAINS.map((domain) => (
+              <Col md={4} key={domain.id}>
+                <Card className="skills-card h-100">
+                  <Card.Header style={{ background: domain.color, color: '#fff' }}>
+                    <span className="me-2">{domain.icon}</span>
+                    {domain.title.split('(')[0].trim()}
+                  </Card.Header>
+                  <Card.Body>
+                    <ul className="skills-list">
+                      {domain.skills.map((skill, i) => (
+                        <li key={i}>
+                          <span className="skill-check">✓</span> {skill}
+                        </li>
+                      ))}
+                    </ul>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </Container>
+      </section>
+
+      {/* Program Details */}
+      <section className="internship-section bg-light-custom">
+        <Container>
+          <h2 className="section-title text-center">Program Details</h2>
+          <Row className="justify-content-center mt-4">
+            <Col md={8}>
+              <Card className="details-card">
+                <Card.Body>
+                  <Row className="g-3">
+                    {[
+                      { icon: '⏱️', label: 'Duration', value: '1 – 3 Months' },
+                      { icon: '🖥️', label: 'Mode', value: 'Offline / Online' },
+                      { icon: '📅', label: 'Start Date', value: 'Rolling Admissions' },
+                      { icon: '🏆', label: 'Certification', value: 'Yes (on successful completion)' },
+                    ].map((d, i) => (
+                      <Col sm={6} key={i}>
+                        <div className="detail-item">
+                          <span className="detail-icon">{d.icon}</span>
+                          <div>
+                            <div className="detail-label">{d.label}</div>
+                            <div className="detail-value">{d.value}</div>
+                          </div>
+                        </div>
+                      </Col>
+                    ))}
+                    <Col sm={12}>
+                      <div className="detail-item">
+                        <span className="detail-icon">🎓</span>
+                        <div>
+                          <div className="detail-label">Eligibility</div>
+                          <div className="detail-value">Students · Fresh Graduates · Self-learners</div>
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+          <p className="text-center mt-4 text-muted fw-semibold">
+            Who Should Apply: BCA / BSC CS / BE / MCA / Diploma in CS
+          </p>
+        </Container>
+      </section>
+
+      {/* Application Form */}
+      <section className="internship-section">
+        <Container>
+          <h2 className="section-title text-center">Apply for Internship</h2>
+          <p className="section-subtitle text-center">Fill out the form below to apply for this internship</p>
+          <Row className="justify-content-center mt-4">
+            <Col md={8} lg={6}>
+              {submitted ? (
+                <Alert variant="success" className="text-center p-4">
+                  <h5>🎉 Application Submitted!</h5>
+                  <p className="mb-0">Thank you for applying. We'll get back to you soon.</p>
+                </Alert>
+              ) : (
+                <Card className="apply-card">
+                  <Card.Body className="p-4">
+                    {error && <Alert variant="danger">{error}</Alert>}
+                    <Form onSubmit={handleSubmit}>
+                      <Row className="g-3">
+                        <Col sm={6}>
+                          <Form.Group>
+                            <Form.Label>Full Name <span className="text-danger">*</span></Form.Label>
+                            <Form.Control name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Your full name" />
+                          </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                          <Form.Group>
+                            <Form.Label>Email <span className="text-danger">*</span></Form.Label>
+                            <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" />
+                          </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                          <Form.Group>
+                            <Form.Label>Phone <span className="text-danger">*</span></Form.Label>
+                            <Form.Control name="phone" value={formData.phone} onChange={handleChange} placeholder="+91 XXXXXXXXXX" />
+                          </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                          <Form.Group>
+                            <Form.Label>College <span className="text-danger">*</span></Form.Label>
+                            <Form.Control name="college" value={formData.college} onChange={handleChange} placeholder="College name" />
+                          </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                          <Form.Group>
+                            <Form.Label>Year <span className="text-danger">*</span></Form.Label>
+                            <Form.Select name="year" value={formData.year} onChange={handleChange}>
+                              <option value="">Select year</option>
+                              <option>1st Year</option>
+                              <option>2nd Year</option>
+                              <option>3rd Year</option>
+                              <option>4th Year</option>
+                              <option>Graduate</option>
+                            </Form.Select>
+                          </Form.Group>
+                        </Col>
+                        <Col sm={6}>
+                          <Form.Group>
+                            <Form.Label>Course / Branch <span className="text-danger">*</span></Form.Label>
+                            <Form.Control name="branch" value={formData.branch} onChange={handleChange} placeholder="e.g. BCA, BE CS" />
+                          </Form.Group>
+                        </Col>
+                        <Col sm={12}>
+                          <Form.Group>
+                            <Form.Label>Your Skills <span className="text-danger">*</span></Form.Label>
+                            <Form.Control as="textarea" rows={3} name="skills" value={formData.skills} onChange={handleChange} placeholder="e.g. React, Node.js, Python..." />
+                          </Form.Group>
+                        </Col>
+                        <Col sm={12}>
+                          <Button type="submit" variant="primary" size="lg" className="w-100 apply-btn">
+                            Submit Application
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </Card.Body>
+                </Card>
+              )}
+            </Col>
+          </Row>
+        </Container>
+      </section>
+
+      {/* Contact Section */}
+      <section className="internship-section bg-light-custom">
+        <Container>
+          <h2 className="section-title text-center">Need Help?</h2>
+          <p className="section-subtitle text-center">Have questions about the internship? Feel free to reach out.</p>
+          <Row className="justify-content-center g-4 mt-2">
+            <Col md={4} className="text-center">
+              <div className="contact-card">
+                <div className="contact-icon">📧</div>
+                <div className="contact-label">Email</div>
+                <a href="mailto:internships@nighan2.com" className="contact-value">internships@nighan2.com</a>
+              </div>
+            </Col>
+            <Col md={4} className="text-center">
+              <div className="contact-card">
+                <div className="contact-icon">💬</div>
+                <div className="contact-label">WhatsApp</div>
+                <a href="https://wa.me/917483127180" className="contact-value" target="_blank" rel="noreferrer">+91 7483127180</a>
+              </div>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+    </div>
   );
 };
 

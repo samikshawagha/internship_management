@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Badge, Button, Alert, ListGroup } from 'react-bootstrap';
@@ -17,42 +17,42 @@ const CompanyHome = () => {
 
   const companyFeatures = [
     {
-      icon: '�',
+      icon: '∩┐╜',
       title: 'Browse Internships',
       description: 'View and manage all internship postings',
       action: () => navigate('/internships'),
       color: 'primary'
     },
     {
-      icon: '➕',
+      icon: 'Γ₧ò',
       title: 'Post Internship',
       description: 'Create and manage internship opportunities',
       action: () => navigate('/internships/create'),
       color: 'success'
     },
     {
-      icon: '👥',
+      icon: '≡ƒæÑ',
       title: 'Applications',
       description: 'Review and manage student applications',
       action: () => navigate('/internships'),
       color: 'info'
     },
     {
-      icon: '📊',
+      icon: '≡ƒôè',
       title: 'Reports',
       description: 'Review reports from your interns',
       action: () => navigate('/reports'),
       color: 'warning'
     },
     {
-      icon: '👤',
+      icon: '≡ƒæñ',
       title: 'My Profile',
       description: 'Manage your account and settings',
       action: () => navigate('/company-profile'),
       color: 'secondary'
     },
     {
-      icon: '⚙️',
+      icon: 'ΓÜÖ∩╕Å',
       title: 'Settings',
       description: 'Configure company preferences',
       action: () => alert('Settings coming soon!'),
@@ -61,40 +61,40 @@ const CompanyHome = () => {
   ];
 
   const recentActivity = [
-    { type: 'application', message: 'New application from Alice Johnson', time: '2 hours ago', icon: '📝' },
-    { type: 'report', message: 'Bob Smith submitted a progress report', time: '1 day ago', icon: '📊' },
-    { type: 'internship', message: 'Your Data Science internship is now open', time: '1 day ago', icon: '🎉' },
-    { type: 'application', message: 'Carol Davis applied for Data Science Internship', time: '2 days ago', icon: '📝' },
+    { type: 'application', message: 'New application from Alice Johnson', time: '2 hours ago', icon: '≡ƒô¥' },
+    { type: 'report', message: 'Bob Smith submitted a progress report', time: '1 day ago', icon: '≡ƒôè' },
+    { type: 'internship', message: 'Your Data Science internship is now open', time: '1 day ago', icon: '≡ƒÄë' },
+    { type: 'application', message: 'Carol Davis applied for Data Science Internship', time: '2 days ago', icon: '≡ƒô¥' },
   ];
 
   const benefits = [
     {
-      icon: '🎓',
+      icon: '≡ƒÄô',
       title: 'Quality Talent',
       description: 'Access vetted student candidates with relevant skills'
     },
     {
-      icon: '💰',
+      icon: '≡ƒÆ░',
       title: 'Cost-Effective',
       description: 'Find affordable talent for short-term projects'
     },
     {
-      icon: '📈',
+      icon: '≡ƒôê',
       title: 'Team Growth',
       description: 'Identify potential full-time employees from interns'
     },
     {
-      icon: '🚀',
+      icon: '≡ƒÜÇ',
       title: 'Quick Onboarding',
       description: 'Streamlined process from posting to hiring'
     },
     {
-      icon: '🤝',
+      icon: '≡ƒñ¥',
       title: 'Network Building',
       description: 'Build relationships with talented students and universities'
     },
     {
-      icon: '📊',
+      icon: '≡ƒôè',
       title: 'Data Insights',
       description: 'Track application trends and hiring analytics'
     }
@@ -107,7 +107,7 @@ const CompanyHome = () => {
             <Row className="align-items-center">
               <Col md={8}>
                 <h1 className="fw-bold mb-3" style={{ fontSize: '2.8rem', color: '#1a1a2e' }}>
-                  🏢 Welcome Back, {user?.fullName}!
+                  ≡ƒÅó Welcome Back, {user?.fullName}!
                 </h1>
                 <p className="fs-5 text-muted mb-4">
                   Manage your internship program, review applications, and connect with talented students.
@@ -120,7 +120,7 @@ const CompanyHome = () => {
                     onClick={() => navigate('/internships/create')}
                     style={{ borderRadius: '10px' }}
                   >
-                    ➕ Post New Internship
+                    Γ₧ò Post New Internship
                   </Button>
                   <Button 
                     variant="primary" 
@@ -129,13 +129,13 @@ const CompanyHome = () => {
                     onClick={() => navigate('/internships')}
                     style={{ borderRadius: '10px' }}
                   >
-                    🔍 Browse Internships
+                    ≡ƒöì Browse Internships
                   </Button>
                 </div>
               </Col>
               <Col md={4} className="text-center">
                 <Badge bg="info" className="badge-xl" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
-                  🌟 Trusted by 180+ Companies
+                  ≡ƒîƒ Trusted by 180+ Companies
                 </Badge>
               </Col>
             </Row>
@@ -146,7 +146,7 @@ const CompanyHome = () => {
             <Col sm={6} lg={3}>
               <Card className="stat-card border-0 shadow-sm" style={{ borderRadius: '15px', backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
                 <Card.Body className="text-center">
-                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📋</div>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>≡ƒôï</div>
                   <p className="mb-2 small">Active Internships</p>
                   <h3 className="fw-bold mb-0">{stats.totalInternships}</h3>
                 </Card.Body>
@@ -155,7 +155,7 @@ const CompanyHome = () => {
             <Col sm={6} lg={3}>
               <Card className="stat-card border-0 shadow-sm" style={{ borderRadius: '15px', backgroundImage: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }}>
                 <Card.Body className="text-center">
-                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>👥</div>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>≡ƒæÑ</div>
                   <p className="mb-2 small">Active Interns</p>
                   <h3 className="fw-bold mb-0">{stats.activeInterns}</h3>
                 </Card.Body>
@@ -164,7 +164,7 @@ const CompanyHome = () => {
             <Col sm={6} lg={3}>
               <Card className="stat-card border-0 shadow-sm" style={{ borderRadius: '15px', backgroundImage: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white' }}>
                 <Card.Body className="text-center">
-                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📊</div>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>≡ƒôè</div>
                   <p className="mb-2 small">Completed</p>
                   <h3 className="fw-bold mb-0">{stats.completedInternships}</h3>
                 </Card.Body>
@@ -173,7 +173,7 @@ const CompanyHome = () => {
             <Col sm={6} lg={3}>
               <Card className="stat-card border-0 shadow-sm" style={{ borderRadius: '15px', backgroundImage: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white' }}>
                 <Card.Body className="text-center">
-                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⭐</div>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Γ¡É</div>
                   <p className="mb-2 small">Avg Performance</p>
                   <h3 className="fw-bold mb-0">{stats.averagePerformance}/5.0</h3>
                 </Card.Body>
@@ -183,7 +183,7 @@ const CompanyHome = () => {
 
           {/* Quick Actions */}
           <div className="mb-5">
-            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>🚀 Quick Actions</h2>
+            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>≡ƒÜÇ Quick Actions</h2>
             <Row className="g-4">
               {companyFeatures.map((feature, index) => (
                 <Col sm={6} lg={4} key={index}>
@@ -224,7 +224,7 @@ const CompanyHome = () => {
                         }}
                         style={{ borderRadius: '8px' }}
                       >
-                        Go →
+                        Go ΓåÆ
                       </Button>
                     </Card.Body>
                   </Card>
@@ -235,7 +235,7 @@ const CompanyHome = () => {
 
           {/* Active Team Members */}
           <div className="mb-5">
-            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>👥 Active Team Members</h2>
+            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>≡ƒæÑ Active Team Members</h2>
             <Row className="g-4">
               {teamMembers.filter(m => m.status === 'active').map((member) => (
                 <Col lg={6} key={member.id}>
@@ -256,7 +256,7 @@ const CompanyHome = () => {
                           <div className="progress" style={{ height: '8px' }}>
                             <div className="progress-bar" style={{ width: `${(member.performanceScore / 5) * 100}%`, backgroundColor: '#667eea' }}></div>
                           </div>
-                          <small className="fw-bold">{member.performanceScore}/5.0 ⭐</small>
+                          <small className="fw-bold">{member.performanceScore}/5.0 Γ¡É</small>
                         </Col>
                         <Col xs={6}>
                           <small className="text-muted">Attendance</small>
@@ -276,7 +276,7 @@ const CompanyHome = () => {
           {/* Pending Leave Requests */}
           {pendingLeaves.length > 0 && (
             <div className="mb-5">
-              <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>📝 Pending Leave Requests ({pendingLeaves.length})</h2>
+              <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>≡ƒô¥ Pending Leave Requests ({pendingLeaves.length})</h2>
               <Row className="g-4">
                 {pendingLeaves.map((leave) => (
                   <Col lg={6} key={leave.id}>
@@ -290,10 +290,10 @@ const CompanyHome = () => {
                           <Button size="sm" variant="success" className="fw-bold">Approve</Button>
                         </div>
                         <small className="text-muted d-block mb-2">
-                          📅 {leave.startDate} to {leave.endDate}
+                          ≡ƒôà {leave.startDate} to {leave.endDate}
                         </small>
                         <small className="text-muted">
-                          💬 {leave.reason}
+                          ≡ƒÆ¼ {leave.reason}
                         </small>
                       </Card.Body>
                     </Card>
@@ -308,7 +308,7 @@ const CompanyHome = () => {
             <Col lg={6}>
               <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
                 <Card.Header className="bg-light border-bottom py-3">
-                  <h5 className="mb-0 fw-bold">� Recent Applications</h5>
+                  <h5 className="mb-0 fw-bold">∩┐╜ Recent Applications</h5>
                 </Card.Header>
                 <Card.Body className="p-0">
                   {dashboardData.recentApplications.map((app, index) => (
@@ -319,7 +319,7 @@ const CompanyHome = () => {
                     >
                       <div className="flex-grow-1">
                         <p className="mb-1 fw-bold small">{app.studentName}</p>
-                        <small className="text-muted">{app.position} • {app.university}</small>
+                        <small className="text-muted">{app.position} ΓÇó {app.university}</small>
                       </div>
                       <Badge bg={app.status === 'new' ? 'primary' : app.status === 'reviewing' ? 'warning' : 'info'}>
                         {app.status}
@@ -334,7 +334,7 @@ const CompanyHome = () => {
             <Col lg={6}>
               <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
                 <Card.Header className="bg-light border-bottom py-3">
-                  <h5 className="mb-0 fw-bold">📅 Upcoming Events</h5>
+                  <h5 className="mb-0 fw-bold">≡ƒôà Upcoming Events</h5>
                 </Card.Header>
                 <Card.Body className="p-0">
                   {dashboardData.upcomingEvents.map((event) => (
@@ -343,7 +343,7 @@ const CompanyHome = () => {
                       className="p-3 border-bottom d-flex gap-3 align-items-start"
                     >
                       <div style={{ fontSize: '1.5rem' }}>
-                        {event.type === 'meeting' ? '🤝' : event.type === 'review' ? '⭐' : '📊'}
+                        {event.type === 'meeting' ? '≡ƒñ¥' : event.type === 'review' ? 'Γ¡É' : '≡ƒôè'}
                       </div>
                       <div className="flex-grow-1">
                         <p className="mb-1 fw-bold small">{event.title}</p>
@@ -358,13 +358,13 @@ const CompanyHome = () => {
 
           {/* Charts & Analytics Section */}
           <div className="mb-5">
-            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>📊 Performance & Analytics</h2>
+            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>≡ƒôè Performance & Analytics</h2>
             <Row className="g-4">
               {/* Hiring Performance */}
               <Col lg={6}>
                 <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
                   <Card.Header className="bg-light border-bottom py-3">
-                    <h5 className="mb-0 fw-bold">📈 Hiring Performance</h5>
+                    <h5 className="mb-0 fw-bold">≡ƒôê Hiring Performance</h5>
                   </Card.Header>
                   <Card.Body>
                     <div className="mb-4">
@@ -426,27 +426,27 @@ const CompanyHome = () => {
               <Col lg={6}>
                 <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
                   <Card.Header className="bg-light border-bottom py-3">
-                    <h5 className="mb-0 fw-bold">👥 Application Distribution</h5>
+                    <h5 className="mb-0 fw-bold">≡ƒæÑ Application Distribution</h5>
                   </Card.Header>
                   <Card.Body>
                     <Row className="text-center">
                       <Col sm={6} className="mb-3">
-                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📥</div>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>≡ƒôÑ</div>
                         <p className="text-muted small mb-1">Pending</p>
                         <h4 className="fw-bold mb-0" style={{ color: '#ffc107' }}>8</h4>
                       </Col>
                       <Col sm={6} className="mb-3">
-                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>✅</div>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Γ£à</div>
                         <p className="text-muted small mb-1">Approved</p>
                         <h4 className="fw-bold mb-0" style={{ color: '#28a745' }}>14</h4>
                       </Col>
                       <Col sm={6} className="mb-3">
-                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>❌</div>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Γ¥î</div>
                         <p className="text-muted small mb-1">Rejected</p>
                         <h4 className="fw-bold mb-0" style={{ color: '#dc3545' }}>2</h4>
                       </Col>
                       <Col sm={6} className="mb-3">
-                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⏳</div>
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>ΓÅ│</div>
                         <p className="text-muted small mb-1">In Review</p>
                         <h4 className="fw-bold mb-0" style={{ color: '#17a2b8' }}>6</h4>
                       </Col>
@@ -465,7 +465,7 @@ const CompanyHome = () => {
               <Col lg={12}>
                 <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
                   <Card.Header className="bg-light border-bottom py-3">
-                    <h5 className="mb-0 fw-bold">📌 Key Metrics Overview</h5>
+                    <h5 className="mb-0 fw-bold">≡ƒôî Key Metrics Overview</h5>
                   </Card.Header>
                   <Card.Body>
                     <Row>
@@ -490,7 +490,7 @@ const CompanyHome = () => {
                       <Col sm={6} md={3} className="mb-3">
                         <div style={{ textAlign: 'center' }}>
                           <p className="text-muted small mb-2">Intern Satisfaction</p>
-                          <h3 className="fw-bold mb-0" style={{ color: '#ffa502' }}>4.6/5 ⭐</h3>
+                          <h3 className="fw-bold mb-0" style={{ color: '#ffa502' }}>4.6/5 Γ¡É</h3>
                         </div>
                       </Col>
                     </Row>
@@ -502,7 +502,7 @@ const CompanyHome = () => {
 
           {/* Performance Evaluations Summary */}
           <div className="mb-5">
-            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>⭐ Recent Performance Evaluations</h2>
+            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>Γ¡É Recent Performance Evaluations</h2>
             <Row className="g-4">
               {performanceData.slice(0, 2).map((eval_) => (
                 <Col lg={6} key={eval_.id}>
@@ -514,7 +514,7 @@ const CompanyHome = () => {
                           <small className="text-muted">{eval_.internshipTitle}</small>
                         </div>
                         <Badge bg={eval_.technicalSkills >= 4.5 ? 'success' : eval_.technicalSkills >= 3.5 ? 'warning' : 'danger'}>
-                          {eval_.technicalSkills}/5.0 ⭐
+                          {eval_.technicalSkills}/5.0 Γ¡É
                         </Badge>
                       </div>
                       <div className="row g-2">
@@ -536,7 +536,7 @@ const CompanyHome = () => {
                         </div>
                       </div>
                       <Button size="sm" variant="outline-primary" className="mt-3 fw-bold w-100" onClick={() => navigate('/company-performance')}>
-                        View All Evaluations →
+                        View All Evaluations ΓåÆ
                       </Button>
                     </Card.Body>
                   </Card>
@@ -548,7 +548,7 @@ const CompanyHome = () => {
           {/* Benefits Section */}
           <div className="benefits-section mb-5">
             <h2 className="fw-bold mb-4 text-center" style={{ color: '#1a1a2e' }}>
-              ✨ Why Use InternHub?
+              Γ£¿ Why Use InternHub?
             </h2>
             <Row className="g-4">
               {benefits.map((benefit, index) => (
@@ -592,7 +592,7 @@ const CompanyHome = () => {
                   color: '#fff'
                 }}
               >
-                <h2 className="fw-bold mb-3">🚀 Ready to Find Your Ideal Intern?</h2>
+                <h2 className="fw-bold mb-3">≡ƒÜÇ Ready to Find Your Ideal Intern?</h2>
                 <p className="mb-4" style={{ fontSize: '1.1rem' }}>
                   Post your first internship opportunity today and connect with talented students
                 </p>
@@ -603,7 +603,7 @@ const CompanyHome = () => {
                   onClick={() => navigate('/internships/create')}
                   style={{ borderRadius: '10px' }}
                 >
-                  ➕ Post Internship Now
+                  Γ₧ò Post Internship Now
                 </Button>
               </div>
             </Col>

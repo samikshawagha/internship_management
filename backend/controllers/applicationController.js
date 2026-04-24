@@ -1,4 +1,5 @@
 const Application = require('../models/Application');
+const Internship = require('../models/Internship');
 
 const applicationController = {
   create: async (req, res) => {
@@ -23,9 +24,13 @@ const applicationController = {
         coverLetter: coverLetter || ''
       });
 
+      // Auto-close internship if minimum students threshold is reached
+      const autoClosed = await Internship.checkAndAutoClose(internshipId);
+
       res.status(201).json({
         message: 'Application submitted successfully',
-        applicationId: result.insertId
+        applicationId: result.insertId,
+        internshipClosed: autoClosed
       });
     } catch (error) {
       console.error('Create application error:', error);
