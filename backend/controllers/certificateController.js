@@ -1,5 +1,7 @@
 const Certificate = require('../models/Certificate');
+const pool = require('../config/database');
 const path = require('path');
+const PDFDocument = require('pdfkit');
 
 // Generate a unique certificate number
 const generateCertificateNumber = () => {
@@ -23,6 +25,16 @@ const createCertificate = async (req, res) => {
       return res.status(400).json({ 
         message: 'Missing required fields: studentId, internshipId' 
       });
+    }
+
+    // verify existence
+    const [stu] = await pool.query('SELECT id FROM users WHERE id = ? AND role = "student"', [studentId]);
+    if (stu.length === 0) {
+      return res.status(400).json({ message: 'Student not found' });
+    }
+    const [intern] = await pool.query('SELECT id FROM internships WHERE id = ?', [internshipId]);
+    if (intern.length === 0) {
+      return res.status(400).json({ message: 'Internship not found' });
     }
 
     // Check if student can receive certificate
@@ -119,6 +131,9 @@ const getCertificateByNumber = async (req, res) => {
 const getStudentCertificates = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!studentId || studentId === 'null') {
+      return res.status(400).json({ message: 'Invalid student ID' });
+    }
 
     const certificates = await Certificate.getByStudentId(studentId);
 
@@ -323,25 +338,71 @@ const downloadCertificate = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const certificate = await Certificate.findById(id);
+    // Get certificate with related data
+    const query = `
+      SELECT c.*, u.fullName as studentName, i.title as internshipTitle, 
+             cu.fullName as companyName, i.startDate, i.endDate
+      FROM certificates c
+      JOIN users u ON c.studentId = u.id
+      JOIN internships i ON c.internshipId = i.id
+      JOIN users cu ON i.companyId = cu.id
+      WHERE c.id = ?
+    `;
+    const [rows] = await pool.query(query, [id]);
 
-    if (!certificate) {
+    if (rows.length === 0) {
       return res.status(404).json({ 
         message: 'Certificate not found' 
       });
     }
 
-    if (!certificate.certificateFile) {
-      return res.status(400).json({ 
-        message: 'Certificate file not available' 
-      });
-    }
+    const certData = rows[0];
 
-    res.download(certificate.certificateFile, `Certificate-${certificate.certificateNumber}.pdf`);
+    // Create PDF
+    const doc = new PDFDocument({
+      size: 'A4',
+      layout: 'landscape'
+    });
+
+    // Set response headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="Certificate-${certData.certificateNumber}.pdf"`);
+
+    // Pipe PDF to response
+    doc.pipe(res);
+
+    // Certificate design
+    doc.fontSize(30).text('CERTIFICATE OF COMPLETION', { align: 'center' });
+    doc.moveDown(2);
+
+    doc.fontSize(20).text('This is to certify that', { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(24).font('Helvetica-Bold').text(certData.studentName, { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(16).font('Helvetica').text('has successfully completed the internship program', { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(18).font('Helvetica-Bold').text(certData.internshipTitle, { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(16).text(`at ${certData.companyName}`, { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(14).text(`From: ${new Date(certData.startDate).toLocaleDateString()} To: ${new Date(certData.endDate).toLocaleDateString()}`, { align: 'center' });
+    doc.moveDown(2);
+
+    doc.fontSize(12).text(`Certificate Number: ${certData.certificateNumber}`, { align: 'center' });
+    doc.fontSize(12).text(`Issued on: ${new Date(certData.issuanceDate).toLocaleDateString()}`, { align: 'center' });
+
+    // Finalize PDF
+    doc.end();
+
   } catch (error) {
-    console.error('Error downloading certificate:', error);
+    console.error('Error generating certificate:', error);
     res.status(500).json({ 
-      message: 'Error downloading certificate',
+      message: 'Error generating certificate',
       error: error.message 
     });
   }

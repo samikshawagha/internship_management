@@ -34,6 +34,26 @@ const Assessment = {
     return result;
   },
 
+  // Submit assessment (student submission)
+  submit: async (id, submissionData) => {
+    const { competencies, comments, status } = submissionData;
+    
+    const query = `
+      UPDATE assessments 
+      SET competencies = ?, comments = ?, status = ?, updatedAt = NOW()
+      WHERE id = ?
+    `;
+    
+    const [result] = await pool.query(query, [
+      JSON.stringify(competencies),
+      comments,
+      status || 'completed',
+      id
+    ]);
+    
+    return result;
+  },
+
   // Get assessment by ID
   findById: async (id) => {
     const query = `
@@ -187,6 +207,26 @@ const Assessment = {
     
     const [rows] = await pool.query(query, [studentId, internshipId]);
     return rows[0];
+  },
+
+  // Get all assessments (no filter)
+  getAll: async () => {
+    const query = `
+      SELECT a.*, 
+             u1.fullName as studentName, 
+             u2.fullName as evaluatorName,
+             i.title as internshipTitle
+      FROM assessments a
+      JOIN users u1 ON a.studentId = u1.id
+      JOIN users u2 ON a.evaluatorId = u2.id
+      JOIN internships i ON a.internshipId = i.id
+      ORDER BY a.createdAt DESC
+    `;
+    const [rows] = await pool.query(query);
+    return rows.map(row => ({
+      ...row,
+      competencies: JSON.parse(row.competencies)
+    }));
   }
 };
 

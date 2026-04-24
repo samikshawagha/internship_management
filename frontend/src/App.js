@@ -14,6 +14,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import StudentDashboard from './pages/StudentDashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
 import CompanyHome from './pages/CompanyHome';
 import CompanyProfile from './pages/CompanyProfile';

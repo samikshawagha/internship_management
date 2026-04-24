@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import '../styles/assessment.css';
 
 const Assessment = () => {
+  const { user } = useAuth();
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedAssessment, setSelectedAssessment] = useState(null);
   const [filterType, setFilterType] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const [formData, setFormData] = useState({
     studentId: '',
@@ -19,21 +24,42 @@ const Assessment = () => {
     overallScore: 0,
     comments: ''
   });
+  const [internships, setInternships] = useState([]);
+
+  useEffect(() => {
+    if (user?.role === 'student') {
+      setFormData(prev => ({ ...prev, studentId: user.id }));
+    }
+  }, [user]);
+
+  // load internships list for dropdown
+  useEffect(() => {
+    const loadInternships = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/internships');
+        setInternships(res.data.data || res.data || []);
+      } catch (err) {
+        console.error('Error loading internships:', err);
+      }
+    };
+    loadInternships();
+  }, []);
 
   // Fetch assessments
   const fetchAssessments = async () => {
+    if (!user?.id) return; // nothing to fetch if no authenticated user
+
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('authToken');
-      const studentId = localStorage.getItem('userId');
+      // axios.defaults.headers.common['Authorization'] is set in AuthContext
+      const studentId = user.role === 'student' ? user.id : '';
+      const url = studentId
+        ? `http://localhost:5000/api/assessments/student/${studentId}`
+        : `http://localhost:5000/api/assessments`;
 
-      const response = await axios.get(
-        `http://localhost:5000/api/assessments/student/${studentId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setAssessments(response.data.data);
+      const response = await axios.get(url);
+      setAssessments(response.data.data || response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch assessments');
       console.error('Error fetching assessments:', err);
@@ -44,7 +70,7 @@ const Assessment = () => {
 
   useEffect(() => {
     fetchAssessments();
-  }, []);
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -72,23 +98,26 @@ const Assessment = () => {
       return;
     }
 
+    // ensure internship is valid
+    if (internships.length && !internships.find(i => i.id.toString() === formData.internshipId.toString())) {
+      setError('Selected internship is not valid');
+      return;
+    }
+
     setLoading(true);
     try {
-      const token = localStorage.getItem('authToken');
-
+      // authorization header already applied globally
       if (selectedAssessment) {
         await axios.put(
           `http://localhost:5000/api/assessments/${selectedAssessment.id}`,
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
+          formData
         );
         setError('');
         alert('Assessment updated successfully');
       } else {
         await axios.post(
           'http://localhost:5000/api/assessments',
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
+          formData
         );
         setError('');
         alert('Assessment created successfully');
@@ -117,11 +146,7 @@ const Assessment = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this assessment?')) {
       try {
-        const token = localStorage.getItem('authToken');
-        await axios.delete(
-          `http://localhost:5000/api/assessments/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await axios.delete(`http://localhost:5000/api/assessments/${id}`);
         alert('Assessment deleted successfully');
         fetchAssessments();
       } catch (err) {
@@ -130,13 +155,24 @@ const Assessment = () => {
     }
   };
 
-  const filteredAssessments = filterType === 'all'
-    ? assessments
-    : assessments.filter(a => a.assessmentType === filterType);
+  // apply filter and search
+  const filteredAssessments = assessments.filter(a => {
+    const typeMatch = filterType === 'all' || a.assessmentType === filterType;
+    const searchMatch = searchTerm === '' ||
+      a.studentId.toString().includes(searchTerm) ||
+      a.internshipId.toString().includes(searchTerm) ||
+      a.evaluatorId.toString().includes(searchTerm);
+    return typeMatch && searchMatch;
+  });
 
+  // pagination
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentAssessments = filteredAssessments.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredAssessments.length / itemsPerPage);
   return (
     <div className="assessment-container">
-      <h1>Assessments & Evaluations</h1>
+      <h1>Assessment Management</h1>
 
       {error && <div className="error-message">{error}</div>}
 
@@ -150,6 +186,17 @@ const Assessment = () => {
         >
           {showForm ? 'Cancel' : 'New Assessment'}
         </button>
+
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search by student, internship, evaluator..."
+          value={searchTerm}
+          onChange={e => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
 
         <select
           className="filter-select"
@@ -166,26 +213,37 @@ const Assessment = () => {
       {showForm && (
         <div className="assessment-form-container">
           <form onSubmit={handleSubmit} className="assessment-form">
-            <div className="form-group">
-              <label>Student ID *</label>
-              <input
-                type="text"
-                name="studentId"
-                value={formData.studentId}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            {user?.role !== 'student' && (
+              <div className="form-group">
+                <label>Student ID *</label>
+                <input
+                  type="text"
+                  name="studentId"
+                  value={formData.studentId}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            )}
+            {user?.role === 'student' && (
+              <input type="hidden" name="studentId" value={formData.studentId} />
+            )}
 
             <div className="form-group">
-              <label>Internship ID *</label>
-              <input
-                type="text"
+              <label>Internship *</label>
+              <select
                 name="internshipId"
                 value={formData.internshipId}
                 onChange={handleInputChange}
                 required
-              />
+              >
+                <option value="">-- select --</option>
+                {internships.map(i => (
+                  <option key={i.id} value={i.id}>
+                    {i.title || i.id}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="form-group">
@@ -248,9 +306,10 @@ const Assessment = () => {
       ) : filteredAssessments.length === 0 ? (
         <p className="no-data">No assessments found</p>
       ) : (
-        <div className="assessment-list">
-          {filteredAssessments.map(assessment => (
-            <div key={assessment.id} className="assessment-card">
+        <>
+          <div className="assessment-list">
+            {currentAssessments.map(assessment => (
+              <div key={assessment.id} className="assessment-card">
               <div className="assessment-header-card">
                 <h3>{assessment.internshipTitle}</h3>
                 <span className={`assessment-badge ${assessment.assessmentType}`}>
@@ -301,6 +360,36 @@ const Assessment = () => {
             </div>
           ))}
         </div>
+
+          {/* pagination controls */}
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                className="page-btn"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Prev
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
+                <button
+                  key={num}
+                  className={`page-btn ${num === currentPage ? 'active' : ''}`}
+                  onClick={() => setCurrentPage(num)}
+                >
+                  {num}
+                </button>
+              ))}
+              <button
+                className="page-btn"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

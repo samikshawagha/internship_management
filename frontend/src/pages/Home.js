@@ -48,7 +48,7 @@ const Home = () => {
         <Col lg={6} className="mb-4 hero-text" style={{ transform: `translateY(${scrollY * 0.3}px)` }}>
           <div className="hero-content">
             <h1 className="display-4 fw-bold mb-4 animate-fade-in" style={{ color: '#1a1a2e' }}>
-              ≡ƒÄ» Internship Management Platform
+              ✨ Internship Management Platform
             </h1>
             <p className="lead mb-4 animate-fade-in" style={{ color: '#555', fontSize: '1.2rem' }}>
               Connect students with exciting internship opportunities and manage applications efficiently. 
@@ -76,7 +76,7 @@ const Home = () => {
         </Col>
         <Col lg={6} className="text-center hero-icon">
           <div className="floating-emoji" style={{ transform: `translateY(${scrollY * 0.2}px)` }}>
-            ≡ƒôè
+            📊
           </div>
         </Col>
       </Row>
@@ -121,13 +121,13 @@ const Home = () => {
             }}
           >
             <Card.Body className="text-center">
-              <div className="feature-icon">≡ƒæ¿ΓÇì≡ƒÄô</div>
+              <div className="feature-icon">🎓</div>
               <h3 className="mb-3">For Students</h3>
               <ul className="text-start feature-list" style={{ fontSize: '0.95rem' }}>
-                <li>Γ£ô Browse curated internship opportunities</li>
-                <li>Γ£ô Easy application process</li>
-                <li>Γ£ô Track application status in real-time</li>
-                <li>Γ£ô Build your professional profile</li>
+                <li>✓ Browse curated internship opportunities</li>
+                <li>✓ Easy application process</li>
+                <li>✓ Track application status in real-time</li>
+                <li>✓ Build your professional profile</li>
               </ul>
             </Card.Body>
           </Card>
@@ -147,13 +147,13 @@ const Home = () => {
             }}
           >
             <Card.Body className="text-center">
-              <div className="feature-icon">≡ƒÅó</div>
+              <div className="feature-icon">🏢</div>
               <h3 className="mb-3">For Companies</h3>
               <ul className="text-start feature-list" style={{ fontSize: '0.95rem' }}>
-                <li>Γ£ô Post internship positions easily</li>
-                <li>Γ£ô Review qualified candidates</li>
-                <li>Γ£ô Manage applications efficiently</li>
-                <li>Γ£ô Track hiring progress</li>
+                <li>✓ Post internship positions easily</li>
+                <li>✓ Review qualified candidates</li>
+                <li>✓ Manage applications efficiently</li>
+                <li>✓ Track hiring progress</li>
               </ul>
             </Card.Body>
           </Card>
@@ -173,13 +173,13 @@ const Home = () => {
             }}
           >
             <Card.Body className="text-center">
-              <div className="feature-icon">≡ƒôê</div>
+              <div className="feature-icon">📈</div>
               <h3 className="mb-3">Analytics</h3>
               <ul className="text-start feature-list" style={{ fontSize: '0.95rem' }}>
-                <li>Γ£ô Detailed application insights</li>
-                <li>Γ£ô Performance metrics</li>
-                <li>Γ£ô Hiring trends and statistics</li>
-                <li>Γ£ô Comprehensive reports</li>
+                <li>✓ Detailed application insights</li>
+                <li>✓ Performance metrics</li>
+                <li>✓ Hiring trends and statistics</li>
+                <li>✓ Comprehensive reports</li>
               </ul>
             </Card.Body>
           </Card>
@@ -190,7 +190,7 @@ const Home = () => {
       <Row className="my-5 py-5 cta-section rounded-4">
         <Col className="text-center cta-content">
           <h3 className="mb-4 fw-bold section-title" style={{ color: '#1a1a2e' }}>
-            ≡ƒÜÇ Ready to Get Started?
+            🚀 Ready to Get Started?
           </h3>
           <p className="mb-4" style={{ fontSize: '1.1rem', color: '#555' }}>
             Join thousands of students and companies already using our platform
@@ -219,28 +219,28 @@ const Home = () => {
       {/* Footer Info Section */}
       <Row className="my-5 py-4 border-top footer-info">
         <Col md={3} className="mb-3 info-item">
-          <div className="info-icon">≡ƒöÆ</div>
+          <div className="info-icon">🔒</div>
           <h5 className="fw-bold mb-2">Secure</h5>
           <p style={{ fontSize: '0.9rem', color: '#666' }}>
             Your data is protected with industry-standard security measures
           </p>
         </Col>
         <Col md={3} className="mb-3 info-item">
-          <div className="info-icon">ΓÜí</div>
+          <div className="info-icon">⚡</div>
           <h5 className="fw-bold mb-2">Fast</h5>
           <p style={{ fontSize: '0.9rem', color: '#666' }}>
             Quick and seamless experience across all devices
           </p>
         </Col>
         <Col md={3} className="mb-3 info-item">
-          <div className="info-icon">≡ƒÄ»</div>
+          <div className="info-icon">🎯</div>
           <h5 className="fw-bold mb-2">Simple</h5>
           <p style={{ fontSize: '0.9rem', color: '#666' }}>
             Intuitive interface designed for ease of use
           </p>
         </Col>
         <Col md={3} className="mb-3 info-item">
-          <div className="info-icon">≡ƒô₧</div>
+          <div className="info-icon">📞</div>
           <h5 className="fw-bold mb-2">Support</h5>
           <p style={{ fontSize: '0.9rem', color: '#666' }}>
             Dedicated support team ready to help anytime
