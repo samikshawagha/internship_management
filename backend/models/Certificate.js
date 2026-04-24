@@ -34,7 +34,7 @@ const Certificate = {
     return result;
   },
 
-  // Get certificate by ID
+  // Get certificate by ID (handle missing internship)
   findById: async (id) => {
     const query = `
       SELECT c.*, 
@@ -43,8 +43,8 @@ const Certificate = {
              co.fullName as companyAdmin
       FROM certificates c
       JOIN users u ON c.studentId = u.id
-      JOIN internships i ON c.internshipId = i.id
-      JOIN users co ON i.companyId = co.id
+      LEFT JOIN internships i ON c.internshipId = i.id
+      LEFT JOIN users co ON i.companyId = co.id
       WHERE c.id = ?
     `;
     
@@ -68,14 +68,14 @@ const Certificate = {
     return rows[0];
   },
 
-  // Get all certificates for a student
+  // Get all certificates for a student (includes those without internship)
   getByStudentId: async (studentId) => {
     const query = `
       SELECT c.*, 
              i.title as internshipTitle,
              i.duration as internshipDuration
       FROM certificates c
-      JOIN internships i ON c.internshipId = i.id
+      LEFT JOIN internships i ON c.internshipId = i.id
       WHERE c.studentId = ?
       ORDER BY c.issuanceDate DESC
     `;

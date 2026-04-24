@@ -6,6 +6,9 @@ const { verifyToken } = require('../middleware/auth');
 // Create a new assessment
 router.post('/', verifyToken, assessmentController.createAssessment);
 
+// Get all assessments (for admin/company)
+router.get('/', verifyToken, assessmentController.getAllAssessments);
+
 // Get assessment by ID
 router.get('/:id', verifyToken, assessmentController.getAssessmentById);
 
@@ -26,6 +29,9 @@ router.get('/average/:studentId/:internshipId', verifyToken, assessmentControlle
 
 // Update assessment
 router.put('/:id', verifyToken, assessmentController.updateAssessment);
+
+// Submit assessment (student)
+router.post('/submit/:id', verifyToken, assessmentController.submitAssessment);
 
 // Delete assessment
 router.delete('/:id', verifyToken, assessmentController.deleteAssessment);

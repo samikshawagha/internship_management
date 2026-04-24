@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import '../styles/certificate.css';
 
 const Certificate = () => {
+  const { user } = useAuth();
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const [formData, setFormData] = useState({
     studentId: '',
@@ -17,21 +22,43 @@ const Certificate = () => {
     expiryDate: '',
     issueLevel: 'standard'
   });
+  const [internships, setInternships] = useState([]);
+
+  useEffect(() => {
+    if (user?.role === 'student') {
+      setFormData(prev => ({ ...prev, studentId: user.id }));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const loadInternships = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/internships');
+        setInternships(res.data.data || res.data || []);
+      } catch (err) {
+        console.error('Error loading internships:', err);
+      }
+    };
+    loadInternships();
+  }, []);
 
   // Fetch certificates
   const fetchCertificates = async () => {
+    if (!user?.id) return;
+    if (user.role !== 'student') {
+      // Only students have personal certificates by default
+      setCertificates([]);
+      return;
+    }
+
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('authToken');
-      const studentId = localStorage.getItem('userId');
+      const studentId = user.id;
+      const url = `http://localhost:5000/api/certificates/student/${studentId}`;
 
-      const response = await axios.get(
-        `http://localhost:5000/api/certificates/student/${studentId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setCertificates(response.data.data);
+      const response = await axios.get(url);
+      setCertificates(response.data.data || response.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch certificates');
       console.error('Error fetching certificates:', err);
@@ -42,7 +69,7 @@ const Certificate = () => {
 
   useEffect(() => {
     fetchCertificates();
-  }, []);
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -60,6 +87,11 @@ const Certificate = () => {
       return;
     }
 
+    if (internships.length && !internships.find(i => i.id.toString() === formData.internshipId.toString())) {
+      setError('Selected internship is not valid');
+      return;
+    }
+
     setLoading(true);
     const formDataWithFile = new FormData();
     formDataWithFile.append('studentId', formData.studentId);
@@ -69,15 +101,12 @@ const Certificate = () => {
     formDataWithFile.append('issueLevel', formData.issueLevel);
 
     try {
-      const token = localStorage.getItem('authToken');
-
       if (selectedCertificate) {
         await axios.put(
           `http://localhost:5000/api/certificates/${selectedCertificate.id}`,
           formDataWithFile,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
               'Content-Type': 'multipart/form-data'
             }
           }
@@ -89,7 +118,6 @@ const Certificate = () => {
           formDataWithFile,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
               'Content-Type': 'multipart/form-data'
             }
           }
@@ -119,11 +147,7 @@ const Certificate = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this certificate?')) {
       try {
-        const token = localStorage.getItem('authToken');
-        await axios.delete(
-          `http://localhost:5000/api/certificates/${id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await axios.delete(`http://localhost:5000/api/certificates/${id}`);
         alert('Certificate deleted successfully');
         fetchCertificates();
       } catch (err) {
@@ -134,11 +158,9 @@ const Certificate = () => {
 
   const handleDownload = async (id, certificateNumber) => {
     try {
-      const token = localStorage.getItem('authToken');
       const response = await axios.get(
         `http://localhost:5000/api/certificates/download/${id}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
           responseType: 'blob'
         }
       );
@@ -156,13 +178,24 @@ const Certificate = () => {
     }
   };
 
-  const filteredCertificates = filterStatus === 'all'
-    ? certificates
-    : certificates.filter(c => c.status === filterStatus);
+  // filter and search
+  const filteredCertificates = certificates.filter(c => {
+    const statusMatch = filterStatus === 'all' || c.status === filterStatus;
+    const searchMatch = searchTerm === '' ||
+      c.certificateNumber?.toString().includes(searchTerm) ||
+      c.studentId?.toString().includes(searchTerm) ||
+      c.internshipId?.toString().includes(searchTerm);
+    return statusMatch && searchMatch;
+  });
+
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentCertificates = filteredCertificates.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredCertificates.length / itemsPerPage);
 
   return (
     <div className="certificate-container">
-      <h1>Certificates & Documentation</h1>
+      <h1>Certificate Management</h1>
 
       {error && <div className="error-message">{error}</div>}
 
@@ -176,6 +209,17 @@ const Certificate = () => {
         >
           {showForm ? 'Cancel' : 'Issue Certificate'}
         </button>
+
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search by certificate, student, internship..."
+          value={searchTerm}
+          onChange={e => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
 
         <select
           className="filter-select"
@@ -193,26 +237,37 @@ const Certificate = () => {
       {showForm && (
         <div className="certificate-form-container">
           <form onSubmit={handleSubmit} className="certificate-form">
-            <div className="form-group">
-              <label>Student ID *</label>
-              <input
-                type="text"
-                name="studentId"
-                value={formData.studentId}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            {user?.role !== 'student' && (
+              <div className="form-group">
+                <label>Student ID *</label>
+                <input
+                  type="text"
+                  name="studentId"
+                  value={formData.studentId}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            )}
+            {user?.role === 'student' && (
+              <input type="hidden" name="studentId" value={formData.studentId} />
+            )}
 
             <div className="form-group">
-              <label>Internship ID *</label>
-              <input
-                type="text"
+              <label>Internship *</label>
+              <select
                 name="internshipId"
                 value={formData.internshipId}
                 onChange={handleInputChange}
                 required
-              />
+              >
+                <option value="">-- select --</option>
+                {internships.map(i => (
+                  <option key={i.id} value={i.id}>
+                    {i.title || i.id}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="form-row">
@@ -264,8 +319,9 @@ const Certificate = () => {
       ) : filteredCertificates.length === 0 ? (
         <p className="no-data">No certificates found</p>
       ) : (
-        <div className="certificate-list">
-          {filteredCertificates.map(certificate => (
+        <>
+          <div className="certificate-list">
+            {currentCertificates.map(certificate => (
             <div key={certificate.id} className="certificate-card">
               <div className="certificate-header-card">
                 <h3>{certificate.internshipTitle}</h3>
@@ -323,6 +379,35 @@ const Certificate = () => {
             </div>
           ))}
         </div>
+
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                className="page-btn"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Prev
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
+                <button
+                  key={num}
+                  className={`page-btn ${num === currentPage ? 'active' : ''}`}
+                  onClick={() => setCurrentPage(num)}
+                >
+                  {num}
+                </button>
+              ))}
+              <button
+                className="page-btn"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

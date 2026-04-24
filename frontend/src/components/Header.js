@@ -78,6 +78,13 @@ const Header = () => {
                   Internships
                 </Nav.Link>
 
+                <Nav.Link as={Link} to="/assessments" className="nav-link-custom" onClick={() => setExpanded(false)}>
+                  Assessments
+                </Nav.Link>
+                <Nav.Link as={Link} to="/certificates" className="nav-link-custom" onClick={() => setExpanded(false)}>
+                  Certificates
+                </Nav.Link>
+
                 {user.role === 'student' && (
                   <Nav.Link as={Link} to="/my-applications" className="nav-link-custom" onClick={() => setExpanded(false)}>
                     Applications

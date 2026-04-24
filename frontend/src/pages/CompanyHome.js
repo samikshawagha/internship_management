@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Badge, Button, Alert, ListGroup } from 'react-bootstrap';
-import { dummyCompanyDashboardData, dummyCompanyTeamMembers, dummyPerformanceEvaluations, dummyCompanyLeaves } from '../utils/dummyData';
+// dummy data removed: real data should come from API
 import '../styles/companyhome.css';
 
 const CompanyHome = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  const [stats, setStats] = useState(dummyCompanyDashboardData.summary);
-  const [dashboardData] = useState(dummyCompanyDashboardData);
-  const [teamMembers] = useState(dummyCompanyTeamMembers);
-  const [pendingLeaves] = useState(dummyCompanyLeaves.filter(l => l.status === 'pending'));
-  const [performanceData] = useState(dummyPerformanceEvaluations);
+  const [stats, setStats] = useState({});
+  const [dashboardData] = useState({});
+  const [teamMembers] = useState([]);
+  const [pendingLeaves] = useState([]);
+  const [performanceData] = useState([]);
 
   const companyFeatures = [
     {

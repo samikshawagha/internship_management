@@ -13,8 +13,8 @@ router.get('/:id', verifyToken, certificateController.getCertificateById);
 // Get certificate by certificate number
 router.get('/number/:certificateNumber', verifyToken, certificateController.getCertificateByNumber);
 
-// Get all certificates for a student
-router.get('/student/:studentId', verifyToken, certificateController.getStudentCertificates);
+// Get all certificates for a student (no auth required)
+router.get('/student/:studentId', certificateController.getStudentCertificates);
 
 // Get all certificates for an internship
 router.get('/internship/:internshipId', verifyToken, certificateController.getInternshipCertificates);

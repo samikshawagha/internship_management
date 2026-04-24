@@ -1,4 +1,5 @@
 const Assessment = require('../models/Assessment');
+const pool = require('../config/database');
 
 // Create a new assessment
 const createAssessment = async (req, res) => {
@@ -17,6 +18,20 @@ const createAssessment = async (req, res) => {
       return res.status(400).json({ 
         message: 'Missing required fields: studentId, internshipId, evaluatorId, assessmentType' 
       });
+    }
+
+    // verify referenced records exist
+    const [studentRow] = await pool.query('SELECT id FROM users WHERE id = ? AND role = "student"', [studentId]);
+    if (studentRow.length === 0) {
+      return res.status(400).json({ message: 'Student not found' });
+    }
+    const [internRow] = await pool.query('SELECT id FROM internships WHERE id = ?', [internshipId]);
+    if (internRow.length === 0) {
+      return res.status(400).json({ message: 'Internship not found' });
+    }
+    const [evalRow] = await pool.query('SELECT id FROM users WHERE id = ?', [evaluatorId]);
+    if (evalRow.length === 0) {
+      return res.status(400).json({ message: 'Evaluator not found' });
     }
 
     if (overallScore < 0 || overallScore > 100) {
@@ -79,6 +94,9 @@ const getAssessmentById = async (req, res) => {
 const getStudentAssessments = async (req, res) => {
   try {
     const { studentId } = req.params;
+    if (!studentId || studentId === 'null') {
+      return res.status(400).json({ message: 'Invalid student ID' });
+    }
 
     const assessments = await Assessment.getByStudentId(studentId);
 
@@ -134,6 +152,24 @@ const getEvaluatorAssessments = async (req, res) => {
     res.status(500).json({ 
       message: 'Error retrieving evaluator assessments',
       error: error.message 
+    });
+  }
+};
+
+// Get all assessments (no filter)
+const getAllAssessments = async (req, res) => {
+  try {
+    const assessments = await Assessment.getAll();
+    res.status(200).json({
+      message: 'All assessments retrieved successfully',
+      data: assessments,
+      count: assessments.length
+    });
+  } catch (error) {
+    console.error('Error retrieving all assessments:', error);
+    res.status(500).json({
+      message: 'Error retrieving assessments',
+      error: error.message
     });
   }
 };
@@ -229,6 +265,44 @@ const deleteAssessment = async (req, res) => {
   }
 };
 
+// Submit assessment (student submission)
+const submitAssessment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { competencies, comments } = req.body;
+
+    // Verify the assessment belongs to the logged-in student
+    const assessment = await Assessment.findById(id);
+    if (!assessment) {
+      return res.status(404).json({ message: 'Assessment not found' });
+    }
+
+    if (assessment.studentId !== req.user.id) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+
+    const result = await Assessment.submit(id, {
+      competencies: competencies || assessment.competencies,
+      comments: comments || assessment.comments,
+      status: 'completed'
+    });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Assessment not found' });
+    }
+
+    res.status(200).json({
+      message: 'Assessment submitted successfully'
+    });
+  } catch (error) {
+    console.error('Error submitting assessment:', error);
+    res.status(500).json({ 
+      message: 'Error submitting assessment',
+      error: error.message 
+    });
+  }
+};
+
 // Get student's average score in an internship
 const getStudentAverageScore = async (req, res) => {
   try {
@@ -255,8 +329,10 @@ module.exports = {
   getStudentAssessments,
   getInternshipAssessments,
   getEvaluatorAssessments,
+  getAllAssessments,
   getAssessmentsByType,
   updateAssessment,
   deleteAssessment,
+  submitAssessment,
   getStudentAverageScore
 };

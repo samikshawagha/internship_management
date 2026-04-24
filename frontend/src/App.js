@@ -13,6 +13,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import StudentDashboard from './pages/StudentDashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
@@ -25,6 +26,8 @@ import InternshipDetail from './pages/InternshipDetail';
 import CreateInternship from './pages/CreateInternship';
 import EditInternship from './pages/EditInternship';
 import MyApplications from './pages/MyApplications';
+import Assessment from './pages/Assessment';
+import Certificate from './pages/Certificate';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -86,7 +89,7 @@ function AppContent() {
               path="/dashboard"
               element={
                 <ProtectedRoute requiredRole={['student']}>
-                  <Dashboard />
+                  <StudentDashboard />
                 </ProtectedRoute>
               }
             />
@@ -135,6 +138,24 @@ function AppContent() {
               element={
                 <ProtectedRoute requiredRole={['admin']}>
                   <AdminApplications />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Assessment and Certificate modules for authenticated users */}
+            <Route
+              path="/assessments"
+              element={
+                <ProtectedRoute>
+                  <Assessment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/certificates"
+              element={
+                <ProtectedRoute>
+                  <Certificate />
                 </ProtectedRoute>
               }
             />

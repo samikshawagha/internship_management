@@ -175,6 +175,43 @@ const authController = {
       console.error('Change password error:', error);
       res.status(500).json({ error: 'Failed to change password' });
     }
+  },
+
+  getStudentDashboard: async (req, res) => {
+    try {
+      const studentId = req.userId;
+
+      // Get student profile
+      const user = await User.findById(studentId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Get enrolled internships (approved applications)
+      const internshipQuery = `
+        SELECT i.*, a.status as applicationStatus, c.fullName as companyName
+        FROM applications a
+        JOIN internships i ON a.internshipId = i.id
+        JOIN users c ON i.companyId = c.id
+        WHERE a.studentId = ? AND a.status = 'approved'
+        ORDER BY a.createdAt DESC
+      `;
+      const [internships] = await pool.query(internshipQuery, [studentId]);
+
+      res.json({
+        profile: {
+          id: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          phone: user.phone,
+          role: user.role
+        },
+        internships: internships
+      });
+    } catch (error) {
+      console.error('Get student dashboard error:', error);
+      res.status(500).json({ error: 'Failed to get dashboard data' });
+    }
   }
 };
 
