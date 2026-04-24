@@ -15,6 +15,10 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CompanyDashboard from './pages/CompanyDashboard';
+import CompanyHome from './pages/CompanyHome';
+import CompanyProfile from './pages/CompanyProfile';
+import CompanyApplications from './pages/CompanyApplications';
+import CompanyAttendance from './pages/CompanyAttendance';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
 import AdminInternships from './pages/AdminInternships';
@@ -30,24 +34,21 @@ import Reports from './pages/Reports';
 import StudentPage from './pages/StudentPage';
 import Unauthorized from './pages/Unauthorized';
 import SystemFlow from './pages/SystemFlow';
+import Assessment from './pages/Assessment';
+import Attendance from './pages/Attendance';
+import Certificate from './pages/Certificate';
+import MyPerformance from './pages/MyPerformance';
+import PerformanceEvaluation from './pages/PerformanceEvaluation';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
+  if (loading) return <div className="loading">Loading...</div>;
+  if (!user) return <Navigate to="/login" />;
 
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  // Check if role is required and if user has the required role
   if (requiredRole && requiredRole.length > 0) {
-    // Ensure user.role exists and is in the requiredRole array
     if (!user.role || !requiredRole.includes(user.role)) {
-      console.log('Access denied - User role:', user.role, 'Required roles:', requiredRole);
       return <Navigate to="/unauthorized" />;
     }
   }
@@ -58,9 +59,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 function AppContent() {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
+  if (loading) return <div className="loading">Loading...</div>;
 
   return (
     <Router>
@@ -70,199 +69,56 @@ function AppContent() {
           {user && <div className="sidebar-sticky-wrapper"><Sidebar /></div>}
           <main style={{ flex: 1, minWidth: 0, overflowX: 'hidden' }}>
             <Routes>
-              {/* Home Route - Available to All */}
+              {/* Public routes - available to all */}
               <Route path="/" element={<Home />} />
               <Route path="/internships" element={<InternshipList />} />
-          
-          {/* Public Routes */}
-          {!user ? (
-            <>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </>
-          ) : (
-            <>
-              {/* Student Dashboard */}
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute requiredRole={['student']}>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
 
-              {/* Student Hub - Enhanced Student Page */}
-              <Route
-                path="/student-hub"
-                element={
-                  <ProtectedRoute requiredRole={['student']}>
-                    <StudentPage />
-                  </ProtectedRoute>
-                }
-              />
+              {!user ? (
+                <>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="*" element={<Navigate to="/" />} />
+                </>
+              ) : (
+                <>
+                  {/* Student routes */}
+                  <Route path="/dashboard" element={<ProtectedRoute requiredRole={['student']}><Dashboard /></ProtectedRoute>} />
+                  <Route path="/student-hub" element={<ProtectedRoute requiredRole={['student']}><StudentPage /></ProtectedRoute>} />
+                  <Route path="/my-applications" element={<ProtectedRoute requiredRole={['student']}><MyApplications /></ProtectedRoute>} />
+                  <Route path="/my-performance" element={<ProtectedRoute requiredRole={['student']}><MyPerformance /></ProtectedRoute>} />
+                  <Route path="/attendance" element={<ProtectedRoute requiredRole={['student']}><Attendance /></ProtectedRoute>} />
+                  <Route path="/assessment" element={<ProtectedRoute requiredRole={['student']}><Assessment /></ProtectedRoute>} />
+                  <Route path="/certificate" element={<ProtectedRoute requiredRole={['student']}><Certificate /></ProtectedRoute>} />
 
-              {/* Student Reports */}
-              <Route
-                path="/reports"
-                element={
-                  <ProtectedRoute requiredRole={['student', 'admin', 'company']}>
-                    <Reports />
-                  </ProtectedRoute>
-                }
-              />
+                  {/* Company routes */}
+                  <Route path="/company-dashboard" element={<ProtectedRoute requiredRole={['company']}><CompanyDashboard /></ProtectedRoute>} />
+                  <Route path="/company-home" element={<ProtectedRoute requiredRole={['company']}><CompanyHome /></ProtectedRoute>} />
+                  <Route path="/company-profile" element={<ProtectedRoute requiredRole={['company']}><CompanyProfile /></ProtectedRoute>} />
+                  <Route path="/company-applications" element={<ProtectedRoute requiredRole={['company']}><CompanyApplications /></ProtectedRoute>} />
+                  <Route path="/company-attendance" element={<ProtectedRoute requiredRole={['company']}><CompanyAttendance /></ProtectedRoute>} />
+                  <Route path="/company-performance" element={<ProtectedRoute requiredRole={['company']}><PerformanceEvaluation /></ProtectedRoute>} />
 
-              {/* Profile - Enhanced for all users */}
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
+                  {/* Admin routes */}
+                  <Route path="/admin-dashboard" element={<ProtectedRoute requiredRole={['admin']}><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/admin/users" element={<ProtectedRoute requiredRole={['admin']}><AdminUsers /></ProtectedRoute>} />
+                  <Route path="/admin/internships" element={<ProtectedRoute requiredRole={['admin']}><AdminInternships /></ProtectedRoute>} />
+                  <Route path="/admin/applications" element={<ProtectedRoute requiredRole={['admin']}><AdminApplications /></ProtectedRoute>} />
+                  <Route path="/admin/reports" element={<ProtectedRoute requiredRole={['admin']}><AdminReports /></ProtectedRoute>} />
+                  <Route path="/system-flow" element={<ProtectedRoute requiredRole={['admin']}><SystemFlow /></ProtectedRoute>} />
 
-              {/* Company Dashboard */}
-              <Route
-                path="/company-dashboard"
-                element={
-                  <ProtectedRoute requiredRole={['company']}>
-                    <CompanyDashboard />
-                  </ProtectedRoute>
-                }
-              />
+                  {/* Shared routes */}
+                  <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-              {/* Company Home */}
-              <Route
-                path="/company-home"
-                element={
-                  <ProtectedRoute requiredRole={['company']}>
-                    <Home />
-                  </ProtectedRoute>
-                }
-              />
+                  {/* Internship routes - order matters: create/edit before :id */}
+                  <Route path="/internships/create" element={<ProtectedRoute requiredRole={['company', 'admin']}><CreateInternship /></ProtectedRoute>} />
+                  <Route path="/internships/:id/edit" element={<ProtectedRoute requiredRole={['company', 'admin']}><EditInternship /></ProtectedRoute>} />
+                  <Route path="/internships/:id" element={<ProtectedRoute><InternshipDetail /></ProtectedRoute>} />
 
-              {/* Admin Dashboard */}
-              <Route
-                path="/admin-dashboard"
-                element={
-                  <ProtectedRoute requiredRole={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Admin Home */}
-              <Route
-                path="/admin-home"
-                element={
-                  <ProtectedRoute requiredRole={['admin']}>
-                    <Home />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Admin Management Routes */}
-              <Route
-                path="/admin/users"
-                element={
-                  <ProtectedRoute requiredRole={['admin']}>
-                    <AdminUsers />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin/internships"
-                element={
-                  <ProtectedRoute requiredRole={['admin']}>
-                    <AdminInternships />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin/applications"
-                element={
-                  <ProtectedRoute requiredRole={['admin']}>
-                    <AdminApplications />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/admin/reports"
-                element={
-                  <ProtectedRoute requiredRole={['admin']}>
-                    <AdminReports />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Internship Routes - Order matters! Create before :id */}
-              <Route
-                path="/internships/create"
-                element={
-                  <ProtectedRoute requiredRole={['company', 'admin']}>
-                    <CreateInternship />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/internships/:id/edit"
-                element={
-                  <ProtectedRoute requiredRole={['company', 'admin']}>
-                    <EditInternship />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/internships/:id"
-                element={
-                  <ProtectedRoute>
-                    <InternshipDetail />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/internships"
-                element={<InternshipList />}
-              />
-
-              {/* My Applications - Student Only */}
-              <Route
-                path="/my-applications"
-                element={
-                  <ProtectedRoute requiredRole={['student']}>
-                    <MyApplications />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Unauthorized Route */}
-              <Route path="/unauthorized" element={<Unauthorized />} />
-
-              {/* System Flow - Admin Only */}
-              <Route
-                path="/system-flow"
-                element={
-                  <ProtectedRoute requiredRole={['admin']}>
-                    <SystemFlow />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Default Route */}
-              <Route
-                path="*"
-                element={<Navigate to="/" />}
-              />
-            </>
-          )}
+                  <Route path="/unauthorized" element={<Unauthorized />} />
+                  <Route path="*" element={<Navigate to="/" />} />
+                </>
+              )}
             </Routes>
           </main>
         </div>

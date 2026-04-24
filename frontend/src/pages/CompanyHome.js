@@ -1,200 +1,614 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { apiService } from '../services/apiService';
-import { Container, Row, Col, Card, Badge, Button, Table, Spinner, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Badge, Button, Alert, ListGroup } from 'react-bootstrap';
+import { dummyCompanyDashboardData, dummyCompanyTeamMembers, dummyPerformanceEvaluations, dummyCompanyLeaves } from '../utils/dummyData';
+import '../styles/companyhome.css';
 
 const CompanyHome = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [internships, setInternships] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  
+  const [stats, setStats] = useState(dummyCompanyDashboardData.summary);
+  const [dashboardData] = useState(dummyCompanyDashboardData);
+  const [teamMembers] = useState(dummyCompanyTeamMembers);
+  const [pendingLeaves] = useState(dummyCompanyLeaves.filter(l => l.status === 'pending'));
+  const [performanceData] = useState(dummyPerformanceEvaluations);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [internRes, statsRes] = await Promise.all([
-          apiService.getCompanyInternships(),
-          apiService.getDashboardStats(),
-        ]);
-        setInternships(internRes.data || []);
-        setStats(statsRes.data || {});
-      } catch (e) {
-        setError('Failed to load dashboard data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
-
-  if (loading) {
-    return (
-      <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
-        <Spinner animation="border" variant="success" />
-      </Container>
-    );
-  }
-
-  const statCards = [
-    { label: 'Total Internships', value: stats?.totalInternships ?? internships.length, icon: '💼', color: '#2a9d8f' },
-    { label: 'Total Applications', value: stats?.totalApplications ?? 0, icon: '📋', color: '#4361ee' },
-    { label: 'Accepted', value: stats?.acceptedApplications ?? 0, icon: '✅', color: '#06d6a0' },
-    { label: 'Pending', value: stats?.pendingApplications ?? 0, icon: '⏳', color: '#f4a261' },
+  const companyFeatures = [
+    {
+      icon: '∩┐╜',
+      title: 'Browse Internships',
+      description: 'View and manage all internship postings',
+      action: () => navigate('/internships'),
+      color: 'primary'
+    },
+    {
+      icon: 'Γ₧ò',
+      title: 'Post Internship',
+      description: 'Create and manage internship opportunities',
+      action: () => navigate('/internships/create'),
+      color: 'success'
+    },
+    {
+      icon: '≡ƒæÑ',
+      title: 'Applications',
+      description: 'Review and manage student applications',
+      action: () => navigate('/internships'),
+      color: 'info'
+    },
+    {
+      icon: '≡ƒôè',
+      title: 'Reports',
+      description: 'Review reports from your interns',
+      action: () => navigate('/reports'),
+      color: 'warning'
+    },
+    {
+      icon: '≡ƒæñ',
+      title: 'My Profile',
+      description: 'Manage your account and settings',
+      action: () => navigate('/company-profile'),
+      color: 'secondary'
+    },
+    {
+      icon: 'ΓÜÖ∩╕Å',
+      title: 'Settings',
+      description: 'Configure company preferences',
+      action: () => alert('Settings coming soon!'),
+      color: 'dark'
+    }
   ];
 
-  const openInternships = internships.filter(i => i.status === 'open');
-  const closedInternships = internships.filter(i => i.status !== 'open');
+  const recentActivity = [
+    { type: 'application', message: 'New application from Alice Johnson', time: '2 hours ago', icon: '≡ƒô¥' },
+    { type: 'report', message: 'Bob Smith submitted a progress report', time: '1 day ago', icon: '≡ƒôè' },
+    { type: 'internship', message: 'Your Data Science internship is now open', time: '1 day ago', icon: '≡ƒÄë' },
+    { type: 'application', message: 'Carol Davis applied for Data Science Internship', time: '2 days ago', icon: '≡ƒô¥' },
+  ];
+
+  const benefits = [
+    {
+      icon: '≡ƒÄô',
+      title: 'Quality Talent',
+      description: 'Access vetted student candidates with relevant skills'
+    },
+    {
+      icon: '≡ƒÆ░',
+      title: 'Cost-Effective',
+      description: 'Find affordable talent for short-term projects'
+    },
+    {
+      icon: '≡ƒôê',
+      title: 'Team Growth',
+      description: 'Identify potential full-time employees from interns'
+    },
+    {
+      icon: '≡ƒÜÇ',
+      title: 'Quick Onboarding',
+      description: 'Streamlined process from posting to hiring'
+    },
+    {
+      icon: '≡ƒñ¥',
+      title: 'Network Building',
+      description: 'Build relationships with talented students and universities'
+    },
+    {
+      icon: '≡ƒôè',
+      title: 'Data Insights',
+      description: 'Track application trends and hiring analytics'
+    }
+  ];
 
   return (
-    <Container fluid className="py-4 px-4">
-      {/* Header */}
-      <div className="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
-        <div>
-          <h2 className="fw-bold mb-1" style={{ color: '#1a1a2e' }}>
-            🏢 Welcome back, {user?.fullName}
-          </h2>
-          <p className="text-muted mb-0">Manage your internship postings and track applicants.</p>
-        </div>
-        <Button variant="success" onClick={() => navigate('/internships/create')}>
-          ➕ Post New Internship
-        </Button>
-      </div>
-
-      {error && <Alert variant="danger">{error}</Alert>}
-
-      {/* Stat Cards */}
-      <Row className="g-3 mb-4">
-        {statCards.map((s, i) => (
-          <Col xs={6} md={3} key={i}>
-            <Card className="border-0 shadow-sm h-100">
-              <Card.Body className="text-center py-3">
-                <div style={{ fontSize: '1.8rem' }}>{s.icon}</div>
-                <div className="fw-bold fs-3 mt-1" style={{ color: s.color }}>{s.value}</div>
-                <div className="text-muted small">{s.label}</div>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-
-      <Row className="g-4 mb-4">
-        {/* Active Internships */}
-        <Col lg={8}>
-          <Card className="border-0 shadow-sm h-100">
-            <Card.Header className="bg-white border-bottom d-flex justify-content-between align-items-center py-3">
-              <h6 className="fw-bold mb-0">💼 Your Internships</h6>
-              <Button variant="outline-success" size="sm" onClick={() => navigate('/internships/create')}>
-                + Post New
-              </Button>
-            </Card.Header>
-            <Card.Body className="p-0">
-              {internships.length === 0 ? (
-                <div className="text-center py-5">
-                  <div style={{ fontSize: '2.5rem' }}>📭</div>
-                  <p className="text-muted mt-2 mb-3">No internships posted yet</p>
-                  <Button variant="success" onClick={() => navigate('/internships/create')}>
-                    Post Your First Internship
+    <Container fluid className="company-home py-5" style={{ backgroundColor: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
+          {/* Welcome Section */}
+          <div className="welcome-section mb-5">
+            <Row className="align-items-center">
+              <Col md={8}>
+                <h1 className="fw-bold mb-3" style={{ fontSize: '2.8rem', color: '#1a1a2e' }}>
+                  ≡ƒÅó Welcome Back, {user?.fullName}!
+                </h1>
+                <p className="fs-5 text-muted mb-4">
+                  Manage your internship program, review applications, and connect with talented students.
+                </p>
+                <div className="d-flex gap-2 flex-wrap">
+                  <Button 
+                    variant="success" 
+                    size="lg"
+                    className="fw-bold"
+                    onClick={() => navigate('/internships/create')}
+                    style={{ borderRadius: '10px' }}
+                  >
+                    Γ₧ò Post New Internship
+                  </Button>
+                  <Button 
+                    variant="primary" 
+                    size="lg"
+                    className="fw-bold"
+                    onClick={() => navigate('/internships')}
+                    style={{ borderRadius: '10px' }}
+                  >
+                    ≡ƒöì Browse Internships
                   </Button>
                 </div>
-              ) : (
-                <div className="table-responsive">
-                  <Table hover className="mb-0" size="sm">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Title</th>
-                        <th>Location</th>
-                        <th>Stipend</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {internships.map(i => (
-                        <tr key={i.id}>
-                          <td className="fw-medium">{i.title}</td>
-                          <td className="text-muted small">📍 {i.location}</td>
-                          <td className="text-success fw-medium">{i.stipend}</td>
-                          <td>
-                            <Badge bg={i.status === 'open' ? 'success' : 'secondary'}>
-                              {i.status}
-                            </Badge>
-                          </td>
-                          <td>
-                            <div className="d-flex gap-1">
-                              <Button
-                                variant="outline-info"
-                                size="sm"
-                                onClick={() => navigate(`/internships/${i.id}`)}
-                              >
-                                View
-                              </Button>
-                              <Button
-                                variant="outline-primary"
-                                size="sm"
-                                onClick={() => navigate(`/internships/${i.id}/edit`)}
-                              >
-                                Edit
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
+              </Col>
+              <Col md={4} className="text-center">
+                <Badge bg="info" className="badge-xl" style={{ padding: '1rem 2rem', fontSize: '1.1rem' }}>
+                  ≡ƒîƒ Trusted by 180+ Companies
+                </Badge>
+              </Col>
+            </Row>
+          </div>
 
-        {/* Summary Panel */}
-        <Col lg={4}>
-          <Card className="border-0 shadow-sm mb-3">
-            <Card.Header className="bg-white border-bottom py-3">
-              <h6 className="fw-bold mb-0">📊 Overview</h6>
-            </Card.Header>
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-                <span className="text-muted small">Open Positions</span>
-                <Badge bg="success">{openInternships.length}</Badge>
-              </div>
-              <div className="d-flex justify-content-between align-items-center py-2 border-bottom">
-                <span className="text-muted small">Closed Positions</span>
-                <Badge bg="secondary">{closedInternships.length}</Badge>
-              </div>
-              <div className="d-flex justify-content-between align-items-center py-2">
-                <span className="text-muted small">Total Posted</span>
-                <Badge bg="primary">{internships.length}</Badge>
-              </div>
-            </Card.Body>
-          </Card>
+          {/* Quick Stats */}
+          <Row className="mb-5 g-4">
+            <Col sm={6} lg={3}>
+              <Card className="stat-card border-0 shadow-sm" style={{ borderRadius: '15px', backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+                <Card.Body className="text-center">
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>≡ƒôï</div>
+                  <p className="mb-2 small">Active Internships</p>
+                  <h3 className="fw-bold mb-0">{stats.totalInternships}</h3>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col sm={6} lg={3}>
+              <Card className="stat-card border-0 shadow-sm" style={{ borderRadius: '15px', backgroundImage: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }}>
+                <Card.Body className="text-center">
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>≡ƒæÑ</div>
+                  <p className="mb-2 small">Active Interns</p>
+                  <h3 className="fw-bold mb-0">{stats.activeInterns}</h3>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col sm={6} lg={3}>
+              <Card className="stat-card border-0 shadow-sm" style={{ borderRadius: '15px', backgroundImage: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', color: 'white' }}>
+                <Card.Body className="text-center">
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>≡ƒôè</div>
+                  <p className="mb-2 small">Completed</p>
+                  <h3 className="fw-bold mb-0">{stats.completedInternships}</h3>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col sm={6} lg={3}>
+              <Card className="stat-card border-0 shadow-sm" style={{ borderRadius: '15px', backgroundImage: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', color: 'white' }}>
+                <Card.Body className="text-center">
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Γ¡É</div>
+                  <p className="mb-2 small">Avg Performance</p>
+                  <h3 className="fw-bold mb-0">{stats.averagePerformance}/5.0</h3>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
 
           {/* Quick Actions */}
-          <Card className="border-0 shadow-sm">
-            <Card.Header className="bg-white border-bottom py-3">
-              <h6 className="fw-bold mb-0">⚡ Quick Actions</h6>
-            </Card.Header>
-            <Card.Body className="d-flex flex-column gap-2">
-              <Button variant="success" className="w-100" onClick={() => navigate('/internships/create')}>
-                ➕ Post Internship
-              </Button>
-              <Button variant="outline-primary" className="w-100" onClick={() => navigate('/internships')}>
-                🔍 Browse All
-              </Button>
-              <Button variant="outline-secondary" className="w-100" onClick={() => navigate('/reports')}>
-                📊 View Reports
-              </Button>
-              <Button variant="outline-dark" className="w-100" onClick={() => navigate('/profile')}>
-                👤 Edit Profile
-              </Button>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+          <div className="mb-5">
+            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>≡ƒÜÇ Quick Actions</h2>
+            <Row className="g-4">
+              {companyFeatures.map((feature, index) => (
+                <Col sm={6} lg={4} key={index}>
+                  <Card 
+                    className="feature-card border-0 shadow-sm h-100 cursor-pointer"
+                    onClick={feature.action}
+                    style={{ 
+                      borderRadius: '15px',
+                      transition: 'all 0.3s ease',
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-10px)';
+                      e.currentTarget.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    <Card.Body className="text-center">
+                      <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
+                        {feature.icon}
+                      </div>
+                      <h5 className="fw-bold mb-2" style={{ color: '#1a1a2e' }}>
+                        {feature.title}
+                      </h5>
+                      <p className="text-muted small mb-3">
+                        {feature.description}
+                      </p>
+                      <Button 
+                        variant={feature.color}
+                        size="sm"
+                        className="fw-bold"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          feature.action();
+                        }}
+                        style={{ borderRadius: '8px' }}
+                      >
+                        Go ΓåÆ
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </div>
+
+          {/* Active Team Members */}
+          <div className="mb-5">
+            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>≡ƒæÑ Active Team Members</h2>
+            <Row className="g-4">
+              {teamMembers.filter(m => m.status === 'active').map((member) => (
+                <Col lg={6} key={member.id}>
+                  <Card className="border-0 shadow-sm" style={{ borderRadius: '15px', transition: 'all 0.3s' }} 
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-8px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
+                    <Card.Body>
+                      <div className="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                          <h6 className="fw-bold mb-1">{member.name}</h6>
+                          <small className="text-muted">{member.internshipTitle}</small>
+                        </div>
+                        <Badge bg="success">{member.status}</Badge>
+                      </div>
+                      <Row className="g-3 mt-2">
+                        <Col xs={6}>
+                          <small className="text-muted">Performance</small>
+                          <div className="progress" style={{ height: '8px' }}>
+                            <div className="progress-bar" style={{ width: `${(member.performanceScore / 5) * 100}%`, backgroundColor: '#667eea' }}></div>
+                          </div>
+                          <small className="fw-bold">{member.performanceScore}/5.0 Γ¡É</small>
+                        </Col>
+                        <Col xs={6}>
+                          <small className="text-muted">Attendance</small>
+                          <div className="progress" style={{ height: '8px' }}>
+                            <div className="progress-bar" style={{ width: `${member.attendancePercentage}%`, backgroundColor: '#28a745' }}></div>
+                          </div>
+                          <small className="fw-bold">{member.attendancePercentage}%</small>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </div>
+
+          {/* Pending Leave Requests */}
+          {pendingLeaves.length > 0 && (
+            <div className="mb-5">
+              <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>≡ƒô¥ Pending Leave Requests ({pendingLeaves.length})</h2>
+              <Row className="g-4">
+                {pendingLeaves.map((leave) => (
+                  <Col lg={6} key={leave.id}>
+                    <Card className="border-0 shadow-sm" style={{ borderRadius: '15px', borderLeft: '5px solid #ffc107' }}>
+                      <Card.Body>
+                        <div className="d-flex justify-content-between align-items-start mb-2">
+                          <div>
+                            <h6 className="fw-bold mb-1">{leave.studentName}</h6>
+                            <Badge bg="warning" className="text-dark">{leave.leaveType}</Badge>
+                          </div>
+                          <Button size="sm" variant="success" className="fw-bold">Approve</Button>
+                        </div>
+                        <small className="text-muted d-block mb-2">
+                          ≡ƒôà {leave.startDate} to {leave.endDate}
+                        </small>
+                        <small className="text-muted">
+                          ≡ƒÆ¼ {leave.reason}
+                        </small>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          )}
+
+          {/* Recent Activity */}
+          <Row className="mb-5 g-4">
+            <Col lg={6}>
+              <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                <Card.Header className="bg-light border-bottom py-3">
+                  <h5 className="mb-0 fw-bold">∩┐╜ Recent Applications</h5>
+                </Card.Header>
+                <Card.Body className="p-0">
+                  {dashboardData.recentApplications.map((app, index) => (
+                    <div
+                      key={index}
+                      className="p-3 border-bottom d-flex gap-3 align-items-start justify-content-between"
+                      style={{ transition: 'all 0.3s' }}
+                    >
+                      <div className="flex-grow-1">
+                        <p className="mb-1 fw-bold small">{app.studentName}</p>
+                        <small className="text-muted">{app.position} ΓÇó {app.university}</small>
+                      </div>
+                      <Badge bg={app.status === 'new' ? 'primary' : app.status === 'reviewing' ? 'warning' : 'info'}>
+                        {app.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </Card.Body>
+              </Card>
+            </Col>
+
+            {/* Upcoming Events */}
+            <Col lg={6}>
+              <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                <Card.Header className="bg-light border-bottom py-3">
+                  <h5 className="mb-0 fw-bold">≡ƒôà Upcoming Events</h5>
+                </Card.Header>
+                <Card.Body className="p-0">
+                  {dashboardData.upcomingEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      className="p-3 border-bottom d-flex gap-3 align-items-start"
+                    >
+                      <div style={{ fontSize: '1.5rem' }}>
+                        {event.type === 'meeting' ? '≡ƒñ¥' : event.type === 'review' ? 'Γ¡É' : '≡ƒôè'}
+                      </div>
+                      <div className="flex-grow-1">
+                        <p className="mb-1 fw-bold small">{event.title}</p>
+                        <small className="text-muted">{event.date} at {event.time}</small>
+                      </div>
+                    </div>
+                  ))}
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Charts & Analytics Section */}
+          <div className="mb-5">
+            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>≡ƒôè Performance & Analytics</h2>
+            <Row className="g-4">
+              {/* Hiring Performance */}
+              <Col lg={6}>
+                <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                  <Card.Header className="bg-light border-bottom py-3">
+                    <h5 className="mb-0 fw-bold">≡ƒôê Hiring Performance</h5>
+                  </Card.Header>
+                  <Card.Body>
+                    <div className="mb-4">
+                      <div className="d-flex justify-content-between mb-2">
+                        <small className="fw-bold">Applications Processed</small>
+                        <small className="text-muted">80%</small>
+                      </div>
+                      <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
+                        <div 
+                          className="progress-bar" 
+                          style={{ width: '80%', backgroundColor: '#667eea' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <div className="d-flex justify-content-between mb-2">
+                        <small className="fw-bold">Acceptance Rate</small>
+                        <small className="text-muted">65%</small>
+                      </div>
+                      <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
+                        <div 
+                          className="progress-bar" 
+                          style={{ width: '65%', backgroundColor: '#84fab0' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <div className="d-flex justify-content-between mb-2">
+                        <small className="fw-bold">Internship Completion</small>
+                        <small className="text-muted">92%</small>
+                      </div>
+                      <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
+                        <div 
+                          className="progress-bar" 
+                          style={{ width: '92%', backgroundColor: '#20c997' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="d-flex justify-content-between mb-2">
+                        <small className="fw-bold">Report Submission</small>
+                        <small className="text-muted">75%</small>
+                      </div>
+                      <div className="progress" style={{ height: '10px', borderRadius: '5px' }}>
+                        <div 
+                          className="progress-bar" 
+                          style={{ width: '75%', backgroundColor: '#ffc107' }}
+                        />
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+
+              {/* Application Distribution */}
+              <Col lg={6}>
+                <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                  <Card.Header className="bg-light border-bottom py-3">
+                    <h5 className="mb-0 fw-bold">≡ƒæÑ Application Distribution</h5>
+                  </Card.Header>
+                  <Card.Body>
+                    <Row className="text-center">
+                      <Col sm={6} className="mb-3">
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>≡ƒôÑ</div>
+                        <p className="text-muted small mb-1">Pending</p>
+                        <h4 className="fw-bold mb-0" style={{ color: '#ffc107' }}>8</h4>
+                      </Col>
+                      <Col sm={6} className="mb-3">
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Γ£à</div>
+                        <p className="text-muted small mb-1">Approved</p>
+                        <h4 className="fw-bold mb-0" style={{ color: '#28a745' }}>14</h4>
+                      </Col>
+                      <Col sm={6} className="mb-3">
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Γ¥î</div>
+                        <p className="text-muted small mb-1">Rejected</p>
+                        <h4 className="fw-bold mb-0" style={{ color: '#dc3545' }}>2</h4>
+                      </Col>
+                      <Col sm={6} className="mb-3">
+                        <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>ΓÅ│</div>
+                        <p className="text-muted small mb-1">In Review</p>
+                        <h4 className="fw-bold mb-0" style={{ color: '#17a2b8' }}>6</h4>
+                      </Col>
+                    </Row>
+                    <hr />
+                    <div className="text-center">
+                      <small className="text-muted">Total Applications: 24</small>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+
+            {/* Key Metrics */}
+            <Row className="g-4 mt-0">
+              <Col lg={12}>
+                <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                  <Card.Header className="bg-light border-bottom py-3">
+                    <h5 className="mb-0 fw-bold">≡ƒôî Key Metrics Overview</h5>
+                  </Card.Header>
+                  <Card.Body>
+                    <Row>
+                      <Col sm={6} md={3} className="mb-3">
+                        <div style={{ textAlign: 'center' }}>
+                          <p className="text-muted small mb-2">Avg. Applications/Internship</p>
+                          <h3 className="fw-bold mb-0" style={{ color: '#667eea' }}>4.8</h3>
+                        </div>
+                      </Col>
+                      <Col sm={6} md={3} className="mb-3">
+                        <div style={{ textAlign: 'center' }}>
+                          <p className="text-muted small mb-2">Time to Hire</p>
+                          <h3 className="fw-bold mb-0" style={{ color: '#f093fb' }}>12 days</h3>
+                        </div>
+                      </Col>
+                      <Col sm={6} md={3} className="mb-3">
+                        <div style={{ textAlign: 'center' }}>
+                          <p className="text-muted small mb-2">Offer Acceptance Rate</p>
+                          <h3 className="fw-bold mb-0" style={{ color: '#84fab0' }}>78%</h3>
+                        </div>
+                      </Col>
+                      <Col sm={6} md={3} className="mb-3">
+                        <div style={{ textAlign: 'center' }}>
+                          <p className="text-muted small mb-2">Intern Satisfaction</p>
+                          <h3 className="fw-bold mb-0" style={{ color: '#ffa502' }}>4.6/5 Γ¡É</h3>
+                        </div>
+                      </Col>
+                    </Row>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </div>
+
+          {/* Performance Evaluations Summary */}
+          <div className="mb-5">
+            <h2 className="fw-bold mb-4" style={{ color: '#1a1a2e' }}>Γ¡É Recent Performance Evaluations</h2>
+            <Row className="g-4">
+              {performanceData.slice(0, 2).map((eval_) => (
+                <Col lg={6} key={eval_.id}>
+                  <Card className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
+                    <Card.Body>
+                      <div className="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                          <h6 className="fw-bold mb-1">{eval_.studentName}</h6>
+                          <small className="text-muted">{eval_.internshipTitle}</small>
+                        </div>
+                        <Badge bg={eval_.technicalSkills >= 4.5 ? 'success' : eval_.technicalSkills >= 3.5 ? 'warning' : 'danger'}>
+                          {eval_.technicalSkills}/5.0 Γ¡É
+                        </Badge>
+                      </div>
+                      <div className="row g-2">
+                        <div className="col-6">
+                          <small className="text-muted d-block">Technical</small>
+                          <small className="fw-bold">{eval_.technicalSkills}</small>
+                        </div>
+                        <div className="col-6">
+                          <small className="text-muted d-block">Communication</small>
+                          <small className="fw-bold">{eval_.communication}</small>
+                        </div>
+                        <div className="col-6">
+                          <small className="text-muted d-block">Teamwork</small>
+                          <small className="fw-bold">{eval_.teamwork}</small>
+                        </div>
+                        <div className="col-6">
+                          <small className="text-muted d-block">Punctuality</small>
+                          <small className="fw-bold">{eval_.punctuality}</small>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="outline-primary" className="mt-3 fw-bold w-100" onClick={() => navigate('/company-performance')}>
+                        View All Evaluations ΓåÆ
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </div>
+
+          {/* Benefits Section */}
+          <div className="benefits-section mb-5">
+            <h2 className="fw-bold mb-4 text-center" style={{ color: '#1a1a2e' }}>
+              Γ£¿ Why Use InternHub?
+            </h2>
+            <Row className="g-4">
+              {benefits.map((benefit, index) => (
+                <Col sm={6} lg={4} key={index}>
+                  <div 
+                    className="benefit-card p-4 rounded"
+                    style={{ 
+                      backgroundColor: '#fff',
+                      border: '2px solid #e9ecef',
+                      borderRadius: '15px',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#667eea';
+                      e.currentTarget.style.boxShadow = '0 10px 30px rgba(102, 126, 234, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#e9ecef';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
+                  >
+                    <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>
+                      {benefit.icon}
+                    </div>
+                    <h6 className="fw-bold mb-2">{benefit.title}</h6>
+                    <p className="text-muted small mb-0">{benefit.description}</p>
+                  </div>
+                </Col>
+              ))}
+            </Row>
+          </div>
+
+          {/* Call to Action */}
+          <Row className="cta-section">
+            <Col md={12}>
+              <div 
+                className="p-5 rounded text-center"
+                style={{ 
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  borderRadius: '15px',
+                  color: '#fff'
+                }}
+              >
+                <h2 className="fw-bold mb-3">≡ƒÜÇ Ready to Find Your Ideal Intern?</h2>
+                <p className="mb-4" style={{ fontSize: '1.1rem' }}>
+                  Post your first internship opportunity today and connect with talented students
+                </p>
+                <Button 
+                  variant="light" 
+                  size="lg"
+                  className="fw-bold"
+                  onClick={() => navigate('/internships/create')}
+                  style={{ borderRadius: '10px' }}
+                >
+                  Γ₧ò Post Internship Now
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        </Container>
   );
 };
 

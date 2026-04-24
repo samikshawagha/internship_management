@@ -113,7 +113,7 @@ crudService.resetData()
 - ✅ **Delete**: Remove applications from list
 
 **Features**:
-- Statistics cards (Total Applications, Pending, Accepted, Rejected)
+- Statistics cards for application counts
 - Profile information display
 - Recent applications table with status badges
 - Quick action buttons
@@ -141,7 +141,7 @@ crudService.resetData()
 **CRUD Operations**:
 - ✅ **Read**: Display all student applications
 - ✅ **Update**: View application details
-- ✅ **Delete**: Withdraw pending applications
+- ✅ **Delete**: Withdraw applications
 
 **Features**:
 - Statistics cards for application counts
@@ -168,7 +168,7 @@ crudService.resetData()
 - Create: Submit applications to internships
 - Read: View their applications in My Applications
 - Update: View details and status
-- Delete: Withdraw pending applications
+- Delete: Withdraw applications
 
 ### **Company Role**
 ✅ **Internship**:
@@ -206,7 +206,7 @@ crudService.resetData()
 2. View application statistics
 3. Search and filter applications
 4. Click "View" to see full details
-5. Click "Withdraw" on pending applications
+5. Click "Withdraw" on applications
 6. Confirm withdrawal in modal
 
 ### **To Post Internship** (Company):

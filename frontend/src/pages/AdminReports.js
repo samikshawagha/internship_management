@@ -49,6 +49,7 @@ const AdminReports = () => {
       const response = await crudService.getAllReports();
       setReports(response.data);
     } catch (err) {
+      console.error('Failed to load admin reports:', err);
       setError('Failed to load reports');
     } finally {
       setLoading(false);

@@ -1,0 +1,169 @@
+.company-admin-page {
+  min-height: 100vh;
+}
+
+.company-admin-page h1 {
+  font-size: 2.5rem;
+}
+
+.company-admin-page h3 {
+  font-size: 1.5rem;
+}
+
+.company-admin-page .card {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.company-admin-page .card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-4px);
+}
+
+.company-admin-page .badge {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.company-admin-page .btn {
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.company-admin-page .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.company-admin-page .table {
+  margin-bottom: 0;
+}
+
+.company-admin-page .table thead {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  background-color: #f8f9fa;
+}
+
+.company-admin-page .table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.company-admin-page .table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Progress bar styling */
+.company-admin-page .progress {
+  background-color: #e9ecef;
+  border-radius: 6px;
+}
+
+.company-admin-page .progress-bar {
+  transition: width 0.3s ease;
+  border-radius: 6px;
+}
+
+/* Modal styling */
+.company-admin-page .modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.company-admin-page .modal-title {
+  font-weight: bold;
+  color: #1a1a2e;
+}
+
+/* Form styling */
+.company-admin-page .form-label {
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.company-admin-page .form-control,
+.company-admin-page .form-select {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.company-admin-page .form-control:focus,
+.company-admin-page .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Range slider styling */
+.company-admin-page .form-range {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.company-admin-page .form-range .form-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #667eea;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Tab buttons */
+.company-admin-page .nav-tabs {
+  border-bottom: 2px solid #e9ecef;
+}
+
+.company-admin-page .nav-tabs .nav-link {
+  color: #6c757d;
+  border-bottom: 3px solid transparent;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.company-admin-page .nav-tabs .nav-link:hover {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+.company-admin-page .nav-tabs .nav-link.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background-color: transparent;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .company-admin-page h1 {
+    font-size: 1.8rem;
+  }
+
+  .company-admin-page h3 {
+    font-size: 1.2rem;
+  }
+
+  .company-admin-page .table {
+    font-size: 0.9rem;
+  }
+
+  .company-admin-page .badge {
+    font-size: 0.75rem;
+  }
+
+  .company-admin-page .btn {
+    font-size: 0.9rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .company-admin-page .d-flex.gap-2 {
+    flex-direction: column;
+  }
+
+  .company-admin-page .d-flex.gap-2 .btn {
+    width: 100%;
+  }
+}

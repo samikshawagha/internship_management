@@ -48,5 +48,10 @@ export const apiService = {
 
   // Analytics endpoints
   getDashboardStats: () => axios.get(`${API_BASE}/analytics/dashboard`),
-  getApplicationStats: () => axios.get(`${API_BASE}/analytics/applications`)
+  getApplicationStats: () => axios.get(`${API_BASE}/analytics/applications`),
+
+  // Auth endpoints
+  getProfile: () => axios.get(`${API_BASE}/auth/profile`),
+  updateProfile: (data) => axios.put(`${API_BASE}/auth/profile`, data),
+  changePassword: (data) => axios.post(`${API_BASE}/auth/change-password`, data)
 };

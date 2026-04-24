@@ -1,4 +1,4 @@
-// Utility function to decode JWT token and extract payload
+﻿// Utility function to decode JWT token and extract payload
 export const decodeJWT = (token) => {
   try {
     const parts = token.split('.');
@@ -32,5 +32,13 @@ export const getRoleFromToken = (token) => {
 
 // Get redirect path based on role
 export const getRedirectPathByRole = (role) => {
-  return '/';
+  switch (role) {
+    case 'company':
+      return '/company-home';
+    case 'admin':
+      return '/admin-dashboard';
+    case 'student':
+    default:
+      return '/dashboard';
+  }
 };

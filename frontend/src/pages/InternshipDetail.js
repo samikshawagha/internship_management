@@ -77,8 +77,9 @@ const InternshipDetail = () => {
       // Reset file input
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = '';
-      setTimeout(() => navigate('/MyApplications'), 2000);
+      setTimeout(() => navigate('/my-applications'), 2000);
     } catch (error) {
+      console.error('Submit application failed:', error);
       setError(error.response?.data?.error || 'Failed to submit application');
     } finally {
       setSubmitting(false);
@@ -98,7 +99,7 @@ const InternshipDetail = () => {
     try {
       setDeleting(true);
       await apiService.deleteInternship(id);
-      navigate('/company-dashboard');
+      navigate('/company-home');
     } catch (error) {
       setError('Failed to delete internship');
       setDeleting(false);
@@ -294,7 +295,7 @@ const InternshipDetail = () => {
                       >
                         🗑️ Delete Internship
                       </Button>
-                      <Link to="/company-dashboard" className="text-decoration-none">
+                      <Link to="/company-home" className="text-decoration-none">
                         <Button variant="outline-secondary" className="w-100 fw-bold">
                           ← Back to Dashboard
                         </Button>
