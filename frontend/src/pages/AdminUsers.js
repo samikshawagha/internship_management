@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { crudService } from '../services/crudService';
+import { apiService } from '../services/apiService';
 import {
   Container,
   Row,
@@ -48,10 +48,11 @@ const AdminUsers = () => {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const response = await crudService.getAllUsers();
+      const response = await apiService.getAllUsers();
       setUsers(response.data);
     } catch (err) {
       setError('Failed to load users');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -115,10 +116,11 @@ const AdminUsers = () => {
   const handleDelete = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
-        await crudService.deleteUser(userId);
+        await apiService.deleteUser(userId);
         loadUsers();
       } catch (err) {
         setError('Failed to delete user');
+        console.error(err);
       }
     }
   };
@@ -131,9 +133,14 @@ const AdminUsers = () => {
 
     try {
       if (editingUser) {
-        await crudService.updateUser(editingUser.id, formData);
+        await apiService.updateUser(editingUser.id, formData);
       } else {
-        await crudService.createUser(formData);
+        // For creating new users, we need a password
+        const createData = {
+          ...formData,
+          password: formData.email.split('@')[0] + '123' // Default password
+        };
+        await apiService.createUser(createData);
       }
       setShowModal(false);
       setEditingUser(null);
@@ -145,7 +152,8 @@ const AdminUsers = () => {
       });
       loadUsers();
     } catch (err) {
-      setValidationError(err.message || 'Failed to save user');
+      setValidationError(err.response?.data?.error || err.message || 'Failed to save user');
+      console.error(err);
     }
   };
 

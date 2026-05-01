@@ -14,6 +14,7 @@ const attendanceRoutes = require('./routes/attendanceRoutes');
 const performanceRoutes = require('./routes/performanceRoutes');
 const assessmentRoutes = require('./routes/assessmentRoutes');
 const certificateRoutes = require('./routes/certificateRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -223,6 +224,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/performance', performanceRoutes);
 app.use('/api/assessments', assessmentRoutes);
 app.use('/api/certificates', certificateRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

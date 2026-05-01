@@ -66,5 +66,13 @@ export const apiService = {
   requestLeave: (data) => axios.post(`${API_BASE}/leaves`, data),
   getLeavesByStudent: (studentId) => axios.get(`${API_BASE}/leaves/student/${studentId}`),
   updateLeave: (leaveId, data) => axios.put(`${API_BASE}/leaves/${leaveId}`, data),
-  deleteLeave: (leaveId) => axios.delete(`${API_BASE}/leaves/${leaveId}`)
+  deleteLeave: (leaveId) => axios.delete(`${API_BASE}/leaves/${leaveId}`),
+
+  // User management endpoints
+  getAllUsers: () => axios.get(`${API_BASE}/users`),
+  getUsersByRole: (role) => axios.get(`${API_BASE}/users/role/${role}`),
+  getUserById: (id) => axios.get(`${API_BASE}/users/${id}`),
+  createUser: (data) => axios.post(`${API_BASE}/users`, data),
+  updateUser: (id, data) => axios.put(`${API_BASE}/users/${id}`, data),
+  deleteUser: (id) => axios.delete(`${API_BASE}/users/${id}`)
 };
