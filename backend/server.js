@@ -144,13 +144,15 @@ const initializeDatabase = async () => {
       await connection.query(`
         CREATE TABLE IF NOT EXISTS attendance (
           id INT AUTO_INCREMENT PRIMARY KEY,
-          studentId INT NOT NULL,
-          internshipId INT NOT NULL,
+          student_id INT NOT NULL,
+          internship_id INT NOT NULL,
           date DATE NOT NULL,
-          status ENUM('present', 'absent', 'leave') DEFAULT 'present',
-          createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (studentId) REFERENCES users(id),
-          FOREIGN KEY (internshipId) REFERENCES internships(id)
+          status ENUM('present', 'absent', 'leave', 'late') DEFAULT 'present',
+          remarks VARCHAR(255),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          FOREIGN KEY (student_id) REFERENCES users(id),
+          FOREIGN KEY (internship_id) REFERENCES internships(id)
         )
       `);
     } catch (error) {
@@ -184,21 +186,24 @@ const initializeDatabase = async () => {
     // Create leave requests table if it doesn't exist
     try {
       await connection.query(`
-        CREATE TABLE IF NOT EXISTS leave_requests (
+        CREATE TABLE IF NOT EXISTS leaves (
           id INT AUTO_INCREMENT PRIMARY KEY,
-          studentId INT NOT NULL,
-          internshipId INT NOT NULL,
-          startDate DATE NOT NULL,
-          endDate DATE NOT NULL,
+          student_id INT NOT NULL,
+          internship_id INT NOT NULL,
+          start_date DATE NOT NULL,
+          end_date DATE NOT NULL,
           reason TEXT,
+          leave_type ENUM('casual', 'sick', 'personal', 'emergency') DEFAULT 'casual',
           status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-          createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (studentId) REFERENCES users(id),
-          FOREIGN KEY (internshipId) REFERENCES internships(id)
+          approver_comments TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          FOREIGN KEY (student_id) REFERENCES users(id),
+          FOREIGN KEY (internship_id) REFERENCES internships(id)
         )
       `);
     } catch (error) {
-      console.log('Leave requests table may already exist:', error.message);
+      console.log('Leaves table may already exist:', error.message);
     }
 
     connection.release();

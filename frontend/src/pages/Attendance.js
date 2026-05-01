@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Badge, Button, Form, Alert, Table, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Card, Badge, Button, Form, Alert, Table, Modal, Spinner } from 'react-bootstrap';
+import { apiService } from '../services/apiService';
 import '../styles/attendance.css';
 
 const Attendance = () => {
@@ -15,29 +16,134 @@ const Attendance = () => {
     leaveType: 'casual'
   });
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  // Mock data
-  const [attendanceRecords] = useState([
-    { date: '2026-02-19', status: 'present', title: 'Feb 19, 2026', icon: '✓' },
-    { date: '2026-02-18', status: 'present', title: 'Feb 18, 2026', icon: '✓' },
-    { date: '2026-02-17', status: 'late', title: 'Feb 17, 2026', icon: '⏱' },
-    { date: '2026-02-16', status: 'present', title: 'Feb 16, 2026', icon: '✓' },
-    { date: '2026-02-15', status: 'absent', title: 'Feb 15, 2026', icon: '✗' },
-  ]);
-
-  const [leaveRequests] = useState([
-    { id: 1, startDate: '2026-02-20', endDate: '2026-02-22', type: 'casual', status: 'pending', reason: 'Personal work' },
-    { id: 2, startDate: '2026-01-10', endDate: '2026-01-12', type: 'sick', status: 'approved', reason: 'Medical appointment' },
-  ]);
-
-  const [attendanceSummary] = useState({
-    totalDays: 45,
-    presentDays: 40,
-    absentDays: 2,
-    leaveDays: 2,
-    lateDays: 1,
-    attendancePercentage: 88.89
+  // Real data states
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [leaveRequests, setLeaveRequests] = useState([]);
+  const [attendanceSummary, setAttendanceSummary] = useState({
+    totalDays: 0,
+    presentDays: 0,
+    absentDays: 0,
+    leaveDays: 0,
+    lateDays: 0,
+    attendancePercentage: 0
   });
+  const [currentInternship, setCurrentInternship] = useState(null);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchStudentData();
+  }, []);
+
+  const fetchStudentData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // First get student's internships
+      const dashboardResponse = await apiService.getStudentInternships();
+      const internships = dashboardResponse.data.internships;
+
+      if (internships && internships.length > 0) {
+        // Use the first internship (or could add logic to select active one)
+        const internship = internships[0];
+        setCurrentInternship(internship);
+
+        // Fetch attendance data
+        await Promise.all([
+          fetchAttendanceRecords(user.id, internship.id),
+          fetchAttendanceSummary(user.id, internship.id),
+          fetchLeaveRequests(user.id)
+        ]);
+      } else {
+        setError('No active internships found. Please apply for an internship first.');
+      }
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      if (err.response) {
+        if (err.response.status === 401) {
+          setError('Authentication failed. Please log in again.');
+        } else if (err.response.status === 403) {
+          setError('Access denied. You may not have permission to view this data.');
+        } else {
+          setError(`Failed to load attendance data: ${err.response.data?.message || err.message}`);
+        }
+      } else {
+        setError('Failed to load attendance data. Please check your connection and try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAttendanceRecords = async (studentId, internshipId) => {
+    try {
+      const response = await apiService.getAttendanceByStudent(studentId, internshipId);
+      const records = response.data.data || [];
+      
+      // Format records for display
+      const formattedRecords = records.map(record => ({
+        date: record.date,
+        status: record.status,
+        title: new Date(record.date).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          year: 'numeric' 
+        }),
+        icon: getStatusIcon(record.status),
+        remarks: record.remarks
+      }));
+      
+      setAttendanceRecords(formattedRecords);
+    } catch (err) {
+      console.error('Error fetching attendance records:', err);
+      // Set empty array on error
+      setAttendanceRecords([]);
+    }
+  };
+
+  const fetchAttendanceSummary = async (studentId, internshipId) => {
+    try {
+      const response = await apiService.getAttendanceSummary(studentId, internshipId);
+      const summary = response.data.data || {
+        totalDays: 0,
+        presentDays: 0,
+        absentDays: 0,
+        leaveDays: 0,
+        lateDays: 0,
+        attendancePercentage: 0
+      };
+      setAttendanceSummary(summary);
+    } catch (err) {
+      console.error('Error fetching attendance summary:', err);
+      // Keep default values on error
+    }
+  };
+
+  const fetchLeaveRequests = async (studentId) => {
+    try {
+      const response = await apiService.getLeavesByStudent(studentId);
+      const leaves = response.data.data || [];
+      setLeaveRequests(leaves);
+    } catch (err) {
+      console.error('Error fetching leave requests:', err);
+      // Set empty array on error
+      setLeaveRequests([]);
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    const icons = {
+      'present': '✓',
+      'absent': '✗',
+      'late': '⏱',
+      'leave': '📝'
+    };
+    return icons[status] || '?';
+  };
 
   const getStatusBadge = (status) => {
     const variants = {
@@ -58,14 +164,37 @@ const Attendance = () => {
     return variants[status] || 'secondary';
   };
 
-  const handleLeaveSubmit = (e) => {
+  const handleLeaveSubmit = async (e) => {
     e.preventDefault();
-    if (leaveForm.startDate && leaveForm.endDate && leaveForm.reason) {
+    if (!leaveForm.startDate || !leaveForm.endDate || !leaveForm.reason || !currentInternship) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const leaveData = {
+        studentId: user.id,
+        internshipId: currentInternship.id,
+        startDate: leaveForm.startDate,
+        endDate: leaveForm.endDate,
+        reason: leaveForm.reason,
+        leaveType: leaveForm.leaveType
+      };
+
+      await apiService.requestLeave(leaveData);
+      
       alert('✓ Leave request submitted successfully!');
       setLeaveForm({ startDate: '', endDate: '', reason: '', leaveType: 'casual' });
       setShowModal(false);
-    } else {
-      alert('Please fill all required fields');
+      
+      // Refresh leave requests
+      await fetchLeaveRequests(user.id);
+    } catch (err) {
+      console.error('Error submitting leave request:', err);
+      alert('Failed to submit leave request. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -81,6 +210,9 @@ const Attendance = () => {
             📋 Attendance & Leave Management
           </h1>
           <p className="text-muted">Track your attendance and manage leave requests</p>
+          {currentInternship && (
+            <p className="text-muted small">Internship: {currentInternship.title}</p>
+          )}
         </Col>
         <Col md={4} className="text-end">
           <Button 
@@ -89,14 +221,30 @@ const Attendance = () => {
             onClick={() => setShowModal(true)}
             className="fw-bold"
             style={{ borderRadius: '8px' }}
+            disabled={!currentInternship}
           >
             📝 Request Leave
           </Button>
         </Col>
       </Row>
 
-      {/* Summary Cards */}
-      <Row className="mb-5 g-4">
+      {loading && (
+        <div className="text-center py-5">
+          <Spinner animation="border" variant="primary" />
+          <p className="mt-2">Loading attendance data...</p>
+        </div>
+      )}
+
+      {error && (
+        <Alert variant="danger" className="mb-4">
+          {error}
+        </Alert>
+      )}
+
+      {!loading && !error && currentInternship ? (
+        <>
+          {/* Summary Cards */}
+          <Row className="mb-5 g-4">
         <Col sm={6} lg={3}>
           <Card className="border-0 shadow-sm text-center" style={{ borderRadius: '12px' }}>
             <Card.Body className="py-4">
@@ -173,19 +321,27 @@ const Attendance = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {attendanceRecords.map((record, index) => (
-                      <tr key={index} className="border-bottom">
-                        <td className="py-3">{record.title}</td>
-                        <td className="py-3">
-                          <Badge bg={getStatusBadge(record.status)}>
-                            {record.icon} {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                          </Badge>
-                        </td>
-                        <td className="py-3 text-muted small">
-                          {record.status === 'late' ? 'Arrived 15 minutes late' : '-'}
+                    {attendanceRecords.length > 0 ? (
+                      attendanceRecords.map((record, index) => (
+                        <tr key={index} className="border-bottom">
+                          <td className="py-3">{record.title}</td>
+                          <td className="py-3">
+                            <Badge bg={getStatusBadge(record.status)}>
+                              {record.icon} {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                            </Badge>
+                          </td>
+                          <td className="py-3 text-muted small">
+                            {record.remarks || '-'}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="3" className="py-4 text-center text-muted">
+                          No attendance records found for this internship.
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </Table>
               </Card.Body>
@@ -247,7 +403,7 @@ const Attendance = () => {
                       <td className="py-3">
                         <small className="fw-bold">{leave.startDate} to {leave.endDate}</small>
                       </td>
-                      <td className="py-3">{leave.type.charAt(0).toUpperCase() + leave.type.slice(1)}</td>
+                      <td className="py-3">{leave.leaveType ? leave.leaveType.charAt(0).toUpperCase() + leave.leaveType.slice(1) : 'Casual'}</td>
                       <td className="py-3">
                         <small className="text-muted">{leave.reason}</small>
                       </td>
@@ -329,12 +485,27 @@ const Attendance = () => {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="w-100 fw-bold" style={{ borderRadius: '8px' }}>
-              Submit Leave Request
+            <Button 
+              variant="primary" 
+              type="submit" 
+              className="w-100 fw-bold" 
+              style={{ borderRadius: '8px' }}
+              disabled={submitting}
+            >
+              {submitting ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Submitting...
+                </>
+              ) : (
+                'Submit Leave Request'
+              )}
             </Button>
           </Form>
         </Modal.Body>
       </Modal>
+        </>
+      ) : null}
     </Container>
   );
 };

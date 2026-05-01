@@ -8,6 +8,7 @@ export const apiService = {
   getAllInternships: () => axios.get(`${API_BASE}/internships/all`),
   getInternshipById: (id) => axios.get(`${API_BASE}/internships/${id}`),
   getCompanyInternships: () => axios.get(`${API_BASE}/internships/company`),
+  getStudentInternships: () => axios.get(`${API_BASE}/auth/student/dashboard`),
   createInternship: (data) => axios.post(`${API_BASE}/internships`, data),
   createInternshipWithImage: (formData) => {
     return axios.post(`${API_BASE}/internships`, formData, {
@@ -53,5 +54,17 @@ export const apiService = {
   // Auth endpoints
   getProfile: () => axios.get(`${API_BASE}/auth/profile`),
   updateProfile: (data) => axios.put(`${API_BASE}/auth/profile`, data),
-  changePassword: (data) => axios.post(`${API_BASE}/auth/change-password`, data)
+  changePassword: (data) => axios.post(`${API_BASE}/auth/change-password`, data),
+
+  // Attendance endpoints
+  getAttendanceByStudent: (studentId, internshipId) => axios.get(`${API_BASE}/attendance/student/${studentId}/internship/${internshipId}`),
+  getAttendanceSummary: (studentId, internshipId) => axios.get(`${API_BASE}/attendance/summary/${studentId}/${internshipId}`),
+  createAttendance: (data) => axios.post(`${API_BASE}/attendance`, data),
+  updateAttendance: (attendanceId, data) => axios.put(`${API_BASE}/attendance/${attendanceId}`, data),
+
+  // Leave endpoints
+  requestLeave: (data) => axios.post(`${API_BASE}/leaves`, data),
+  getLeavesByStudent: (studentId) => axios.get(`${API_BASE}/leaves/student/${studentId}`),
+  updateLeave: (leaveId, data) => axios.put(`${API_BASE}/leaves/${leaveId}`, data),
+  deleteLeave: (leaveId) => axios.delete(`${API_BASE}/leaves/${leaveId}`)
 };

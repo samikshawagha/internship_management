@@ -1,6 +1,7 @@
-# Online Internship Management System
+﻿# Online Internship Management System
 
-A comprehensive web-based system for managing the complete internship lifecycle with support for multiple roles (Admin, Company, Student). Built with React, Node.js, and MySQL.
+A full-featured internship management platform for Admins, Companies, and Students.
+This repository contains a React frontend and a Node.js/Express backend powered by MySQL.
 
 ## 📋 Table of Contents
 
@@ -14,131 +15,77 @@ A comprehensive web-based system for managing the complete internship lifecycle 
 - [Database Schema](#database-schema)
 - [User Roles & Permissions](#user-roles--permissions)
 - [Usage Guide](#usage-guide)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18.2.0** - UI library
-- **React Router DOM 6.20.1** - Client-side routing
-- **Axios 1.6.2** - HTTP client
-- **CSS3** - Styling
+- React 18.2.0
+- React Router DOM 6.20.1
+- Axios 1.6.2
+- React Bootstrap 2.10.10
+- Bootstrap 5.3.8
 
 ### Backend
-- **Node.js** - Runtime environment
-- **Express.js 4.18.2** - Web framework
-- **MySQL2 3.6.5** - Database driver
-- **bcrypt 5.1.1** - Password hashing
-- **JSON Web Token (JWT) 9.1.2** - Authentication
-- **CORS 2.8.5** - Cross-origin support
-- **Multer 1.4.5-lts.1** - File upload handling
-- **dotenv 16.3.1** - Environment variables
+- Node.js
+- Express 4.18.2
+- MySQL2 3.6.5
+- bcrypt 5.1.1
+- jsonwebtoken 9.0.2
+- cors 2.8.5
+- multer 1.4.5-lts.1
+- dotenv 16.3.1
+- pdfkit 0.18.0
 
 ### Database
-- **MySQL 8.0+** - Relational database
+- MySQL 8.0+
 
-### Development Tools
-- **Nodemon 3.0.2** - Auto-restart server during development
-- **React Scripts 5.0.1** - Build tools for React
+### Dev Tools
+- Nodemon 3.0.2
+- React Scripts 5.0.1
 
 ## ✨ Features
 
-### Authentication & Authorization
-- User registration and login (Student, Company, Admin)
-- JWT-based authentication
-- Password hashing with bcrypt
-- Role-based access control (RBAC)
-
-### Core Modules
-
-#### 1. **Internship Management**
-- Post new internship opportunities (Company)
-- Browse available internships (Student)
-- View internship details
-- Close/Open internship positions
-- Edit and delete internships (Company)
-
-#### 2. **Application Tracking**
-- Students can apply to internships
-- Upload resume and cover letter with applications
-- Companies can view applications for their internships
-- Approve/Reject applications
-- Track application status
-
-#### 3. **Report Submission**
-- Students submit internship completion reports
-- Companies review and approve reports
-- Rejection with feedback capability
-
-#### 4. **Dashboard & Analytics**
-- Role-based dashboard
-- Application statistics
-- Internship statistics
-- User metrics (Admin)
-- Visual representation of data
-
-#### 5. **User Management**
-- Profile management
-- Update profile information
-- View user details
+- Role-based authentication: Student, Company, Admin
+- Secure JWT login and registration
+- Internship posting, editing, deletion, and status control
+- Student application submission with resume upload
+- Application approval and rejection flows
+- Internship report submission and review
+- Assessment and performance evaluation tracking
+- Certificate management and download
+- Attendance and leave request tracking
+- Dashboard analytics and role-based statistics
+- Profile editing and password management
 
 ## 📁 Project Structure
 
-```
+```text
 internship_management/
 ├── backend/
-│   ├── config/
-│   │   └── database.js           # MySQL connection pool
-│   ├── controllers/
-│   │   ├── authController.js     # Authentication logic
-│   │   ├── internshipController.js
-│   │   ├── applicationController.js
-│   │   ├── reportController.js
-│   │   └── analyticsController.js
-│   ├── middleware/
-│   │   └── auth.js               # JWT verification & role checking
-│   ├── models/
-│   │   ├── User.js               # User data model
-│   │   ├── Internship.js
-│   │   ├── Application.js
-│   │   └── Report.js
-│   ├── routes/
-│   │   ├── authRoutes.js
-│   │   ├── internshipRoutes.js
-│   │   ├── applicationRoutes.js
-│   │   ├── reportRoutes.js
-│   │   └── analyticsRoutes.js
-│   ├── utils/
-│   │   └── hashPassword.js       # Password utilities
-│   ├── .env                      # Environment variables
+│   ├── config/                # Database connection configuration
+│   ├── controllers/           # Backend business logic
+│   ├── middleware/            # Auth and file upload middleware
+│   ├── models/                # Data model definitions
+│   ├── routes/                # API route handlers
+│   ├── uploads/               # Uploaded files and images
 │   ├── package.json
-│   └── server.js                 # Express server entry point
-│
-└── frontend/
-    ├── public/
-    │   └── index.html            # HTML template
-    ├── src/
-    │   ├── components/
-    │   │   └── Navbar.js         # Navigation bar
-    │   ├── context/
-    │   │   └── AuthContext.js    # Auth state management
-    │   ├── pages/
-    │   │   ├── Login.js
-    │   │   ├── Register.js
-    │   │   ├── Dashboard.js
-    │   │   ├── Profile.js
-    │   │   ├── InternshipList.js
-    │   │   ├── InternshipDetail.js
-    │   │   ├── CreateInternship.js
-    │   │   ├── MyApplications.js
-    │   │   └── Reports.js
-    │   ├── services/
-    │   │   └── apiService.js     # API calls
-    │   ├── styles/
-    │   │   └── global.css        # Global styles
-    │   ├── App.js                # Main component
-    │   └── index.js              # React entry point
-    └── package.json
-
+│   └── server.js              # Express application entry point
+├── frontend/
+│   ├── public/                # Static assets and HTML template
+│   ├── src/
+│   │   ├── components/        # UI components
+│   │   ├── context/           # Authentication context
+│   │   ├── pages/             # Feature pages
+│   │   ├── services/          # API service functions
+│   │   ├── styles/            # CSS and styling
+│   │   ├── App.js
+│   │   └── index.js
+│   └── package.json
+├── internship_php/            # Optional legacy PHP implementation
+└── README.md
 ```
 
 ## 📦 Installation Guide
@@ -149,327 +96,246 @@ internship_management/
 - MySQL Server (v8.0+)
 - Git
 
-### Step 1: Navigate to Project Directory
+### 1. Clone the repository
 
 ```bash
 cd d:/internship_management
 ```
 
-### Step 2: Setup Backend
+### 2. Install backend dependencies
 
 ```bash
 cd backend
-
-# Install dependencies
 npm install
-
-# Verify .env file settings
-# DB_HOST=localhost
-# DB_USER=root
-# DB_PASSWORD=root
-# DB_NAME=internship_management
-# JWT_SECRET=your_jwt_secret_key_change_in_production
-# PORT=5000
-# NODE_ENV=development
 ```
 
-### Step 3: Setup Frontend
+### 3. Install frontend dependencies
 
 ```bash
 cd ../frontend
-
-# Install dependencies
 npm install
 ```
 
-### Step 4: Setup MySQL Database
+### 4. Create the database
 
-```bash
-# Open MySQL Command Line Client or MySQL Workbench
+Open MySQL and run:
 
-# Create database
+```sql
 CREATE DATABASE IF NOT EXISTS internship_management;
-
-# The backend will automatically create all required tables
-# when you run the server for the first time
 ```
+
+The backend will automatically create the required tables when it starts.
 
 ## ⚙️ Configuration
 
-### Backend Configuration (.env)
+### Backend `.env`
+
+Create a `.env` file inside `backend/` with:
 
 ```env
-# Database Configuration
-DB_HOST=localhost                         # MySQL host
-DB_USER=root                              # MySQL username (change in production)
-DB_PASSWORD=root                          # MySQL password (change in production)
-DB_NAME=internship_management             # Database name
-
-# JWT Configuration
-JWT_SECRET=your_jwt_secret_key_change_in_production  # Keep this secure in production
-
-# Server Configuration
-PORT=5000                                 # Server port
-NODE_ENV=development                      # Set to 'production' for production deployment
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=root
+DB_NAME=internship_management
+JWT_SECRET=your_jwt_secret_key_change_in_production
+PORT=5000
+NODE_ENV=development
 ```
 
-> **⚠️ Security Warning**: Never use default credentials (root/root) in production. Always change the database credentials and JWT secret in production environments.
+### Frontend API base
 
-### Frontend Configuration
-
-The frontend is configured to connect to the backend at `http://:localhost5000`. Modify in `src/services/apiService.js` if your backend is on a different address:
-
-```javascript
-const API_BASE = 'http://localhost:5000/api';
-```
+The frontend uses `http://localhost:5000/api` by default.
+If your backend is running elsewhere, update `frontend/src/services/apiService.js`.
 
 ## 🚀 Running the Application
 
-### Start Backend Server
+### Start the backend
 
 ```bash
 cd backend
 npm start
-# OR for development with auto-reload
+```
+
+For live reload during development:
+
+```bash
 npm run dev
 ```
 
-Backend will run on: `http://localhost:5000`
+### Start the frontend
 
-### Start Frontend Development Server
-
-In a new terminal:
+In a second terminal:
 
 ```bash
 cd frontend
 npm start
 ```
 
-Frontend will run on: `http://localhost:3000`
+### Open the app
 
-### Access the Application
-
-Open your browser and navigate to: `http://localhost:3000`
+Visit `http://localhost:3000`
 
 ## 📡 API Endpoints
 
-### Authentication Endpoints
-```
-POST   /api/auth/register          # Register new user
-POST   /api/auth/login             # User login
-GET    /api/auth/profile           # Get user profile
-PUT    /api/auth/profile           # Update user profile
-```
+### Authentication
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/profile`
+- `PUT /api/auth/profile`
+- `POST /api/auth/change-password`
+- `GET /api/auth/student/dashboard`
 
-### Internship Endpoints
-```
-POST   /api/internships            # Create internship (Company/Admin)
-GET    /api/internships            # Get all internships
-GET    /api/internships/company    # Get company's internships
-GET    /api/internships/:id        # Get internship details
-PUT    /api/internships/:id        # Update internship (Company/Admin)
-DELETE /api/internships/:id        # Delete internship (Company/Admin)
-PATCH  /api/internships/:id/status # Update internship status
-```
+### Internships
+- `POST /api/internships`
+- `GET /api/internships`
+- `GET /api/internships/all` (Admin)
+- `GET /api/internships/company`
+- `GET /api/internships/:id`
+- `PUT /api/internships/:id`
+- `DELETE /api/internships/:id`
+- `PATCH /api/internships/:id/status`
 
-### Application Endpoints
-```
-POST   /api/applications                        # Submit application (Student)
-GET    /api/applications                        # Get student applications
-GET    /api/applications/internship/:internshipId  # Get applications for internship
-PATCH  /api/applications/:id/status             # Update application status (Company/Admin)
-DELETE /api/applications/:id                    # Withdraw application (Student)
-```
+### Applications
+- `POST /api/applications`
+- `GET /api/applications`
+- `GET /api/applications/internship/:internshipId`
+- `PATCH /api/applications/:id/status`
+- `DELETE /api/applications/:id`
 
-### Report Endpoints
-```
-POST   /api/reports                        # Submit report (Student)
-GET    /api/reports                        # Get student reports
-GET    /api/reports/internship/:internshipId # Get internship reports
-PATCH  /api/reports/:id/status             # Update report status (Company/Admin)
-DELETE /api/reports/:id                    # Delete report (Student)
-```
+### Reports
+- `POST /api/reports`
+- `GET /api/reports`
+- `GET /api/reports/internship/:internshipId`
+- `PATCH /api/reports/:id/status`
+- `DELETE /api/reports/:id`
 
-### Analytics Endpoints
-```
-GET    /api/analytics/dashboard      # Get dashboard statistics
-GET    /api/analytics/applications   # Get application statistics
-```
+### Analytics
+- `GET /api/analytics/dashboard`
+- `GET /api/analytics/applications`
+
+### Attendance & Leave
+- `POST /api/attendance/attendance`
+- `GET /api/attendance/attendance/student/:studentId/internship/:internshipId`
+- `GET /api/attendance/attendance/internship/:internshipId`
+- `GET /api/attendance/attendance/summary/:studentId/:internshipId`
+- `PUT /api/attendance/attendance/:attendanceId`
+- `DELETE /api/attendance/attendance/:attendanceId`
+- `POST /api/attendance/leaves`
+- `GET /api/attendance/leaves/student/:studentId`
+- `GET /api/attendance/leaves/internship/:internshipId`
+- `GET /api/attendance/leaves/pending/:internshipId`
+- `PUT /api/attendance/leaves/:leaveId/approve`
+- `PUT /api/attendance/leaves/:leaveId/reject`
+- `PUT /api/attendance/leaves/:leaveId`
+- `DELETE /api/attendance/leaves/:leaveId`
+
+### Assessments
+- `POST /api/assessments`
+- `GET /api/assessments`
+- `GET /api/assessments/:id`
+- `GET /api/assessments/student/:studentId`
+- `GET /api/assessments/internship/:internshipId`
+- `GET /api/assessments/evaluator/:evaluatorId`
+- `GET /api/assessments/type/:type`
+- `GET /api/assessments/average/:studentId/:internshipId`
+- `PUT /api/assessments/:id`
+- `POST /api/assessments/submit/:id`
+- `DELETE /api/assessments/:id`
+
+### Certificates
+- `POST /api/certificates`
+- `GET /api/certificates/:id`
+- `GET /api/certificates/number/:certificateNumber`
+- `GET /api/certificates/student/:studentId`
+- `GET /api/certificates/internship/:internshipId`
+- `GET /api/certificates/status/:status`
+- `GET /api/certificates/level/:issueLevel`
+- `GET /api/certificates/active/list`
+- `GET /api/certificates/expired/list`
+- `GET /api/certificates/download/:id`
+- `PUT /api/certificates/:id`
+- `DELETE /api/certificates/:id`
 
 ## 🗄️ Database Schema
 
-### Users Table
-```sql
-CREATE TABLE users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  role ENUM('admin', 'company', 'student') NOT NULL,
-  fullName VARCHAR(255) NOT NULL,
-  phone VARCHAR(15),
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### Internships Table
-```sql
-CREATE TABLE internships (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  companyId INT NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  description TEXT NOT NULL,
-  location VARCHAR(255) NOT NULL,
-  duration VARCHAR(100) NOT NULL,
-  stipend DECIMAL(10, 2),
-  skills TEXT,
-  startDate DATE,
-  status ENUM('open', 'closed') DEFAULT 'open',
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (companyId) REFERENCES users(id)
-);
-```
-
-### Applications Table
-```sql
-CREATE TABLE applications (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  studentId INT NOT NULL,
-  internshipId INT NOT NULL,
-  resume TEXT,
-  coverLetter TEXT,
-  status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (studentId) REFERENCES users(id),
-  FOREIGN KEY (internshipId) REFERENCES internships(id)
-);
-```
-
-### Reports Table
-```sql
-CREATE TABLE reports (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  studentId INT NOT NULL,
-  internshipId INT NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  content TEXT NOT NULL,
-  status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (studentId) REFERENCES users(id),
-  FOREIGN KEY (internshipId) REFERENCES internships(id)
-);
-```
+The backend creates the required tables automatically on startup, including:
+- `users`
+- `internships`
+- `applications`
+- `reports`
+- `assessments`
+- `certificates`
+- `attendance`
+- `performance_evaluations`
+- `leave_requests`
 
 ## 👥 User Roles & Permissions
 
 ### Student
 - Register and login
-- Browse available internships
-- Apply to internships
-- View own applications
+- Browse internships
+- Apply for internships
+- View own applications and reports
 - Submit completion reports
-- View own reports
-- View dashboard with personal statistics
 
 ### Company
 - Register and login
-- Post internship opportunities
-- Edit/Delete own internships
-- View applications for own internships
-- Approve/Reject applications
-- View reports from students
-- Approve/Reject reports
-- View company dashboard with statistics
+- Post internships
+- Manage own internships
+- Review applications
+- Approve/reject students
+- Review reports
 
 ### Admin
-- Full system access
-- View all users
-- View all internships, applications, and reports
-- Manage system-wide statistics
-- User management capabilities
+- Manage users, internships, and reports
+- View system-wide analytics
+- Access all application data
 
-## 📚 Usage Guide
+## 📝 Usage Guide
 
-### For Students
+### Student flow
+1. Register as a Student
+2. Browse internships
+3. Submit applications
+4. Track status
+5. Upload completion reports
 
-1. **Register**: Create an account as a Student
-2. **Browse**: View available internships on the Browse page
-3. **Apply**: Click on an internship and submit your application with resume and cover letter
-4. **Track**: View your applications and their status in "My Applications"
-5. **Report**: After completing internship, submit a completion report
-6. **Dashboard**: Monitor your progress in the dashboard
+### Company flow
+1. Register as a Company
+2. Post internship listings
+3. Manage applications
+4. Review student reports
 
-### For Companies
-
-1. **Register**: Create an account as a Company
-2. **Post**: Post new internship opportunities
-3. **Manage**: Edit or close internship positions
-4. **Review**: View applications received for your internships
-5. **Approve**: Accept or reject applications
-6. **Evaluate**: Review completion reports from students
-7. **Dashboard**: Track internship statistics
-
-### For Admins
-
-1. **Login**: Use admin credentials
-2. **Monitor**: View system-wide statistics
-3. **Manage**: Handle user management and reporting
-
-## 🔒 Security Features
-
-- Password hashing using bcrypt
-- JWT token-based authentication
-- Role-based access control (RBAC)
-- SQL injection prevention (parameterized queries)
-- CORS protection
-- Environment variable management for sensitive data
+### Admin flow
+1. Login as Admin
+2. View dashboards and analytics
+3. Manage the platform
 
 ## 🐛 Troubleshooting
 
-### Database Connection Error
+### Database connection issues
 - Ensure MySQL is running
-- Check DB credentials in .env file
-- Verify database exists: `CREATE DATABASE internship_management;`
+- Check backend `.env` credentials
+- Confirm the database exists: `CREATE DATABASE internship_management;`
 
-### Port Already in Use
-- Change PORT in .env file
-- Or kill process using the port
+### Port conflicts
+- Change `PORT` in `backend/.env`
+- Free the port used by other processes
 
-### Module Not Found
-- Run `npm install` in both frontend and backend folders
-- Clear node_modules and package-lock.json, then reinstall
-
-### CORS Errors
-- Ensure backend is running on correct port
-- Update API_BASE URL in frontend if needed
-
-## 📝 Sample Test Credentials
-
-### Create Test Users:
-
-**Student Account:**
-- Email: student@example.com
-- Password: password123
-- Role: Student
-
-**Company Account:**
-- Email: company@example.com
-- Password: password123
-- Role: Company
+### Dependency problems
+- Run `npm install` in both `backend/` and `frontend/`
 
 ## 🤝 Contributing
 
-1. Create a feature branch
-2. Make your changes
-3. Submit a pull request
+1. Fork the repo
+2. Create a feature branch
+3. Make changes
+4. Open a pull request
 
 ## 📄 License
 
-This project is open source and available for educational purposes.
+This project is available for educational use.
 
-## 📞 Support
+## 📌 Notes
 
-For issues, questions, or feedback, please open an issue in the repository.
-
----
-
-**Happy Coding! 🚀**
+The `internship_php/` directory contains a separate PHP-based implementation and is not required for the Node/React version.

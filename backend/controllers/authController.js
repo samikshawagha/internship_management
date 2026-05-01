@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const pool = require('../config/database');
 const User = require('../models/User');
 const { hashPassword, comparePassword } = require('../utils/hashPassword');
 
@@ -70,7 +71,7 @@ const authController = {
       }
 
       const token = jwt.sign(
-        { userId: user.id, role: user.role },
+        { id: user.id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: '24h' }
       );
@@ -187,13 +188,13 @@ const authController = {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      // Get enrolled internships (approved applications)
+      // Get all applications (any status)
       const internshipQuery = `
-        SELECT i.*, a.status as applicationStatus, c.fullName as companyName
+        SELECT i.*, a.status as applicationStatus, a.id as applicationId, c.fullName as companyName
         FROM applications a
         JOIN internships i ON a.internshipId = i.id
         JOIN users c ON i.companyId = c.id
-        WHERE a.studentId = ? AND a.status = 'approved'
+        WHERE a.studentId = ?
         ORDER BY a.createdAt DESC
       `;
       const [internships] = await pool.query(internshipQuery, [studentId]);

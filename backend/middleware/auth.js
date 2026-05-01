@@ -13,7 +13,7 @@ const verifyToken = (req, res, next) => {
     if (err) {
       return res.status(500).json({ error: 'Failed to authenticate token' });
     }
-    req.userId = decoded.userId;
+    req.userId = decoded.id;
     req.userRole = decoded.role;
     next();
   });
